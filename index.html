@@ -3,199 +3,328 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HEMORA - Water Quality & Heavy Metal Intelligence</title>
+  <title>HEMORA - National Water Quality & Heavy Metal Intelligence</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans min-h-screen pb-16">
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen pb-20 selection:bg-cyan-500 selection:text-black">
 
-  <!-- HEADER & PHASE 1: MAP / REGION SELECTOR -->
-  <header class="text-center py-10 px-4">
-    <div class="inline-flex items-center gap-2 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
-      <i data-lucide="droplet" class="w-4 h-4"></i> National Water Toxicity Index
+  <!-- TOP NAVBAR -->
+  <nav class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50 px-6 py-4">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-black text-black">
+          H
+        </div>
+        <span class="font-extrabold text-lg tracking-wider bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">
+          HEMORA AI
+        </span>
+      </div>
+      <span class="text-xs bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-3 py-1 rounded-full font-semibold">
+        🇮🇳 National Water Health Engine
+      </span>
     </div>
-    <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-cyan-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent">
-      HEMORA: Groundwater Health Engine
+  </nav>
+
+  <!-- ========================================== -->
+  <!-- PHASE 1: MACRO VIEW (INDIA STATE HEATMAP & SEARCH) -->
+  <!-- ========================================== -->
+  <section class="max-w-6xl mx-auto px-4 py-10 text-center">
+    <div class="inline-flex items-center gap-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
+      <i data-lucide="map-pin" class="w-4 h-4"></i> Phase 1: Macro Regional Heatmap
+    </div>
+    <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-white mb-4">
+      India Groundwater <span class="bg-gradient-to-r from-cyan-400 via-teal-300 to-blue-500 bg-clip-text text-transparent">Toxicity Index</span>
     </h1>
-    <p class="text-slate-400 mt-2 text-sm max-w-xl mx-auto">
-      Select an Indian state to inspect localized heavy metal risks, chemical indices, and life-saving remediation.
+    <p class="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto mb-8">
+      Click on any state below or use the search bar to inspect heavy metal contamination, BOD/COD indices, and life-saving remediation.
     </p>
 
-    <!-- State Selection Buttons -->
-    <div class="flex flex-wrap gap-2 justify-center max-w-2xl mx-auto mt-6" id="state-buttons"></div>
-  </header>
+    <!-- State Search Box -->
+    <div class="max-w-md mx-auto relative mb-8">
+      <i data-lucide="search" class="w-5 h-5 absolute left-4 top-3.5 text-slate-500"></i>
+      <input 
+        type="text" 
+        id="search-box"
+        placeholder="Type to search state (e.g. West Bengal, Bihar, Rajasthan)..."
+        class="w-full bg-slate-900 border border-slate-800 rounded-full pl-12 pr-4 py-3 text-sm focus:outline-none focus:border-cyan-400 text-white placeholder-slate-500 transition"
+        oninput="handleSearch()"
+      />
+    </div>
 
-  <!-- MAIN DASHBOARD (PHASE 2 & PHASE 3) -->
-  <main class="max-w-4xl mx-auto px-4 space-y-6">
+    <!-- 12 States Heatmap Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 text-left" id="state-grid"></div>
+  </section>
 
-    <!-- PHASE 2: RISK BREAKDOWN -->
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8">
-      <div class="flex items-center justify-between flex-wrap gap-2 mb-6">
-        <h2 class="text-2xl font-bold flex items-center gap-2">
-          <i data-lucide="activity" class="text-cyan-400 w-6 h-6"></i>
-          Assessment for: <span id="current-state" class="text-cyan-400 font-black">Punjab</span>
-        </h2>
-        <span id="risk-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/30">
+  <!-- ========================================== -->
+  <!-- PHASE 2: MICRO VIEW (RISK & HEAVY METAL BREAKDOWN) -->
+  <!-- ========================================== -->
+  <section class="max-w-5xl mx-auto px-4 py-6" id="phase-2-section">
+    <div class="inline-flex items-center gap-2 bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
+      <i data-lucide="activity" class="w-3.5 h-3.5"></i> Phase 2: Localized Hazard Assessment
+    </div>
+
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+      <!-- Title Header -->
+      <div class="flex items-center justify-between flex-wrap gap-4 border-b border-slate-800 pb-6 mb-6">
+        <div>
+          <span class="text-xs text-slate-400 uppercase font-bold">Selected Region Analysis</span>
+          <h2 class="text-3xl font-extrabold text-white flex items-center gap-2 mt-1">
+            <span id="p2-state" class="text-cyan-400">Punjab</span>, India
+          </h2>
+        </div>
+        <div id="p2-badge" class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-red-500/20 text-red-400 border border-red-500/30">
           Critical Hazard
-        </span>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Overall Score -->
-        <div class="bg-slate-800/80 p-6 rounded-2xl flex flex-col items-center justify-center text-center">
-          <span class="text-xs uppercase text-slate-400 font-bold">Overall Toxicity Risk</span>
-          <div class="text-5xl font-black text-red-400 my-3" id="risk-score">84%</div>
+        <!-- Circular Risk Gauge Card -->
+        <div class="bg-slate-800/60 border border-slate-700/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center">
+          <span class="text-xs uppercase text-slate-400 font-bold">Overall Water Toxicity Risk</span>
+          <div class="text-5xl font-black text-red-400 my-4" id="p2-risk">84%</div>
           <span class="text-xs text-slate-400">Above WHO Safe Limits</span>
         </div>
 
-        <!-- Heavy Metal Distribution -->
-        <div class="bg-slate-800/80 p-6 rounded-2xl md:col-span-2">
+        <!-- Heavy Metal Breakdown Percentage Bars -->
+        <div class="bg-slate-800/60 border border-slate-700/50 p-6 rounded-2xl md:col-span-2 flex flex-col justify-between">
           <div class="flex justify-between items-center mb-4">
             <span class="text-xs uppercase text-slate-400 font-bold">Heavy Metal Concentration</span>
-            <span class="text-xs text-amber-400 font-semibold" id="top-pollutant">⚠️ Primary: Arsenic</span>
+            <span class="text-xs text-amber-400 font-bold" id="p2-pollutant">⚠️ Primary Hazard: Arsenic</span>
           </div>
-          
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-            <div class="bg-slate-900/60 p-3 rounded-xl">
-              <span class="text-xs text-slate-400">Arsenic</span>
-              <div class="font-bold text-red-400 text-lg mt-1" id="val-arsenic">0.08 ppm</div>
+
+          <div class="space-y-3 text-xs">
+            <!-- Arsenic -->
+            <div>
+              <div class="flex justify-between font-semibold mb-1">
+                <span class="text-slate-300">Arsenic (As)</span>
+                <span class="text-red-400 font-bold" id="val-arsenic">0.08 ppm</span>
+              </div>
+              <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden">
+                <div id="bar-arsenic" class="bg-red-500 h-2 rounded-full" style="width: 80%"></div>
+              </div>
             </div>
-            <div class="bg-slate-900/60 p-3 rounded-xl">
-              <span class="text-xs text-slate-400">Lead</span>
-              <div class="font-bold text-orange-400 text-lg mt-1" id="val-lead">0.04 ppm</div>
+
+            <!-- Lead -->
+            <div>
+              <div class="flex justify-between font-semibold mb-1">
+                <span class="text-slate-300">Lead (Pb)</span>
+                <span class="text-orange-400 font-bold" id="val-lead">0.04 ppm</span>
+              </div>
+              <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden">
+                <div id="bar-lead" class="bg-orange-500 h-2 rounded-full" style="width: 55%"></div>
+              </div>
             </div>
-            <div class="bg-slate-900/60 p-3 rounded-xl">
-              <span class="text-xs text-slate-400">Mercury</span>
-              <div class="font-bold text-purple-400 text-lg mt-1" id="val-mercury">0.01 ppm</div>
+
+            <!-- Mercury -->
+            <div>
+              <div class="flex justify-between font-semibold mb-1">
+                <span class="text-slate-300">Mercury (Hg)</span>
+                <span class="text-purple-400 font-bold" id="val-mercury">0.01 ppm</span>
+              </div>
+              <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden">
+                <div id="bar-mercury" class="bg-purple-500 h-2 rounded-full" style="width: 35%"></div>
+              </div>
             </div>
-            <div class="bg-slate-900/60 p-3 rounded-xl">
-              <span class="text-xs text-slate-400">Cadmium</span>
-              <div class="font-bold text-yellow-400 text-lg mt-1" id="val-cadmium">0.009 ppm</div>
+
+            <!-- Cadmium -->
+            <div>
+              <div class="flex justify-between font-semibold mb-1">
+                <span class="text-slate-300">Cadmium (Cd)</span>
+                <span class="text-yellow-400 font-bold" id="val-cadmium">0.009 ppm</span>
+              </div>
+              <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden">
+                <div id="bar-cadmium" class="bg-yellow-500 h-2 rounded-full" style="width: 25%"></div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Water Stats Grid -->
+      <!-- Water Quality Telemetry (BOD, COD, pH) -->
       <div class="grid grid-cols-3 gap-3 mt-6 text-center text-sm">
-        <div class="bg-slate-800/40 p-3 rounded-xl">
+        <div class="bg-slate-800/40 border border-slate-800 p-4 rounded-xl">
           <span class="text-xs text-slate-400">BOD Level</span>
-          <div class="font-bold text-yellow-400 text-base mt-1" id="val-bod">6.8 mg/L</div>
+          <div class="text-xl font-extrabold text-yellow-400 mt-1" id="p2-bod">6.8 mg/L</div>
+          <span class="text-[11px] text-slate-500">WHO Limit: &lt; 3.0</span>
         </div>
-        <div class="bg-slate-800/40 p-3 rounded-xl">
+        <div class="bg-slate-800/40 border border-slate-800 p-4 rounded-xl">
           <span class="text-xs text-slate-400">COD Level</span>
-          <div class="font-bold text-red-400 text-base mt-1" id="val-cod">28.4 mg/L</div>
+          <div class="text-xl font-extrabold text-red-400 mt-1" id="p2-cod">28.4 mg/L</div>
+          <span class="text-[11px] text-slate-500">WHO Limit: &lt; 10.0</span>
         </div>
-        <div class="bg-slate-800/40 p-3 rounded-xl">
-          <span class="text-xs text-slate-400">pH Level</span>
-          <div class="font-bold text-emerald-400 text-base mt-1" id="val-ph">7.4</div>
+        <div class="bg-slate-800/40 border border-slate-800 p-4 rounded-xl">
+          <span class="text-xs text-slate-400">pH Value</span>
+          <div class="text-xl font-extrabold text-emerald-400 mt-1" id="p2-ph">7.4</div>
+          <span class="text-[11px] text-slate-500">Ideal: 6.5 - 8.5</span>
         </div>
       </div>
     </div>
+  </section>
 
-    <!-- PHASE 3: BEFORE VS AFTER & SOLUTIONS -->
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8">
-      <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
-        <i data-lucide="shield-check" class="text-emerald-400 w-6 h-6"></i>
-        Remediation Protocol & Life Transformation
+  <!-- ========================================== -->
+  <!-- PHASE 3: SOLUTIONS & BEFORE VS. AFTER -->
+  <!-- ========================================== -->
+  <section class="max-w-5xl mx-auto px-4 py-6">
+    <div class="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
+      <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Phase 3: Life Transformation & Remediation
+    </div>
+
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+      <h3 class="text-2xl font-black text-white mb-6">
+        Impact Matrix: <span class="text-emerald-400">Before vs. After Remediation</span>
       </h3>
 
-      <!-- Before vs After -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div class="bg-red-950/20 border border-red-500/30 p-5 rounded-2xl">
-          <div class="text-red-400 font-bold text-sm mb-2 flex items-center gap-1.5">
-            <i data-lucide="x-circle" class="w-4 h-4"></i> Current State: Untreated Water
+      <!-- Before vs After Split View -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <!-- LIFE BEFORE (UNTREATED) -->
+        <div class="bg-red-950/20 border border-red-500/30 p-6 rounded-2xl relative overflow-hidden">
+          <div class="flex items-center gap-2 text-red-400 font-extrabold text-sm uppercase tracking-wider mb-4">
+            <i data-lucide="x-octagon" class="w-5 h-5"></i> Current: Life with Toxic Water
           </div>
-          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
-            High bioaccumulation causing neurological stress, kidney burden, and skin pigmentation risks.
-          </p>
+          <ul class="space-y-3 text-sm text-slate-300">
+            <li class="flex items-start gap-2">
+              <span class="text-red-400 font-bold">•</span> Severe bio-accumulation of toxic heavy metals in kidneys & liver.
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-red-400 font-bold">•</span> High risk of chronic skin lesions and neurological fatigue.
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-red-400 font-bold">•</span> Developmental risks in children due to toxic chemical load.
+            </li>
+          </ul>
         </div>
 
-        <div class="bg-emerald-950/20 border border-emerald-500/30 p-5 rounded-2xl">
-          <div class="text-emerald-400 font-bold text-sm mb-2 flex items-center gap-1.5">
-            <i data-lucide="check-circle-2" class="w-4 h-4"></i> Life After Recommended Solution
+        <!-- LIFE AFTER (REMEDIATED) -->
+        <div class="bg-emerald-950/20 border border-emerald-500/30 p-6 rounded-2xl relative overflow-hidden">
+          <div class="flex items-center gap-2 text-emerald-400 font-extrabold text-sm uppercase tracking-wider mb-4">
+            <i data-lucide="check-circle-2" class="w-5 h-5"></i> Life After Prescribed Solution
           </div>
-          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed" id="life-after">
-            Reduces neurological disease & chronic kidney burden by 92%.
-          </p>
+          <ul class="space-y-3 text-sm text-slate-300">
+            <li class="flex items-start gap-2">
+              <span class="text-emerald-400 font-bold">•</span> <b class="text-emerald-400" id="p3-impact">94% reduction in toxic load</b>, restoring cellular health.
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-emerald-400 font-bold">•</span> Long-term protection against chronic organ failure.
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-emerald-400 font-bold">•</span> Pure, healthy mineral-balanced drinking water.
+            </li>
+          </ul>
         </div>
       </div>
 
-      <!-- Actionable Tech -->
-      <div class="bg-slate-800/80 p-5 rounded-2xl flex items-start gap-4">
-        <i data-lucide="wrench" class="text-cyan-400 w-6 h-6 shrink-0 mt-1"></i>
+      <!-- Actionable Treatment Protocol -->
+      <div class="bg-slate-800/80 border border-slate-700/60 p-6 rounded-2xl flex items-start gap-4">
+        <div class="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-xl text-cyan-400 shrink-0">
+          <i data-lucide="wrench" class="w-6 h-6"></i>
+        </div>
         <div>
-          <div class="text-white font-bold text-sm">Recommended Engineering Filtration</div>
-          <p class="text-slate-300 text-xs sm:text-sm mt-1" id="solution-text">
-            Activated Alumina Adsorption + Dual-Stage Reverse Osmosis with pre-oxidation.
+          <h4 class="text-white font-bold text-base">Prescribed Engineering Purification Architecture</h4>
+          <p class="text-slate-300 text-sm mt-1 leading-relaxed" id="p3-solution">
+            Activated Alumina Adsorption filter bed + Dual-Stage Reverse Osmosis (RO) with Pre-Oxidation.
           </p>
         </div>
       </div>
     </div>
-  </main>
+  </section>
 
-
+  <!-- JAVASCRIPT DATA & LOGIC (12 STATES) -->
   <script>
-    // 1. Paste your real Supabase Project URL and Anon Key here:
-    const SUPABASE_URL = 'https://ocdrwlllnjvadlmivxlg.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZHJ3bGxsbmp2YWRsbWl2eGxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMjMyNDUsImV4cCI6MjEwMjg5OTI0NX0.ycMEiohfCUB6XqtYekFI0orpMsZL8mgnJR7fgPSkWa0';
+    const dataset = [
+      { state: "Punjab", risk: 84, status: "Critical", top: "Arsenic & Lead", as: "0.08", pb: "0.04", hg: "0.01", cd: "0.009", bod: "6.8", cod: "28.4", ph: "7.4", solution: "Activated Alumina Adsorption + Dual-Stage Reverse Osmosis (RO)", impact: "Reduces neurological disease & chronic kidney burden by 92%." },
+      { state: "West Bengal", risk: 91, status: "Critical", top: "Arsenic (High)", as: "0.12", pb: "0.03", hg: "0.005", cd: "0.004", bod: "5.9", cod: "22.1", ph: "7.1", solution: "Iron-Oxide Coated Sand Filter + Sub-micron Ultrafiltration", impact: "Halts skin lesion progression & safeguards child cognitive health." },
+      { state: "Bihar", risk: 88, status: "Critical", top: "Arsenic & Iron", as: "0.09", pb: "0.035", hg: "0.004", cd: "0.003", bod: "6.2", cod: "25.0", ph: "7.3", solution: "Community Arsenic Removal Unit (AIRP) + Activated Alumina", impact: "Eliminates toxic bioaccumulation in rural drinking wells." },
+      { state: "Uttar Pradesh", risk: 79, status: "Critical", top: "Chromium & Lead", as: "0.05", pb: "0.06", hg: "0.008", cd: "0.007", bod: "7.4", cod: "32.0", ph: "7.8", solution: "Ion Exchange Resin Bed + Granular Activated Carbon (GAC)", impact: "Extracts industrial tannery runoff and heavy chromium toxicity." },
+      { state: "Rajasthan", risk: 72, status: "Critical", top: "Fluoride & Nitrate", as: "0.02", pb: "0.02", hg: "0.002", cd: "0.003", bod: "4.1", cod: "16.8", ph: "8.1", solution: "Nalgonda De-fluoridation Technique + RO Desalination", impact: "Protects against skeletal fluorosis, dental damage, and joint stiffness." },
+      { state: "Maharashtra", risk: 54, status: "Moderate", top: "Industrial COD & Lead", as: "0.015", pb: "0.03", hg: "0.004", cd: "0.005", bod: "4.8", cod: "19.5", ph: "7.2", solution: "Multi-media Sand Filter + Active Carbon Polishing", impact: "Clears chemical industrial runoff, restoring fresh water clarity." },
+      { state: "Karnataka", risk: 42, status: "Moderate", top: "Nitrate & Iron", as: "0.01", pb: "0.01", hg: "0.001", cd: "0.002", bod: "3.4", cod: "14.2", ph: "7.6", solution: "Aeration + Activated Carbon + Catalytic Iron Filter", impact: "Removes metallic taste, protects digestive system." },
+      { state: "Tamil Nadu", risk: 48, status: "Moderate", top: "Total Dissolved Solids (TDS)", as: "0.01", pb: "0.02", hg: "0.002", cd: "0.003", bod: "3.9", cod: "15.1", ph: "7.5", solution: "Brackish Water Reverse Osmosis (BWRO) + Remineralizer", impact: "Balances alkaline pH and prevents kidney stone formation." },
+      { state: "Gujarat", risk: 65, status: "Moderate", top: "Heavy Chlorides & Lead", as: "0.02", pb: "0.035", hg: "0.003", cd: "0.004", bod: "4.5", cod: "18.0", ph: "7.9", solution: "Electro-dialysis Reversal (EDR) + Micron Sediment Filter", impact: "Eliminates coastal salinity intrusion and heavy trace metals." },
+      { state: "Assam", risk: 68, status: "Critical", top: "Arsenic & Manganese", as: "0.07", pb: "0.02", hg: "0.001", cd: "0.002", bod: "5.1", cod: "19.0", ph: "6.9", solution: "Green Sand Manganese Removal + Alumina Adsorption", impact: "Prevents neurological tremors and toxic burden." },
+      { state: "Delhi NCR", risk: 82, status: "Critical", top: "Ammonia, Lead & COD", as: "0.04", pb: "0.05", hg: "0.009", cd: "0.008", bod: "8.5", cod: "38.0", ph: "7.6", solution: "Ozonation + UV Sterilization + High-Recovery RO", impact: "Removes toxic sewage intrusion and carcinogenic organic loads." },
+      { state: "Kerala", risk: 18, status: "Safe", top: "Trace Organic Matter", as: "0.001", pb: "0.002", hg: "0.000", cd: "0.001", bod: "1.8", cod: "7.2", ph: "7.0", solution: "Basic Sediment Cartridge Filter + UV Disinfection", impact: "Preserves natural mountain minerals for pure hydration." }
+    ];
 
-    // Initialize Supabase Client
-    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    let allWaterRecords = [];
     let activeIndex = 0;
 
-    // 2. Fetch all rows from your Supabase table
-    async function fetchLiveRecords() {
-      const { data, error } = await db.from('water_records').select('*');
-      
-      if (error || !data || data.length === 0) {
-        console.warn("Could not fetch Supabase data or table is empty. Using demo data.");
-        return;
-      }
+    function renderGrid(filter = "") {
+      const container = document.getElementById('state-grid');
+      container.innerHTML = "";
+      const filtered = dataset.filter(d => d.state.toLowerCase().includes(filter.toLowerCase()));
 
-      allWaterRecords = data;
-      renderButtons();
-      updateUI();
-    }
+      filtered.forEach((item) => {
+        const origIndex = dataset.findIndex(x => x.state === item.state);
+        const card = document.createElement('div');
+        const isSelected = activeIndex === origIndex;
 
-    function renderButtons() {
-      const container = document.getElementById('state-buttons');
-      container.innerHTML = '';
-      allWaterRecords.forEach((record, index) => {
-        const btn = document.createElement('button');
-        btn.textContent = record.state;
-        btn.className = `px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-          activeIndex === index 
-            ? 'bg-cyan-500 text-slate-950 scale-105 shadow-lg shadow-cyan-500/20' 
-            : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
+        const badgeColor = item.status === 'Critical' ? 'bg-red-500/20 text-red-400 border-red-500/30' :
+                           item.status === 'Moderate' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
+                           'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+
+        card.className = `p-4 rounded-2xl border cursor-pointer transition-all hover:scale-105 ${
+          isSelected 
+            ? 'border-cyan-400 bg-cyan-950/40 shadow-lg shadow-cyan-500/20 ring-1 ring-cyan-400' 
+            : 'border-slate-800 bg-slate-900/60 hover:border-slate-700'
         }`;
-        btn.onclick = () => { activeIndex = index; updateUI(); renderButtons(); };
-        container.appendChild(btn);
+
+        card.onclick = () => {
+          activeIndex = origIndex;
+          renderGrid(document.getElementById('search-box').value);
+          updatePhase2And3();
+          document.getElementById('phase-2-section').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-bold text-white text-sm flex items-center gap-1">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-cyan-400"></i> ${item.state}
+            </span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${badgeColor}">
+              ${item.status}
+            </span>
+          </div>
+          <div class="text-xl font-black ${item.risk > 70 ? 'text-red-400' : item.risk > 40 ? 'text-yellow-400' : 'text-emerald-400'}">
+            ${item.risk}% <span class="text-[11px] text-slate-400 font-normal">Risk</span>
+          </div>
+          <div class="text-[11px] text-slate-400 mt-1 truncate">⚠️ ${item.top}</div>
+        `;
+        container.appendChild(card);
       });
+      lucide.createIcons();
     }
 
-    function updateUI() {
-      if (allWaterRecords.length === 0) return;
-      const data = allWaterRecords[activeIndex];
-      
-      document.getElementById('current-state').textContent = data.state;
-      document.getElementById('risk-score').textContent = (data.overall_risk_score || 0) + '%';
-      document.getElementById('risk-badge').textContent = (data.water_status || 'Critical') + ' Hazard';
-      document.getElementById('top-pollutant').textContent = '⚠️ Primary: ' + (data.top_pollutant || 'Heavy Metals');
-      document.getElementById('val-arsenic').textContent = (data.arsenic_ppm || 0) + ' ppm';
-      document.getElementById('val-lead').textContent = (data.lead_ppm || 0) + ' ppm';
-      document.getElementById('val-mercury').textContent = (data.mercury_ppm || 0) + ' ppm';
-      document.getElementById('val-cadmium').textContent = (data.cadmium_ppm || 0) + ' ppm';
-      document.getElementById('val-bod').textContent = (data.bod_level || 0) + ' mg/L';
-      document.getElementById('val-cod').textContent = (data.cod_level || 0) + ' mg/L';
-      document.getElementById('val-ph').textContent = data.ph_level || 7.0;
-      document.getElementById('life-after').textContent = data.life_after_impact || 'Protects organ and neurological health.';
-      document.getElementById('solution-text').textContent = data.recommended_solution || 'Multi-stage Reverse Osmosis & Activated Alumina.';
+    function updatePhase2And3() {
+      const data = dataset[activeIndex];
+      document.getElementById('p2-state').textContent = data.state;
+      document.getElementById('p2-risk').textContent = data.risk + '%';
+      document.getElementById('p2-badge').textContent = data.status + ' Hazard';
+      document.getElementById('p2-pollutant').textContent = '⚠️ Primary Hazard: ' + data.top;
+
+      document.getElementById('val-arsenic').textContent = data.as + ' ppm';
+      document.getElementById('val-lead').textContent = data.pb + ' ppm';
+      document.getElementById('val-mercury').textContent = data.hg + ' ppm';
+      document.getElementById('val-cadmium').textContent = data.cd + ' ppm';
+
+      document.getElementById('bar-arsenic').style.width = Math.min(100, parseFloat(data.as) * 800) + '%';
+      document.getElementById('bar-lead').style.width = Math.min(100, parseFloat(data.pb) * 1200) + '%';
+      document.getElementById('bar-mercury').style.width = Math.min(100, parseFloat(data.hg) * 3000) + '%';
+      document.getElementById('bar-cadmium').style.width = Math.min(100, parseFloat(data.cd) * 4000) + '%';
+
+      document.getElementById('p2-bod').textContent = data.bod + ' mg/L';
+      document.getElementById('p2-cod').textContent = data.cod + ' mg/L';
+      document.getElementById('p2-ph').textContent = data.ph;
+
+      document.getElementById('p3-impact').textContent = data.impact;
+      document.getElementById('p3-solution').textContent = data.solution;
     }
 
-    // Load data from Supabase as soon as page opens!
-    fetchLiveRecords();
-    lucide.createIcons();
+    function handleSearch() {
+      renderGrid(document.getElementById('search-box').value);
+    }
+
+    renderGrid();
+    updatePhase2And3();
   </script>
+</body>
+</html>
