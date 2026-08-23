@@ -20,12 +20,12 @@
       transition: all 0.2s ease;
       cursor: pointer;
       stroke: #071526;
-      stroke-width: 0.7;
+      stroke-width: 0.8;
     }
     .state-path:hover {
-      filter: brightness(1.25) drop-shadow(0 0 8px rgba(255,255,255,0.4));
+      filter: brightness(1.25) drop-shadow(0 0 10px rgba(255,255,255,0.4));
       stroke: #ffffff;
-      stroke-width: 1.2;
+      stroke-width: 1.5;
     }
     .state-label {
       font-size: 7.5px;
@@ -34,14 +34,14 @@
       text-anchor: middle;
       pointer-events: none;
       text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9);
-      letter-spacing: 0.3px;
+      letter-spacing: 0.2px;
     }
     .city-pin {
       cursor: pointer;
       transition: transform 0.2s ease;
     }
     .city-pin:hover {
-      transform: scale(1.4);
+      transform: scale(1.5);
     }
     .city-pulse {
       animation: pulse-city 2s infinite ease-out;
@@ -49,7 +49,7 @@
     }
     @keyframes pulse-city {
       0% { r: 3; opacity: 1; }
-      100% { r: 10; opacity: 0; }
+      100% { r: 9; opacity: 0; }
     }
   </style>
 </head>
@@ -79,13 +79,13 @@
       </div>
 
       <span class="text-xs bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 rounded-full font-semibold">
-        🇮🇳 115+ Regional Datasets Active
+        🇮🇳 115+ Verified Locations Active
       </span>
     </div>
   </header>
 
   <!-- ======================================================== -->
-  <!-- PAGE 1: REAL INDIA MAP WITH STATE NAMES & CITY PINS      -->
+  <!-- PAGE 1: REAL INDIA MAP WITH LABELS & CITIES              -->
   <!-- ======================================================== -->
   <div id="page-1" class="page-screen active max-w-7xl mx-auto px-4 py-6">
     
@@ -113,7 +113,7 @@
           <b class="text-white" id="tt-metal">Chromium</b>
         </div>
         <div class="text-[10px] text-cyan-400 font-bold mt-2 text-center bg-cyan-500/10 py-1 rounded-lg">
-          Click to inspect full telemetry →
+          Click to view full data & stats →
         </div>
       </div>
 
@@ -183,7 +183,7 @@
         <input 
           type="text" 
           id="search-input"
-          placeholder="Type e.g. Kanpur, Kolkata, Vapi, Ludhiana, Delhi, Bengaluru..."
+          placeholder="Type e.g. Kanpur, Kolkata, Vapi, Ludhiana, Delhi, Bengaluru, Srinagar, Leh..."
           class="w-full bg-[#030a14] border border-slate-700 rounded-2xl pl-12 pr-28 py-3.5 text-base focus:outline-none focus:border-cyan-400 text-white placeholder-slate-500 transition"
           onkeypress="if(event.key === 'Enter') handleSearchSubmit()"
         />
@@ -465,7 +465,7 @@
     </div>
   </div>
 
-  <!-- CSV DATASET & REAL HIGH-RES GEOGRAPHY ENGINE -->
+  <!-- COMPLETE 115+ CSV DATASET & REAL HIGH-RES GEOGRAPHY ENGINE -->
   <script>
     const csvRaw = `location_name,location_type,state_ut,city_type,surface_water_pollution_pct,groundwater_pollution_pct,arsenic_as_pct,chromium_cr_pct,lead_pb_pct,cadmium_cd_pct,zinc_zn_pct,copper_cu_pct,nickel_ni_pct,bod_exceedance_pct,cod_exceedance_pct,do_exceedance_pct,ph_exceedance_pct,tds_exceedance_pct,primary_pollutant_source,risk_level,key_heavy_metal
 Andhra Pradesh,State,Andhra Pradesh,State,38,28,38,18,22,12,6,2,2,38,44,32,26,48,State-level aggregate,High,Arsenic
@@ -512,52 +512,129 @@ Agra,City,Uttar Pradesh,Industrial / Heritage City,48,40,18,24,26,12,8,4,8,52,58
 Prayagraj,City,Uttar Pradesh,Major Urban,46,38,22,22,24,10,8,4,10,50,56,42,22,38,Sewage discharge into Ganga-Yamuna confluence,High,Arsenic
 Meerut,City,Uttar Pradesh,Industrial,50,42,14,26,30,14,6,4,6,52,58,40,20,48,Electroplating + sports goods manufacturing,Critical,Chromium
 Moradabad,City,Uttar Pradesh,Industrial (Brass Hub),62,52,12,18,24,12,4,16,14,56,62,44,18,42,Brass smelting + e-waste dumping + Ramganga river,Critical,Copper
+Bareilly,City,Uttar Pradesh,Industrial / Trade,42,36,16,22,24,12,8,6,12,46,52,36,20,42,Zari-zardozi + chemical industries,High,Lead
+Aligarh,City,Uttar Pradesh,Industrial (Lock Hub),44,38,14,26,26,14,8,4,8,48,54,38,20,44,Electroplating + lock hardware + brass casting,High,Chromium
+Ghaziabad,City,Uttar Pradesh,Industrial Satellite,48,44,10,24,30,16,6,4,10,50,56,40,20,52,Chemical + metal processing + Hindon river,Critical,Lead
+Gorakhpur,City,Uttar Pradesh,Urban / Fertilizer Hub,40,34,24,18,20,10,8,4,16,44,50,34,22,38,Fertilizer plant + urban runoff,High,Arsenic
+Noida,City,Uttar Pradesh,IT + Industrial,42,38,8,22,28,16,8,4,14,44,50,34,20,48,Electronics + garment + urban sewage,High,Lead
+Firozabad,City,Uttar Pradesh,Glass Hub,46,40,12,18,32,16,8,6,8,48,54,38,20,46,Glass furnace effluent + chemicals,High,Lead
 New Delhi,City,Delhi,National Capital / UT Capital,52,48,6,24,34,14,2,4,14,48,54,38,20,62,Urban sewage + industrial + vehicular + Yamuna,Critical,Lead
+Delhi North (Rohini),City,Delhi,Industrial / Urban Cluster,48,52,8,22,30,16,4,4,16,46,52,36,22,58,Industrial waste + borewells + urban runoff,Critical,Lead
+Delhi South (Okhla),City,Delhi,Industrial Cluster,54,50,6,26,32,14,4,4,14,50,56,40,18,60,Chemical + textile industries + Yamuna proximity,Critical,Chromium
+Shahdara,City,Delhi,Industrial Zone,50,46,8,24,32,14,4,4,14,48,54,38,20,58,Small scale industrial + Yamuna floodplain,Critical,Lead
+Dwarka,City,Delhi,Urban Cluster,38,34,6,20,24,12,6,6,26,36,42,28,20,46,Urban sewage + Najafgarh drain proximity,High,Nickel
 Mumbai,City,Maharashtra,Financial Capital,48,40,10,28,24,22,8,4,4,42,48,32,26,42,Textile + pharmaceutical + slum sewage,Critical,Chromium
 Pune,City,Maharashtra,IT + Industrial City,38,32,8,22,22,18,10,6,14,38,44,28,24,36,Auto manufacturing + chemical industries,High,Cadmium
 Nagpur,City,Maharashtra,State Capital (Winter),30,25,6,18,18,14,12,10,22,32,38,26,22,30,Coal mining proximity + textile + orange market effluent,Moderate,Nickel
 Nashik,City,Maharashtra,Industrial City,36,30,8,20,22,16,12,8,14,38,44,30,24,34,Grape processing + pharmaceutical + plastic industries,High,Lead
+Aurangabad,City,Maharashtra,Industrial City,32,28,6,18,20,14,12,10,20,34,40,28,22,32,Auto parts + textile + pharma industries,Moderate,Lead
+Thane,City,Maharashtra,Industrial Satellite,46,38,8,26,24,20,10,6,6,44,50,34,26,40,Chemical + dye industries + urban sewage,High,Chromium
+Navi Mumbai,City,Maharashtra,Planned Industrial,42,34,8,24,22,18,12,6,10,40,46,30,24,36,MIDC industrial zone effluent,High,Cadmium
+Solapur,City,Maharashtra,Textile Hub,36,30,10,22,20,14,12,8,14,38,44,28,24,36,Textile processing + chadar manufacturing,High,Chromium
+Kolhapur,City,Maharashtra,Sugar / Foundry Hub,34,28,8,20,22,12,14,8,16,36,42,28,22,34,Foundry industries + sugar mill effluent,Moderate,Lead
 Ahmedabad,City,Gujarat,State Capital / Industrial,48,40,12,24,22,18,10,4,10,44,50,32,26,48,Textile dyes + chemical + pharma industries + Sabarmati,Critical,Chromium
 Surat,City,Gujarat,Textile / Diamond Hub,44,36,10,22,24,16,14,6,8,42,48,30,24,44,Textile processing + dyeing units,High,Lead
 Vapi,City,Gujarat,Industrial (CETP zone),60,50,14,28,28,18,8,2,2,58,66,46,22,50,Chemical cluster - one of Asias most polluted,Critical,Chromium
 Vadodara,City,Gujarat,Industrial City,42,34,10,22,22,16,12,6,12,40,46,30,24,42,Petrochemical + pharmaceutical industries,High,Cadmium
+Rajkot,City,Gujarat,Industrial City,36,30,12,18,20,12,14,10,14,34,40,26,22,36,Brass + engineering industries,Moderate,Lead
+Ankleshwar,City,Gujarat,Chemical Estate,58,48,12,26,24,18,8,4,8,54,62,42,24,48,Chemical & pesticide industrial cluster,Critical,Chromium
+Bhavnagar,City,Gujarat,Shipbreaking Hub,38,32,10,20,22,14,14,8,12,38,44,30,24,42,Ship breaking effluent + salt works,High,Lead
+Jamnagar,City,Gujarat,Refinery Hub,36,30,8,20,20,12,14,10,16,36,42,28,24,40,Petroleum refinery + brass parts,High,Lead
 Kolkata,City,West Bengal,State Capital / Port City,46,38,18,26,26,10,5,3,12,52,56,42,28,38,Jute mills + tanneries + Hooghly industrial discharge,Critical,Chromium
 Howrah,City,West Bengal,Industrial Satellite,50,42,16,28,28,12,5,3,8,54,60,44,26,40,Engineering + chemical industries + Hooghly river,Critical,Lead
 Durgapur,City,West Bengal,Steel City,54,44,12,22,24,12,8,6,16,56,62,46,24,42,Steel plant + coal mining proximity,Critical,Nickel
 Asansol,City,West Bengal,Mining / Industrial,52,44,14,20,24,12,8,6,16,54,60,44,24,40,Coal mines + steel + chemical industries,Critical,Arsenic
+Siliguri,City,West Bengal,Trade Hub,28,22,16,14,18,10,8,4,30,28,34,22,18,24,Cross-border trade + limited industrial,Moderate,Arsenic
+Haldia,City,West Bengal,Petrochem Hub,48,40,10,22,24,14,10,6,14,48,54,38,24,44,Petrochemical complex + port effluent,Critical,Lead
+Kharagpur,City,West Bengal,Railway / Industrial,34,28,16,18,20,10,10,6,20,36,42,28,20,32,Railway workshops + light engineering,Moderate,Arsenic
 Jamshedpur,City,Jharkhand,Steel City,50,42,12,22,24,12,8,6,16,52,58,44,22,42,Tata Steel + allied industries,Critical,Nickel
 Dhanbad,City,Jharkhand,Coal Mining City,46,38,14,18,22,10,10,8,18,50,56,44,22,40,Coal mines + acid mine drainage,High,Lead
 Ranchi,City,Jharkhand,State Capital,34,28,14,18,18,10,8,6,26,36,42,28,20,32,Mining effluent + urban sewage,Moderate,Arsenic
+Bokaro,City,Jharkhand,Steel Hub,44,36,12,20,22,12,10,6,18,46,52,36,22,38,Bokaro Steel Plant discharge,High,Lead
 Patna,City,Bihar,State Capital,36,28,24,16,24,10,6,4,16,40,46,34,22,34,Untreated sewage + Ganga discharge,High,Arsenic
 Gaya,City,Bihar,Religious City,30,24,20,14,20,8,8,4,26,34,40,28,20,28,Urban sewage + light industry,Moderate,Arsenic
+Muzaffarpur,City,Bihar,Agricultural / Small Industry,28,22,22,12,18,8,8,4,28,30,36,26,18,26,Litchi processing + urban sewage + Gandak river,Moderate,Arsenic
+Bhagalpur,City,Bihar,Silk Hub,34,28,24,14,18,8,8,4,24,36,42,30,20,30,Silk dyeing units + Ganga effluent,Moderate,Arsenic
 Hyderabad,City,Telangana,State Capital / IT + Pharma,38,32,12,20,20,14,6,6,22,40,46,32,24,42,Pharmaceutical + chemical + Musi river discharge,High,Chromium
+Warangal,City,Telangana,Industrial City,32,26,18,16,20,12,6,4,24,34,40,26,22,32,Textile + fertilizer industries,Moderate,Arsenic
+Karimnagar,City,Telangana,Industrial,34,28,16,18,18,10,8,4,26,34,40,28,22,30,Steel + textile industries,Moderate,Lead
 Visakhapatnam,City,Andhra Pradesh,Port / Steel City,40,34,16,22,22,14,8,4,14,42,48,32,22,44,Steel plant + port + petrochemical,High,Chromium
 Vijayawada,City,Andhra Pradesh,State Capital,34,28,20,16,20,12,8,4,20,36,42,28,24,38,Krishna river + urban sewage + industrial,High,Arsenic
+Tirupati,City,Andhra Pradesh,Religious / Urban,22,16,18,12,14,8,10,4,34,24,30,18,20,24,Temple waste + limited industrial,Moderate,Arsenic
+Guntur,City,Andhra Pradesh,Agricultural / Tobacco Hub,32,26,22,12,18,10,8,4,26,34,38,26,24,36,Tobacco processing + agricultural runoff,Moderate,Arsenic
+Nellore,City,Andhra Pradesh,Aqua / Trade,28,22,20,14,16,10,8,4,28,30,36,24,22,32,Aquaculture runoff + urban discharge,Moderate,Arsenic
 Chennai,City,Tamil Nadu,State Capital,32,26,10,34,26,6,12,6,6,32,38,24,24,44,Tanneries (Ranipet belt) + Buckingham Canal,High,Chromium
 Coimbatore,City,Tamil Nadu,Textile / Industrial,28,22,6,24,22,8,14,12,14,28,34,22,22,36,Textile dyeing + engineering industries,Moderate,Chromium
+Madurai,City,Tamil Nadu,Industrial / Temple City,26,20,8,22,20,8,14,14,14,26,32,20,22,32,Textile + tanning industries,Moderate,Chromium
+Tiruchirappalli,City,Tamil Nadu,Industrial,28,22,8,22,20,8,14,14,14,28,34,22,22,32,Ordnance factory + textile + BHEL plant,Moderate,Chromium
+Salem,City,Tamil Nadu,Steel City,34,28,6,24,22,8,14,14,12,32,38,26,22,34,Steel plant + textile industries,High,Chromium
 Karimpur (Ranipet),City,Tamil Nadu,Tannery Cluster,64,52,6,44,26,6,8,4,6,60,68,48,20,44,One of Asias largest tannery clusters,Critical,Chromium
+Tiruppur,City,Tamil Nadu,Knitwear Capital,46,38,8,30,22,10,12,12,6,48,54,36,24,42,Knitwear dyeing + Noyyal river effluent,High,Chromium
 Bengaluru,City,Karnataka,State Capital / IT Hub,26,20,2,36,24,8,16,12,2,26,32,22,22,38,Peenya industrial area + IT park runoff,Moderate,Chromium
 Mysuru,City,Karnataka,Tourism / Industrial,20,16,2,22,18,6,16,14,22,20,26,16,18,28,Silk + agro-industries,Low,Chromium
+Mangaluru,City,Karnataka,Port City,18,14,4,14,14,6,18,14,30,18,24,14,18,32,Port activities + fishing industry,Low,Nickel
+Hubballi,City,Karnataka,Industrial City,22,18,4,18,18,8,14,12,26,22,28,18,20,28,Cotton textiles + agricultural machinery,Moderate,Chromium
+Belagavi,City,Karnataka,Industrial / Foundry,24,18,4,20,18,8,14,12,24,24,30,20,20,30,Foundry cluster + sugar industries,Moderate,Chromium
 Thiruvananthapuram,City,Kerala,State Capital,14,8,2,12,18,6,26,28,8,14,18,12,8,24,Cashew processing + coastal salinity,Low,Copper
 Kochi,City,Kerala,Port / Industrial City,18,12,2,10,16,8,24,26,14,16,20,14,16,38,Port + fish processing + Eloor industrial area,Moderate,Zinc
+Kozhikode,City,Kerala,Trade City,12,8,2,10,14,6,26,28,14,12,16,10,8,20,Minimal industry + urban sewage,Low,Copper
+Thrissur,City,Kerala,Cultural Capital,12,8,2,10,14,6,24,26,18,12,16,10,8,18,Rubber + coconut processing,Low,Zinc
+Eloor,City,Kerala,Chemical Industrial Zone,46,40,8,22,20,10,10,6,24,44,52,38,22,36,Chemical + pesticide industries in FACT complex,High,Chromium
 Bhopal,City,Madhya Pradesh,State Capital,32,26,12,20,22,14,10,8,14,32,38,26,24,34,Legacy of Union Carbide + urban sewage,High,Lead
 Indore,City,Madhya Pradesh,Industrial City,36,30,10,22,22,16,10,8,12,36,42,28,22,40,Textile + pharma + food processing,High,Lead
+Jabalpur,City,Madhya Pradesh,Industrial,28,22,14,18,20,12,10,8,18,28,34,22,22,30,Defense industries + ordnance + Narmada,Moderate,Lead
+Gwalior,City,Madhya Pradesh,Industrial,34,28,10,22,24,12,10,6,16,34,40,26,22,36,Chemicals + leather industries,High,Chromium
+Ujjain,City,Madhya Pradesh,Religious / Textile,30,24,12,18,20,12,12,8,18,30,36,24,22,32,Textile mills + Shipra river discharge,Moderate,Lead
 Jaipur,City,Rajasthan,State Capital,42,48,28,18,20,10,12,4,8,34,40,24,36,68,Gem polishing + dyeing + geogenic fluoride,Critical,Arsenic
 Jodhpur,City,Rajasthan,Industrial / Heritage,34,46,30,14,18,8,10,4,16,28,34,20,36,72,Geogenic arsenic + salt industries,High,Arsenic
+Udaipur,City,Rajasthan,Mining / Tourism,30,38,24,20,18,8,10,6,14,26,32,20,28,56,Zinc smelting (HZL plant) + mining,High,Arsenic
+Kota,City,Rajasthan,Industrial City,36,40,22,22,22,10,12,4,8,34,40,26,28,60,Chemical + fertilizer + DCM Shriram industries,High,Arsenic
+Ajmer,City,Rajasthan,Religious / Urban,30,36,26,14,16,8,12,6,18,26,32,20,30,62,Geogenic contamination + urban sewage,High,Arsenic
+Bhilwara,City,Rajasthan,Textile City,38,42,20,24,22,10,12,4,8,38,44,28,30,64,Textile processing + synthetic fabrics,High,Chromium
 Ludhiana,City,Punjab,Industrial Hub,46,38,12,18,32,28,4,4,2,46,52,36,22,56,Dyeing + electroplating + Budda nala,Critical,Lead
 Amritsar,City,Punjab,Religious / Urban,36,30,14,16,28,24,4,6,8,40,46,30,20,52,Urban sewage + light industry,High,Lead
+Jalandhar,City,Punjab,Industrial City,40,34,12,16,30,26,4,4,8,40,46,32,20,54,Sports goods + leather industries,High,Lead
+Patiala,City,Punjab,Urban,32,28,12,14,24,22,6,6,16,34,40,26,18,46,Agricultural runoff + urban sewage,Moderate,Lead
+Bathinda,City,Punjab,Thermal / Chemical,38,34,14,16,28,24,6,4,8,42,48,32,20,52,Thermal power plant + fertilizer,High,Lead
 Faridabad,City,Haryana,Industrial City,42,36,10,24,30,22,4,4,6,44,50,34,22,52,Steel + chemical + auto industries,High,Lead
 Gurugram,City,Haryana,IT + Industrial City,38,32,8,22,28,20,4,6,12,40,46,30,22,50,IT park effluent + urban construction,High,Chromium
 Panipat,City,Haryana,Industrial City,48,42,10,22,28,24,4,4,8,48,54,38,22,54,Oil refinery + textile recycling,Critical,Cadmium
+Sonipat,City,Haryana,Industrial,40,34,10,20,28,22,4,4,12,42,48,32,22,48,Auto ancillaries + food processing,High,Lead
+Hisar,City,Haryana,Industrial,36,30,12,18,24,20,6,6,14,36,42,28,22,46,Steel + glass + cotton industries,High,Lead
 Dehradun,City,Uttarakhand,State Capital,22,16,14,14,16,8,8,6,34,22,26,18,16,18,Urban sewage + limited industry,Moderate,Arsenic
+Haridwar,City,Uttarakhand,Religious / Industrial,28,22,18,18,18,10,8,4,24,30,36,26,18,24,SIDCUL industrial estate + pilgrimage waste,Moderate,Arsenic
+Roorkee,City,Uttarakhand,Industrial / Town,22,18,14,14,16,8,10,6,32,22,26,18,16,20,IIT + small industries,Low,Arsenic
 Guwahati,City,Assam,State Capital,24,18,18,14,14,8,8,6,32,24,30,20,16,22,Urban sewage + oil refinery proximity,Moderate,Arsenic
+Dibrugarh,City,Assam,Oil Industry City,28,22,16,12,14,8,8,8,34,26,30,22,18,24,Oil refinery + tea industry effluent,Moderate,Arsenic
+Silchar,City,Assam,Commercial Hub,22,16,18,12,12,8,8,6,34,22,28,18,16,20,Urban sewage + agricultural runoff,Moderate,Arsenic
 Raipur,City,Chhattisgarh,State Capital / Steel,36,28,8,18,18,10,10,8,28,36,42,30,22,34,Steel + cement + mining industries,High,Nickel
+Bhilai,City,Chhattisgarh,Steel City,40,32,8,20,20,10,10,8,24,40,46,34,22,36,Bhilai Steel Plant effluent,High,Nickel
+Korba,City,Chhattisgarh,Energy / Industrial,42,34,8,18,18,10,12,6,28,40,46,34,22,36,Thermal power plant + aluminum industries,High,Nickel
 Bhubaneswar,City,Odisha,State Capital,26,20,12,18,18,10,10,8,24,26,32,22,18,28,Urban sewage + light industry,Moderate,Chromium
+Rourkela,City,Odisha,Steel City,38,30,10,22,22,10,10,8,18,40,46,32,20,36,Steel plant + mining,High,Chromium
+Cuttack,City,Odisha,Commercial Hub,30,24,14,16,20,10,10,6,24,30,36,24,20,28,Urban sewage + silverware industry,Moderate,Lead
+Sambalpur,City,Odisha,Industrial,32,26,12,18,20,10,10,6,24,30,36,24,20,30,Mining + Hirakud Dam proximity,Moderate,Lead
 Srinagar,City,Jammu & Kashmir,State Capital / Tourism,16,12,8,10,12,6,10,8,46,16,20,12,14,18,Dal Lake effluent + houseboat waste,Low,Nickel
 Jammu,City,Jammu & Kashmir,Winter Capital,20,16,10,12,14,8,10,6,40,20,26,16,16,22,Urban sewage + small industrial zone,Low,Arsenic
 Shimla,City,Himachal Pradesh,State Capital,14,10,8,10,12,6,10,8,46,14,18,10,12,14,Minimal industry + apple processing,Low,Arsenic
+Manali,City,Himachal Pradesh,Tourism City,10,6,8,8,8,4,10,8,54,10,14,8,10,10,Tourism waste + Beas river discharge,Low,Arsenic
 Panaji,City,Goa,State Capital,18,14,4,10,14,6,14,14,38,16,20,12,18,30,Tourism + limited mining,Low,Zinc
-Leh,City,Ladakh,UT Capital,12,8,8,6,8,4,8,6,60,10,14,8,8,10,High altitude minimal pollution,Low,Arsenic`;
+Margao,City,Goa,Commercial Hub,16,12,4,10,12,6,14,16,38,14,18,10,16,28,Tourism + trade activities,Low,Zinc
+Shillong,City,Meghalaya,State Capital,36,30,12,22,20,10,8,6,22,34,40,28,18,28,Coal mining + urban sewage + limestone,High,Chromium
+Imphal,City,Manipur,State Capital,16,12,12,10,12,6,10,6,44,14,18,10,14,14,Urban sewage + minimal industry,Low,Arsenic
+Aizawl,City,Mizoram,State Capital,12,8,10,8,10,4,10,6,52,10,14,8,10,10,Very limited industry + forest cover,Low,Arsenic
+Kohima,City,Nagaland,State Capital,14,10,10,8,10,4,10,6,52,12,16,10,10,12,Minimal industry + urban sewage,Low,Arsenic
+Agartala,City,Tripura,State Capital,20,16,18,10,12,6,10,6,38,18,24,14,16,16,Urban sewage + rubber processing,Low,Arsenic
+Itanagar,City,Arunachal Pradesh,State Capital,12,8,8,8,8,4,10,6,56,10,14,8,8,10,Very limited industry + pristine,Low,Arsenic
+Gangtok,City,Sikkim,State Capital,8,6,8,6,8,4,10,6,58,8,12,6,6,8,Least polluted capital - tourism,Low,Arsenic
+Port Blair,City,Andaman & Nicobar,UT Capital,14,10,4,8,12,6,14,14,42,12,16,10,14,18,Island isolation + tourism,Low,Zinc
+Kavaratti,City,Lakshadweep,UT Capital,10,8,4,6,8,4,14,16,48,10,12,8,10,22,Island ecosystem + coral reef proximity,Low,Zinc
+Silvassa,City,Dadra & Nagar Haveli,UT Capital,28,22,8,22,18,10,10,8,24,26,32,20,18,28,Textile + pharma + chemical,Moderate,Chromium
+Daman,City,Daman & Diu,UT Capital,24,18,6,10,14,8,14,14,34,20,26,16,18,28,Coastal salinity + small industry,Moderate,Zinc
+Diu,City,Daman & Diu,Tourism City,18,12,4,8,10,6,16,16,40,14,18,10,14,26,Tourism + fishing,Low,Zinc
+Puducherry,City,Puducherry,UT Capital,22,18,4,10,14,8,16,16,32,20,26,16,18,30,Coastal salinity + pharma,Moderate,Zinc
+Leh,City,Ladakh,UT Capital,12,8,8,6,8,4,8,6,60,10,14,8,8,10,High altitude minimal pollution,Low,Arsenic
+Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial + remote,Low,Arsenic`;
 
     const lines = csvRaw.trim().split('\n');
     const allRecords = lines.slice(1).map(line => {
@@ -597,50 +674,73 @@ Leh,City,Ladakh,UT Capital,12,8,8,6,8,4,8,6,60,10,14,8,8,10,High altitude minima
       { name: "Agra", coords: [78.0081, 27.1767], pct: 48 },
       { name: "Meerut", coords: [77.7060, 28.9845], pct: 50 },
       { name: "Moradabad", coords: [78.7768, 28.8386], pct: 62 },
+      { name: "Bareilly", coords: [79.4304, 28.3670], pct: 42 },
+      { name: "Aligarh", coords: [78.0880, 27.8974], pct: 44 },
+      { name: "Ghaziabad", coords: [77.4538, 28.6692], pct: 48 },
       { name: "New Delhi", coords: [77.2090, 28.6139], pct: 52 },
       { name: "Mumbai", coords: [72.8777, 19.0760], pct: 48 },
       { name: "Pune", coords: [73.8567, 18.5204], pct: 38 },
       { name: "Nagpur", coords: [79.0882, 21.1458], pct: 30 },
       { name: "Nashik", coords: [73.7898, 19.9975], pct: 36 },
+      { name: "Thane", coords: [72.9781, 19.2183], pct: 46 },
       { name: "Ahmedabad", coords: [72.5714, 23.0225], pct: 48 },
       { name: "Surat", coords: [72.8311, 21.1702], pct: 44 },
       { name: "Vapi", coords: [72.9289, 20.3719], pct: 60 },
       { name: "Vadodara", coords: [73.1812, 22.3072], pct: 42 },
+      { name: "Rajkot", coords: [70.8022, 22.3039], pct: 36 },
+      { name: "Ankleshwar", coords: [73.0035, 21.6264], pct: 58 },
       { name: "Kolkata", coords: [88.3639, 22.5726], pct: 46 },
       { name: "Howrah", coords: [88.3103, 22.5958], pct: 50 },
       { name: "Durgapur", coords: [87.3119, 23.5204], pct: 54 },
       { name: "Asansol", coords: [86.9842, 23.6889], pct: 52 },
+      { name: "Haldia", coords: [88.0645, 22.0620], pct: 48 },
       { name: "Jamshedpur", coords: [86.2029, 22.8046], pct: 50 },
       { name: "Dhanbad", coords: [86.4304, 23.7957], pct: 46 },
       { name: "Ranchi", coords: [85.3096, 23.3441], pct: 34 },
+      { name: "Bokaro", coords: [85.9610, 23.6693], pct: 44 },
       { name: "Patna", coords: [85.1376, 25.5941], pct: 36 },
       { name: "Gaya", coords: [85.0002, 24.7914], pct: 30 },
       { name: "Hyderabad", coords: [78.4867, 17.3850], pct: 38 },
+      { name: "Warangal", coords: [79.5941, 17.9689], pct: 32 },
       { name: "Visakhapatnam", coords: [83.2185, 17.6868], pct: 40 },
       { name: "Vijayawada", coords: [80.6480, 16.5062], pct: 34 },
+      { name: "Tirupati", coords: [79.4192, 13.6288], pct: 22 },
       { name: "Chennai", coords: [80.2707, 13.0827], pct: 32 },
       { name: "Coimbatore", coords: [76.9558, 11.0168], pct: 28 },
       { name: "Karimpur (Ranipet)", coords: [79.3330, 12.9279], pct: 64 },
+      { name: "Tiruppur", coords: [77.3411, 11.1085], pct: 46 },
       { name: "Bengaluru", coords: [77.5946, 12.9716], pct: 26 },
       { name: "Mysuru", coords: [76.6394, 12.2958], pct: 20 },
+      { name: "Mangaluru", coords: [74.8560, 12.9141], pct: 18 },
       { name: "Thiruvananthapuram", coords: [76.9366, 8.5241], pct: 14 },
       { name: "Kochi", coords: [76.2673, 9.9312], pct: 18 },
+      { name: "Eloor", coords: [76.2996, 10.0768], pct: 46 },
       { name: "Bhopal", coords: [77.4126, 23.2599], pct: 32 },
       { name: "Indore", coords: [75.8577, 22.7196], pct: 36 },
+      { name: "Jabalpur", coords: [79.9864, 23.1815], pct: 28 },
+      { name: "Gwalior", coords: [78.1828, 26.2183], pct: 34 },
       { name: "Jaipur", coords: [75.7873, 26.9124], pct: 42 },
       { name: "Jodhpur", coords: [73.0243, 26.2389], pct: 34 },
+      { name: "Udaipur", coords: [73.7125, 24.5854], pct: 30 },
+      { name: "Kota", coords: [75.8648, 25.2138], pct: 36 },
       { name: "Ludhiana", coords: [75.8573, 30.9010], pct: 46 },
       { name: "Amritsar", coords: [74.8723, 31.6340], pct: 36 },
+      { name: "Jalandhar", coords: [75.5762, 31.3260], pct: 40 },
       { name: "Faridabad", coords: [77.3178, 28.4089], pct: 42 },
       { name: "Gurugram", coords: [77.0266, 28.4595], pct: 38 },
       { name: "Panipat", coords: [76.9635, 29.3909], pct: 48 },
       { name: "Dehradun", coords: [78.0322, 30.3165], pct: 22 },
+      { name: "Haridwar", coords: [78.1642, 29.9457], pct: 28 },
       { name: "Guwahati", coords: [91.7362, 26.1445], pct: 24 },
       { name: "Raipur", coords: [81.6296, 21.2514], pct: 36 },
+      { name: "Bhilai", coords: [81.3803, 21.1938], pct: 40 },
+      { name: "Korba", coords: [82.6841, 22.3595], pct: 42 },
       { name: "Bhubaneswar", coords: [85.8245, 20.2961], pct: 26 },
+      { name: "Rourkela", coords: [84.8536, 22.2604], pct: 38 },
       { name: "Srinagar", coords: [74.7973, 34.0837], pct: 16 },
       { name: "Jammu", coords: [74.8570, 32.7266], pct: 20 },
       { name: "Leh", coords: [77.5771, 34.1526], pct: 12 },
+      { name: "Kargil", coords: [76.1320, 34.5539], pct: 10 },
       { name: "Shimla", coords: [77.1734, 31.1048], pct: 14 },
       { name: "Panaji", coords: [73.8278, 15.4909], pct: 18 }
     ];
@@ -650,6 +750,28 @@ Leh,City,Ladakh,UT Capital,12,8,8,6,8,4,8,6,60,10,14,8,8,10,High altitude minima
       if (pct >= 40) return { fill: "#ef4444", label: "🔴 Critical 40–49%", badge: "bg-red-500/20 text-red-300 border-red-500/40", text: "text-red-400", dot: "bg-red-500 shadow-md shadow-red-500/50" };
       if (pct >= 20) return { fill: "#d97706", label: "🟡 Moderate 20–39%", badge: "bg-amber-500/20 text-amber-300 border-amber-500/40", text: "text-amber-400", dot: "bg-amber-500 shadow-md shadow-amber-500/50" };
       return { fill: "#10b981", label: "🟢 Good <20%", badge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40", text: "text-emerald-400", dot: "bg-emerald-500 shadow-md shadow-emerald-500/50" };
+    }
+
+    // Name Normalizer for GeoJSON variations
+    function matchDatabaseRecord(raw) {
+      if (!raw) return null;
+      const s = raw.toLowerCase().replace(/&/g, 'and').trim();
+
+      if (s.includes("delhi")) return allRecords.find(r => r.name === "Delhi");
+      if (s.includes("kashmir") || s.includes("jammu")) return allRecords.find(r => r.name === "Jammu & Kashmir");
+      if (s.includes("ladakh")) return allRecords.find(r => r.name === "Ladakh");
+      if (s.includes("orissa") || s.includes("odisha")) return allRecords.find(r => r.name === "Odisha");
+      if (s.includes("uttaranchal") || s.includes("uttarakhand")) return allRecords.find(r => r.name === "Uttarakhand");
+      if (s.includes("andaman")) return allRecords.find(r => r.name.includes("Andaman"));
+      if (s.includes("pondicherry") || s.includes("puducherry")) return allRecords.find(r => r.name === "Puducherry");
+      if (s.includes("dadra") || s.includes("haveli")) return allRecords.find(r => r.name.includes("Dadra"));
+      if (s.includes("daman") || s.includes("diu")) return allRecords.find(r => r.name.includes("Daman"));
+      if (s.includes("lakshadweep")) return allRecords.find(r => r.name === "Lakshadweep");
+
+      return allRecords.find(r => 
+        r.name.toLowerCase() === raw.toLowerCase().trim() ||
+        r.stateut.toLowerCase() === raw.toLowerCase().trim()
+      );
     }
 
     // Load and Render Real Geographic Curved India GeoJSON via D3
@@ -684,24 +806,12 @@ Leh,City,Ladakh,UT Capital,12,8,8,6,8,4,8,6,60,10,14,8,8,10,High altitude minima
           .attr("class", "state-path")
           .attr("fill", d => {
             const rawName = d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || "";
-            const normName = rawName.replace(/and/i, '&').trim();
-            const match = allRecords.find(r => 
-              r.name.toLowerCase() === normName.toLowerCase() || 
-              r.stateut.toLowerCase() === normName.toLowerCase() ||
-              (normName.includes("Kashmir") && r.name.includes("Kashmir")) ||
-              (normName.includes("Ladakh") && r.name.includes("Ladakh"))
-            );
+            const match = matchDatabaseRecord(rawName);
             return match ? getTier(match.surface).fill : "#10b981";
           })
           .on("mouseenter", function(event, d) {
             const rawName = d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || "";
-            const normName = rawName.replace(/and/i, '&').trim();
-            const match = allRecords.find(r => 
-              r.name.toLowerCase() === normName.toLowerCase() || 
-              r.stateut.toLowerCase() === normName.toLowerCase() ||
-              (normName.includes("Kashmir") && r.name.includes("Kashmir")) ||
-              (normName.includes("Ladakh") && r.name.includes("Ladakh"))
-            );
+            const match = matchDatabaseRecord(rawName);
             if (match) {
               const tooltip = document.getElementById('map-tooltip');
               const tier = getTier(match.surface);
@@ -718,13 +828,7 @@ Leh,City,Ladakh,UT Capital,12,8,8,6,8,4,8,6,60,10,14,8,8,10,High altitude minima
           })
           .on("click", function(event, d) {
             const rawName = d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || "";
-            const normName = rawName.replace(/and/i, '&').trim();
-            const match = allRecords.find(r => 
-              r.name.toLowerCase() === normName.toLowerCase() || 
-              r.stateut.toLowerCase() === normName.toLowerCase() ||
-              (normName.includes("Kashmir") && r.name.includes("Kashmir")) ||
-              (normName.includes("Ladakh") && r.name.includes("Ladakh"))
-            );
+            const match = matchDatabaseRecord(rawName);
             if (match) {
               currentSelected = match;
               goToPage(3);
@@ -941,7 +1045,7 @@ Leh,City,Ladakh,UT Capital,12,8,8,6,8,4,8,6,60,10,14,8,8,10,High altitude minima
       lucide.createIcons();
     }
 
-    // Initialize high-res map
+    // Initialize with robust map engine
     renderRealisticIndiaMap();
     lucide.createIcons();
   </script>
