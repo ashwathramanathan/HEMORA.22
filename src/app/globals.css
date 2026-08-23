@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #0A0F1E;
+  --bg-secondary: #0E1525;
+  --bg-card: #131C30;
+  --teal-accent: #00D4FF;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: #E2E8F0;
+  overflow-x: hidden;
+}
+
+.glass-card {
+  background: rgba(19, 28, 48, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(36, 51, 82, 0.6);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card-hover:hover {
+  border-color: rgba(0, 212, 255, 0.4);
+  box-shadow: 0 8px 40px rgba(0, 212, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(36, 51, 82, 0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36, 51, 82, 0.15) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.glow-teal {
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.15);
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.phase-section {
+  scroll-margin-top: 80px;
+}
+
+.rssm-state {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  stroke: #050810;
+  stroke-width: 0.5;
+}
+
+.rssm-state:hover {
+  filter: brightness(1.3) drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+  stroke: #00D4FF;
+  stroke-width: 1;
+}
+
+.progress-bar-fill {
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-pill {
+  transition: all 0.3s ease;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #ffffff 0%, #00D4FF 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.3), transparent);
+}
