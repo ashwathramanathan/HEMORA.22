@@ -134,50 +134,68 @@
     </div>
   </main>
 
-  <script>
-    const mockData = {
-      "Punjab": { overall_risk_score: 84, water_status: "Critical", top_pollutant: "Arsenic & Lead", arsenic_ppm: 0.08, lead_ppm: 0.04, mercury_ppm: 0.01, cadmium_ppm: 0.009, bod_level: 6.8, cod_level: 28.4, ph_level: 7.4, recommended_solution: "Activated Alumina Adsorption + Dual-Stage Reverse Osmosis", life_after_impact: "Reduces neurological disease & chronic kidney burden by 92%." },
-      "West Bengal": { overall_risk_score: 91, water_status: "Critical", top_pollutant: "Arsenic (High)", arsenic_ppm: 0.12, lead_ppm: 0.03, mercury_ppm: 0.005, cadmium_ppm: 0.004, bod_level: 5.9, cod_level: 22.1, ph_level: 7.1, recommended_solution: "Iron-Oxide Coated Sand Bed + Sub-micron Ultrafiltration", life_after_impact: "Prevents skin lesion progression and secures child cognitive development." },
-      "Karnataka": { overall_risk_score: 42, water_status: "Moderate", top_pollutant: "Fluoride & Nitrate", arsenic_ppm: 0.01, lead_ppm: 0.01, mercury_ppm: 0.001, cadmium_ppm: 0.002, bod_level: 3.4, cod_level: 14.2, ph_level: 7.6, recommended_solution: "Activated Carbon + Bone Char De-fluoridation", life_after_impact: "Restores pure taste, protects dental enamel and bone health." },
-      "Kerala": { overall_risk_score: 18, water_status: "Safe", top_pollutant: "Trace Iron", arsenic_ppm: 0.001, lead_ppm: 0.002, mercury_ppm: 0.000, cadmium_ppm: 0.001, bod_level: 1.8, cod_level: 7.2, ph_level: 7.0, recommended_solution: "Basic Micro-Sediment Cartridge Filter", life_after_impact: "Maintains optimal natural hydration with pure mineral balance." }
-    };
 
-    let activeState = "Punjab";
+  <script>
+    // 1. Paste your real Supabase Project URL and Anon Key here:
+    const SUPABASE_URL = 'https://ocdrwlllnjvadlmivxlg.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9jZHJ3bGxsbmp2YWRsbWl2eGxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMjMyNDUsImV4cCI6MjEwMjg5OTI0NX0.ycMEiohfCUB6XqtYekFI0orpMsZL8mgnJR7fgPSkWa0';
+
+    // Initialize Supabase Client
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let allWaterRecords = [];
+    let activeIndex = 0;
+
+    // 2. Fetch all rows from your Supabase table
+    async function fetchLiveRecords() {
+      const { data, error } = await db.from('water_records').select('*');
+      
+      if (error || !data || data.length === 0) {
+        console.warn("Could not fetch Supabase data or table is empty. Using demo data.");
+        return;
+      }
+
+      allWaterRecords = data;
+      renderButtons();
+      updateUI();
+    }
 
     function renderButtons() {
       const container = document.getElementById('state-buttons');
       container.innerHTML = '';
-      Object.keys(mockData).forEach(state => {
+      allWaterRecords.forEach((record, index) => {
         const btn = document.createElement('button');
-        btn.textContent = state;
+        btn.textContent = record.state;
         btn.className = `px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-          activeState === state ? 'bg-cyan-500 text-slate-950 scale-105 shadow-lg shadow-cyan-500/20' : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
+          activeIndex === index 
+            ? 'bg-cyan-500 text-slate-950 scale-105 shadow-lg shadow-cyan-500/20' 
+            : 'bg-slate-900 text-slate-300 hover:bg-slate-800 border border-slate-800'
         }`;
-        btn.onclick = () => { activeState = state; updateUI(); renderButtons(); };
+        btn.onclick = () => { activeIndex = index; updateUI(); renderButtons(); };
         container.appendChild(btn);
       });
     }
 
     function updateUI() {
-      const data = mockData[activeState];
-      document.getElementById('current-state').textContent = activeState;
-      document.getElementById('risk-score').textContent = data.overall_risk_score + '%';
-      document.getElementById('risk-badge').textContent = data.water_status + ' Hazard';
-      document.getElementById('top-pollutant').textContent = '⚠️ Primary: ' + data.top_pollutant;
-      document.getElementById('val-arsenic').textContent = data.arsenic_ppm + ' ppm';
-      document.getElementById('val-lead').textContent = data.lead_ppm + ' ppm';
-      document.getElementById('val-mercury').textContent = data.mercury_ppm + ' ppm';
-      document.getElementById('val-cadmium').textContent = data.cadmium_ppm + ' ppm';
-      document.getElementById('val-bod').textContent = data.bod_level + ' mg/L';
-      document.getElementById('val-cod').textContent = data.cod_level + ' mg/L';
-      document.getElementById('val-ph').textContent = data.ph_level;
-      document.getElementById('life-after').textContent = data.life_after_impact;
-      document.getElementById('solution-text').textContent = data.recommended_solution;
+      if (allWaterRecords.length === 0) return;
+      const data = allWaterRecords[activeIndex];
+      
+      document.getElementById('current-state').textContent = data.state;
+      document.getElementById('risk-score').textContent = (data.overall_risk_score || 0) + '%';
+      document.getElementById('risk-badge').textContent = (data.water_status || 'Critical') + ' Hazard';
+      document.getElementById('top-pollutant').textContent = '⚠️ Primary: ' + (data.top_pollutant || 'Heavy Metals');
+      document.getElementById('val-arsenic').textContent = (data.arsenic_ppm || 0) + ' ppm';
+      document.getElementById('val-lead').textContent = (data.lead_ppm || 0) + ' ppm';
+      document.getElementById('val-mercury').textContent = (data.mercury_ppm || 0) + ' ppm';
+      document.getElementById('val-cadmium').textContent = (data.cadmium_ppm || 0) + ' ppm';
+      document.getElementById('val-bod').textContent = (data.bod_level || 0) + ' mg/L';
+      document.getElementById('val-cod').textContent = (data.cod_level || 0) + ' mg/L';
+      document.getElementById('val-ph').textContent = data.ph_level || 7.0;
+      document.getElementById('life-after').textContent = data.life_after_impact || 'Protects organ and neurological health.';
+      document.getElementById('solution-text').textContent = data.recommended_solution || 'Multi-stage Reverse Osmosis & Activated Alumina.';
     }
 
-    renderButtons();
-    updateUI();
+    // Load data from Supabase as soon as page opens!
+    fetchLiveRecords();
     lucide.createIcons();
   </script>
-</body>
-</html>
