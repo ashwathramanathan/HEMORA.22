@@ -3,209 +3,222 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HEMORA - National Water Quality Intelligence Platform</title>
-  <!-- Tailwind CSS & Lucide Icons -->
+  <title>HEMORA - National Water & Heavy Metal Intelligence Platform</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     .page-screen { display: none; }
     .page-screen.active { display: block; animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .tier-purple { background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.5); color: #c084fc; }
+    .tier-red { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.5); color: #f87171; }
+    .tier-yellow { background: rgba(217, 119, 6, 0.15); border-color: rgba(217, 119, 6, 0.5); color: #fbbf24; }
+    .tier-green { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.5); color: #34d399; }
+    .dot-purple { background: #a855f7; box-shadow: 0 0 10px #a855f7; }
+    .dot-red { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
+    .dot-yellow { background: #d97706; box-shadow: 0 0 10px #d97706; }
+    .dot-green { background: #10b981; box-shadow: 0 0 10px #10b981; }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen selection:bg-cyan-500 selection:text-black">
 
-  <!-- NAVBAR & STEPPER PROGRESS BAR -->
-  <header class="border-b border-slate-800/80 bg-slate-950/90 backdrop-blur sticky top-0 z-50 px-6 py-4">
-    <div class="max-w-6xl mx-auto flex items-center justify-between">
+  <!-- TOP HEADER & PROGRESS STEPPER -->
+  <header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur sticky top-0 z-50 px-6 py-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-2.5 cursor-pointer" onclick="goToPage(1)">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-black text-black text-sm">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center font-black text-black text-sm">
           H
         </div>
-        <span class="font-extrabold text-lg tracking-wider bg-gradient-to-r from-white to-cyan-400 bg-clip-text text-transparent">
+        <span class="font-extrabold text-lg tracking-wider bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">
           HEMORA AI
         </span>
       </div>
 
-      <!-- Step Indicator Pills -->
-      <div class="hidden sm:flex items-center gap-2 text-xs font-semibold">
-        <span id="step-pill-1" class="px-3 py-1 rounded-full bg-cyan-500 text-slate-950 font-bold transition-all">1. Map Overview</span>
+      <!-- Stepper Indicator -->
+      <div class="hidden md:flex items-center gap-2 text-xs font-semibold">
+        <span id="step-pill-1" class="px-3 py-1 rounded-full bg-cyan-500 text-slate-950 font-bold transition-all">1. National Map & Circles</span>
         <span class="text-slate-600">→</span>
-        <span id="step-pill-2" class="px-3 py-1 rounded-full bg-slate-900 text-slate-400 transition-all">2. Search Location</span>
+        <span id="step-pill-2" class="px-3 py-1 rounded-full bg-slate-900 text-slate-400 transition-all">2. Search Engine</span>
         <span class="text-slate-600">→</span>
-        <span id="step-pill-3" class="px-3 py-1 rounded-full bg-slate-900 text-slate-400 transition-all">3. Risk Report</span>
+        <span id="step-pill-3" class="px-3 py-1 rounded-full bg-slate-900 text-slate-400 transition-all">3. CSV Data Telemetry</span>
         <span class="text-slate-600">→</span>
-        <span id="step-pill-4" class="px-3 py-1 rounded-full bg-slate-900 text-slate-400 transition-all">4. Remediation</span>
+        <span id="step-pill-4" class="px-3 py-1 rounded-full bg-slate-900 text-slate-400 transition-all">4. Remediation Plan</span>
       </div>
 
-      <span class="text-xs bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-3 py-1 rounded-full font-medium">
-        🇮🇳 Central Water Registry
+      <span class="text-xs bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 rounded-full font-semibold">
+        115+ Regional Datasets Active
       </span>
     </div>
   </header>
 
   <!-- ======================================================== -->
-  <!-- PAGE 1: HOMEPAGE (INDIA MAP & NATIONAL RISK ZONES)       -->
+  <!-- PAGE 1: INDIA MAP & 4-TIER COLOR DISTINCTION MATRIX      -->
   <!-- ======================================================== -->
-  <div id="page-1" class="page-screen active max-w-5xl mx-auto px-4 py-10">
-    <div class="text-center max-w-2xl mx-auto mb-8">
-      <div class="inline-flex items-center gap-2 bg-blue-500/10 text-blue-400 border border-blue-500/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
-        <i data-lucide="map" class="w-4 h-4"></i> National Water Quality Overview
+  <div id="page-1" class="page-screen active max-w-7xl mx-auto px-4 py-8">
+    <div class="text-center max-w-3xl mx-auto mb-8">
+      <div class="inline-flex items-center gap-2 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
+        <i data-lucide="map" class="w-4 h-4"></i> Phase 1: National Geographic Contamination Index
       </div>
-      <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-        India Groundwater <span class="bg-gradient-to-r from-cyan-400 via-teal-300 to-blue-500 bg-clip-text text-transparent">Health Index</span>
+      <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight">
+        India Water Quality <span class="bg-gradient-to-r from-purple-400 via-rose-400 to-amber-400 bg-clip-text text-transparent">& Heavy Metal Map</span>
       </h1>
-      <p class="text-slate-400 text-sm mt-3">
-        Real-time telemetry of hazardous heavy metal contamination (Arsenic, Lead, Cadmium) across Indian river basins and aquifers.
+      <p class="text-slate-400 text-sm mt-2">
+        Geographic and aquifer distribution across all 28 States, 8 UTs, and key Industrial Hubs.
       </p>
     </div>
 
-    <!-- Map & Legend Container -->
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 mb-8 shadow-2xl">
-      <!-- Zone Badges / Legend -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
-        <div class="p-4 rounded-2xl bg-red-950/30 border border-red-500/30 flex items-center gap-3">
-          <div class="w-3.5 h-3.5 rounded-full bg-red-500 shrink-0 shadow-lg shadow-red-500/50"></div>
-          <div>
-            <div class="text-xs font-bold text-red-400 uppercase">Critical Hazard Zone (&gt;70%)</div>
-            <div class="text-[11px] text-slate-400">Punjab, West Bengal, Bihar, UP, Delhi</div>
-          </div>
-        </div>
-
-        <div class="p-4 rounded-2xl bg-yellow-950/30 border border-yellow-500/30 flex items-center gap-3">
-          <div class="w-3.5 h-3.5 rounded-full bg-yellow-500 shrink-0 shadow-lg shadow-yellow-500/50"></div>
-          <div>
-            <div class="text-xs font-bold text-yellow-400 uppercase">Moderate Risk Zone (40-69%)</div>
-            <div class="text-[11px] text-slate-400">Rajasthan, Maharashtra, Gujarat, TN</div>
-          </div>
-        </div>
-
-        <div class="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 flex items-center gap-3">
-          <div class="w-3.5 h-3.5 rounded-full bg-emerald-500 shrink-0 shadow-lg shadow-emerald-500/50"></div>
-          <div>
-            <div class="text-xs font-bold text-emerald-400 uppercase">Safe / Healthy Zone (&lt;40%)</div>
-            <div class="text-[11px] text-slate-400">Kerala, Himachal, Goa, Sikkim</div>
-          </div>
+    <!-- 4-COLOR TIER LEGEND -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 max-w-5xl mx-auto mb-8">
+      <div class="p-3.5 rounded-2xl bg-purple-950/30 border border-purple-500/40 flex items-center gap-3">
+        <div class="w-4 h-4 rounded-full dot-purple shrink-0"></div>
+        <div>
+          <div class="text-xs font-black text-purple-300 uppercase">🟣 50%+ Pollution</div>
+          <div class="text-[11px] text-slate-400">Extreme / Critical Hazard</div>
         </div>
       </div>
 
-      <!-- Interactive India State Matrix Preview -->
-      <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-6 text-center">
-        <div class="flex items-center justify-center gap-2 text-xs text-slate-400 font-semibold mb-4 uppercase tracking-wider">
-          <i data-lucide="compass" class="w-4 h-4 text-cyan-400"></i> Regional Aquifer Contamination Matrix
+      <div class="p-3.5 rounded-2xl bg-red-950/30 border border-red-500/40 flex items-center gap-3">
+        <div class="w-4 h-4 rounded-full dot-red shrink-0"></div>
+        <div>
+          <div class="text-xs font-black text-red-300 uppercase">🔴 40% – 49% Pollution</div>
+          <div class="text-[11px] text-slate-400">High Risk Contamination</div>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-          <div class="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 font-bold">Punjab: 84% Critical</div>
-          <div class="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 font-bold">West Bengal: 91% Critical</div>
-          <div class="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 font-bold">Bihar: 88% Critical</div>
-          <div class="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 font-bold">Delhi NCR: 82% Critical</div>
-          <div class="p-2.5 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 font-bold">Rajasthan: 72% Moderate</div>
-          <div class="p-2.5 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 font-bold">Maharashtra: 54% Moderate</div>
-          <div class="p-2.5 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 font-bold">Karnataka: 42% Moderate</div>
-          <div class="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-bold">Kerala: 18% Safe</div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-amber-950/30 border border-amber-500/40 flex items-center gap-3">
+        <div class="w-4 h-4 rounded-full dot-yellow shrink-0"></div>
+        <div>
+          <div class="text-xs font-black text-amber-300 uppercase">🟡 20% – 39% Pollution</div>
+          <div class="text-[11px] text-slate-400">Yellow Ochre (Moderate)</div>
+        </div>
+      </div>
+
+      <div class="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-500/40 flex items-center gap-3">
+        <div class="w-4 h-4 rounded-full dot-green shrink-0"></div>
+        <div>
+          <div class="text-xs font-black text-emerald-300 uppercase">🟢 Below 20% Pollution</div>
+          <div class="text-[11px] text-slate-400">Safe / Low Risk Baselines</div>
         </div>
       </div>
     </div>
 
-    <!-- ACTION BUTTON TO GO TO PAGE 2 -->
+    <!-- FILTER BUTTONS (ALL / STATES / UTs / INDUSTRIAL CITIES) -->
+    <div class="flex items-center justify-center gap-2 mb-6 flex-wrap text-xs">
+      <button onclick="filterMapType('All')" id="tab-All" class="px-4 py-2 rounded-full font-bold bg-cyan-500 text-slate-950 transition">All Locations (115)</button>
+      <button onclick="filterMapType('State')" id="tab-State" class="px-4 py-2 rounded-full font-bold bg-slate-900 text-slate-300 hover:bg-slate-800 transition">States (28)</button>
+      <button onclick="filterMapType('UT')" id="tab-UT" class="px-4 py-2 rounded-full font-bold bg-slate-900 text-slate-300 hover:bg-slate-800 transition">Union Territories (8)</button>
+      <button onclick="filterMapType('City')" id="tab-City" class="px-4 py-2 rounded-full font-bold bg-slate-900 text-slate-300 hover:bg-slate-800 transition">Industrial Cities (79)</button>
+    </div>
+
+    <!-- REGIONAL CIRCLES GRID -->
+    <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 mb-8 max-h-[480px] overflow-y-auto">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3" id="map-circles-container"></div>
+    </div>
+
+    <!-- PROMINENT NEXT BUTTON -->
     <div class="text-center">
       <button 
         onclick="goToPage(2)"
-        class="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black px-8 py-4 rounded-full text-base shadow-xl shadow-cyan-500/20 hover:scale-105 transition-all cursor-pointer"
+        class="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-500 via-teal-400 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black px-10 py-4 rounded-full text-base shadow-xl shadow-cyan-500/20 hover:scale-105 transition-all cursor-pointer"
       >
-        <span>Test My Location Water Quality</span>
+        <span>Open Location Search Engine</span>
         <i data-lucide="arrow-right" class="w-5 h-5"></i>
       </button>
     </div>
   </div>
 
   <!-- ======================================================== -->
-  <!-- PAGE 2: LOCATION SEARCH ENGINE & VERIFICATION            -->
+  <!-- PAGE 2: SEARCH ENGINE & VERIFICATION LOOP                -->
   <!-- ======================================================== -->
   <div id="page-2" class="page-screen max-w-3xl mx-auto px-4 py-12">
     <div class="text-center mb-8">
-      <div class="inline-flex items-center gap-2 bg-purple-500/10 text-purple-400 border border-purple-500/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4">
-        <i data-lucide="search" class="w-4 h-4"></i> Step 2: Location Intelligence Engine
+      <div class="inline-flex items-center gap-2 bg-purple-500/10 text-purple-400 border border-purple-500/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
+        <i data-lucide="search" class="w-4 h-4"></i> Phase 2: Location Search Engine
       </div>
       <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
-        Enter Your State or District
+        Search State, UT or City
       </h2>
       <p class="text-slate-400 text-sm mt-2">
-        Type your location to search our central database for chemical telemetry.
+        Type any location from our central dataset to inspect its heavy metal telemetry.
       </p>
     </div>
 
     <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
       <!-- Search Input -->
-      <div class="relative mb-6">
+      <div class="relative mb-4">
         <i data-lucide="map-pin" class="w-5 h-5 absolute left-4 top-4 text-cyan-400"></i>
         <input 
           type="text" 
-          id="user-location-input"
-          placeholder="Enter State or City (e.g. Punjab, Bathinda, Kolkata, Patna)..."
+          id="search-input"
+          placeholder="Type e.g. Kanpur, Kolkata, Vapi, Punjab, Delhi, Bangalore..."
           class="w-full bg-slate-950 border border-slate-700 rounded-2xl pl-12 pr-28 py-3.5 text-base focus:outline-none focus:border-cyan-400 text-white placeholder-slate-500 transition"
-          onkeypress="if(event.key === 'Enter') verifyLocation()"
+          oninput="handleLiveSearch()"
+          onkeypress="if(event.key === 'Enter') handleSearchSubmit()"
         />
         <button 
-          onclick="verifyLocation()"
-          class="absolute right-2 top-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer"
+          onclick="handleSearchSubmit()"
+          class="absolute right-2 top-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-5 py-2 rounded-xl text-xs transition cursor-pointer"
         >
-          Check
+          Search
         </button>
       </div>
 
-      <!-- Quick Suggestion Pills -->
-      <div class="flex items-center gap-2 flex-wrap mb-6 text-xs">
-        <span class="text-slate-500 font-semibold">Try searching:</span>
-        <button onclick="fillAndSearch('Punjab')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Punjab</button>
-        <button onclick="fillAndSearch('West Bengal')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">West Bengal</button>
-        <button onclick="fillAndSearch('Bihar')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Bihar</button>
-        <button onclick="fillAndSearch('Rajasthan')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Rajasthan</button>
-        <button onclick="fillAndSearch('Kerala')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">Kerala</button>
+      <!-- Quick Suggestion Badges -->
+      <div class="flex items-center gap-1.5 flex-wrap mb-6 text-xs">
+        <span class="text-slate-500 font-medium">Quick examples:</span>
+        <button onclick="quickPick('Kanpur')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-purple-300">Kanpur (50%+)</button>
+        <button onclick="quickPick('Delhi')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-purple-300">Delhi (52%)</button>
+        <button onclick="quickPick('Kolkata')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-red-300">Kolkata (46%)</button>
+        <button onclick="quickPick('Bengaluru')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300">Bengaluru (26%)</button>
+        <button onclick="quickPick('Kerala')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-300">Kerala (14%)</button>
       </div>
 
-      <!-- ERROR STATE: NOT FOUND (LOOP TRIGGER) -->
-      <div id="error-box" class="hidden p-4 rounded-2xl bg-red-950/40 border border-red-500/40 text-red-300 text-sm mb-6 flex items-start gap-3">
+      <!-- ERROR STATE (NOT FOUND LOOP) -->
+      <div id="search-error" class="hidden p-4 rounded-2xl bg-red-950/40 border border-red-500/40 text-red-300 text-sm mb-6 flex items-start gap-3">
         <i data-lucide="alert-circle" class="w-5 h-5 text-red-400 shrink-0 mt-0.5"></i>
         <div>
           <b>Your location is currently not found.</b>
-          <p class="text-xs text-slate-400 mt-1">Please try searching another state or major district (e.g. Punjab, West Bengal, Bihar, UP, Delhi, Karnataka, Kerala).</p>
+          <p class="text-xs text-slate-400 mt-1">Please try another Indian state, district, or industrial hub from our database (e.g. Ludhiana, Varanasi, Ahmedabad, Patna, Chennai, Jaipur).</p>
         </div>
       </div>
 
-      <!-- SUCCESS STATE: LOCATION VERIFIED CARD -->
-      <div id="success-box" class="hidden p-5 rounded-2xl bg-emerald-950/30 border border-emerald-500/40 mb-6">
+      <!-- SUCCESS STATE (VERIFIED CARD) -->
+      <div id="search-success" class="hidden p-5 rounded-2xl bg-slate-950 border mb-6">
         <div class="flex items-center justify-between flex-wrap gap-2">
-          <div class="flex items-center gap-2.5">
-            <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400"></i>
+          <div class="flex items-center gap-3">
+            <div id="success-dot" class="w-3.5 h-3.5 rounded-full shrink-0"></div>
             <div>
-              <span class="text-xs text-emerald-400 font-bold uppercase tracking-wider">Telemetry Record Found</span>
-              <div class="text-lg font-extrabold text-white" id="verified-location-name">Punjab, India</div>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400" id="success-category">State / Industrial Hub</span>
+              <div class="text-xl font-black text-white" id="success-location-title">Kanpur, Uttar Pradesh</div>
             </div>
           </div>
-          <span class="text-xs px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-semibold">
-            Ready for Analysis
+          <span id="success-risk-badge" class="text-xs px-3 py-1 rounded-full font-black uppercase border">
+            50%+ Pollution
           </span>
+        </div>
+        <div class="mt-3 text-xs text-slate-400 flex items-center gap-2 border-t border-slate-800 pt-3">
+          <span>⚠️ Key Heavy Metal: <b class="text-white" id="success-metal">Chromium</b></span>
+          <span>•</span>
+          <span>Source: <span class="text-slate-300" id="success-source">Tannery effluent (~1000 units)</span></span>
         </div>
       </div>
 
-      <!-- NAVIGATION BUTTONS -->
+      <!-- NAVIGATION -->
       <div class="flex items-center justify-between pt-4 border-t border-slate-800">
         <button 
           onclick="goToPage(1)"
           class="flex items-center gap-2 text-slate-400 hover:text-white text-sm font-semibold transition"
         >
-          <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Map
+          <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to National Map
         </button>
 
         <button 
-          id="btn-goto-stats"
+          id="btn-goto-p3"
           onclick="goToPage(3)"
           disabled
-          class="inline-flex items-center gap-2 bg-slate-800 text-slate-500 font-black px-6 py-3 rounded-full text-sm transition-all cursor-not-allowed"
+          class="inline-flex items-center gap-2 bg-slate-800 text-slate-500 font-black px-7 py-3.5 rounded-full text-sm transition-all cursor-not-allowed"
         >
-          <span>View Water Stats & Report</span>
+          <span>Next: View Detailed Stats</span>
           <i data-lucide="arrow-right" class="w-4 h-4"></i>
         </button>
       </div>
@@ -213,107 +226,116 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- PAGE 3: DATA & STATS REPORT (TELEMETRY & HEAVY METALS)   -->
+  <!-- PAGE 3: DATA & STATS TELEMETRY REPORT                    -->
   <!-- ======================================================== -->
   <div id="page-3" class="page-screen max-w-5xl mx-auto px-4 py-8">
     <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl mb-8">
       <!-- Title Header -->
       <div class="flex items-center justify-between flex-wrap gap-4 border-b border-slate-800 pb-6 mb-6">
         <div>
-          <span class="text-xs text-slate-400 uppercase font-bold tracking-wider">Step 3: Comprehensive Telemetry</span>
+          <span class="text-xs text-slate-400 uppercase font-bold tracking-wider">Phase 3: Real Database Telemetry</span>
           <h2 class="text-3xl font-extrabold text-white flex items-center gap-2 mt-1">
-            Water Assessment: <span id="p3-state-title" class="text-cyan-400">Punjab</span>
+            <span id="p3-name" class="text-cyan-400">Kanpur</span>
+            <span class="text-sm font-normal text-slate-400" id="p3-stateut">(Uttar Pradesh)</span>
           </h2>
         </div>
-        <span id="p3-hazard-badge" class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider bg-red-500/20 text-red-400 border border-red-500/30">
+        <span id="p3-risk-badge" class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border">
           Critical Hazard
         </span>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <!-- Risk Score Gauge -->
-        <div class="bg-slate-800/60 border border-slate-700/50 p-6 rounded-2xl flex flex-col items-center justify-center text-center">
-          <span class="text-xs uppercase text-slate-400 font-bold">Overall Toxicity Score</span>
-          <div class="text-5xl font-black text-red-400 my-4" id="p3-risk-score">84%</div>
-          <span class="text-xs text-slate-400">Hazard Index Exceeds Safe Baseline</span>
+      <!-- Top Row: Surface vs Groundwater & Key Metal -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-slate-800/50 border border-slate-700/50 p-5 rounded-2xl text-center">
+          <span class="text-xs uppercase text-slate-400 font-bold">Surface Water Pollution</span>
+          <div class="text-3xl font-black text-purple-400 mt-2" id="p3-surface">68%</div>
+          <span class="text-[11px] text-slate-500">River & Basin Contamination</span>
         </div>
 
-        <!-- Heavy Metal Breakdown Percentage Bars -->
-        <div class="bg-slate-800/60 border border-slate-700/50 p-6 rounded-2xl md:col-span-2 flex flex-col justify-between">
-          <div class="flex justify-between items-center mb-4">
-            <span class="text-xs uppercase text-slate-400 font-bold">Heavy Metal Concentration</span>
-            <span class="text-xs text-amber-400 font-bold" id="p3-top-hazard">⚠️ Primary Hazard: Arsenic</span>
+        <div class="bg-slate-800/50 border border-slate-700/50 p-5 rounded-2xl text-center">
+          <span class="text-xs uppercase text-slate-400 font-bold">Groundwater Pollution</span>
+          <div class="text-3xl font-black text-red-400 mt-2" id="p3-ground">55%</div>
+          <span class="text-[11px] text-slate-500">Aquifer & Borewell Depth</span>
+        </div>
+
+        <div class="bg-slate-800/50 border border-slate-700/50 p-5 rounded-2xl text-center">
+          <span class="text-xs uppercase text-slate-400 font-bold">Primary Heavy Metal</span>
+          <div class="text-2xl font-black text-amber-400 mt-2 flex items-center justify-center gap-1.5" id="p3-metal">
+            <i data-lucide="shield-alert" class="w-5 h-5"></i> Chromium
           </div>
+          <span class="text-[11px] text-slate-400" id="p3-citytype">Tannery Effluent Hub</span>
+        </div>
+      </div>
 
-          <div class="space-y-3.5 text-xs">
-            <!-- Arsenic -->
-            <div>
-              <div class="flex justify-between font-semibold mb-1">
-                <span class="text-slate-300">Arsenic (As)</span>
-                <span class="text-red-400 font-bold" id="p3-val-as">0.08 ppm</span>
-              </div>
-              <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden">
-                <div id="p3-bar-as" class="bg-red-500 h-2 rounded-full" style="width: 80%"></div>
-              </div>
-            </div>
+      <!-- Heavy Metal Breakdown Percentage (7 Metals from CSV) -->
+      <div class="bg-slate-800/40 border border-slate-700/50 p-6 rounded-2xl mb-6">
+        <h4 class="text-xs uppercase text-slate-400 font-bold mb-4 tracking-wider">
+          Heavy Metal Concentration Distribution (% of Toxicity Load)
+        </h4>
 
-            <!-- Lead -->
-            <div>
-              <div class="flex justify-between font-semibold mb-1">
-                <span class="text-slate-300">Lead (Pb)</span>
-                <span class="text-orange-400 font-bold" id="p3-val-pb">0.04 ppm</span>
-              </div>
-              <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden">
-                <div id="p3-bar-pb" class="bg-orange-500 h-2 rounded-full" style="width: 55%"></div>
-              </div>
-            </div>
-
-            <!-- Mercury -->
-            <div>
-              <div class="flex justify-between font-semibold mb-1">
-                <span class="text-slate-300">Mercury (Hg)</span>
-                <span class="text-purple-400 font-bold" id="p3-val-hg">0.01 ppm</span>
-              </div>
-              <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden">
-                <div id="p3-bar-hg" class="bg-purple-500 h-2 rounded-full" style="width: 35%"></div>
-              </div>
-            </div>
-
-            <!-- Cadmium -->
-            <div>
-              <div class="flex justify-between font-semibold mb-1">
-                <span class="text-slate-300">Cadmium (Cd)</span>
-                <span class="text-yellow-400 font-bold" id="p3-val-cd">0.009 ppm</span>
-              </div>
-              <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden">
-                <div id="p3-bar-cd" class="bg-yellow-500 h-2 rounded-full" style="width: 25%"></div>
-              </div>
-            </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 text-center text-xs">
+          <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+            <span class="text-slate-400">Arsenic (As)</span>
+            <div class="text-base font-black text-red-400 mt-1" id="m-as">20%</div>
+          </div>
+          <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+            <span class="text-slate-400">Chromium (Cr)</span>
+            <div class="text-base font-black text-purple-400 mt-1" id="m-cr">35%</div>
+          </div>
+          <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+            <span class="text-slate-400">Lead (Pb)</span>
+            <div class="text-base font-black text-orange-400 mt-1" id="m-pb">28%</div>
+          </div>
+          <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+            <span class="text-slate-400">Cadmium (Cd)</span>
+            <div class="text-base font-black text-yellow-400 mt-1" id="m-cd">10%</div>
+          </div>
+          <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+            <span class="text-slate-400">Zinc (Zn)</span>
+            <div class="text-base font-black text-cyan-400 mt-1" id="m-zn">4%</div>
+          </div>
+          <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+            <span class="text-slate-400">Copper (Cu)</span>
+            <div class="text-base font-black text-amber-400 mt-1" id="m-cu">2%</div>
+          </div>
+          <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+            <span class="text-slate-400">Nickel (Ni)</span>
+            <div class="text-base font-black text-indigo-400 mt-1" id="m-ni">1%</div>
           </div>
         </div>
       </div>
 
-      <!-- Water Stats (BOD, COD, pH) -->
-      <div class="grid grid-cols-3 gap-3 text-center text-sm">
-        <div class="bg-slate-800/40 border border-slate-800 p-4 rounded-xl">
-          <span class="text-xs text-slate-400">BOD Level</span>
-          <div class="text-xl font-extrabold text-yellow-400 mt-1" id="p3-val-bod">6.8 mg/L</div>
-          <span class="text-[11px] text-slate-500">WHO Limit: &lt; 3.0</span>
+      <!-- Biochemical Parameters (BOD, COD, DO, pH, TDS) -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center text-xs">
+        <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
+          <span class="text-slate-400">BOD Exceedance</span>
+          <div class="text-lg font-black text-amber-400 mt-1" id="p3-bod">62%</div>
         </div>
-        <div class="bg-slate-800/40 border border-slate-800 p-4 rounded-xl">
-          <span class="text-xs text-slate-400">COD Level</span>
-          <div class="text-xl font-extrabold text-red-400 mt-1" id="p3-val-cod">28.4 mg/L</div>
-          <span class="text-[11px] text-slate-500">WHO Limit: &lt; 10.0</span>
+        <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
+          <span class="text-slate-400">COD Exceedance</span>
+          <div class="text-lg font-black text-red-400 mt-1" id="p3-cod">68%</div>
         </div>
-        <div class="bg-slate-800/40 border border-slate-800 p-4 rounded-xl">
-          <span class="text-xs text-slate-400">pH Value</span>
-          <div class="text-xl font-extrabold text-emerald-400 mt-1" id="p3-val-ph">7.4</div>
-          <span class="text-[11px] text-slate-500">Ideal: 6.5 - 8.5</span>
+        <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
+          <span class="text-slate-400">Dissolved O2 (DO)</span>
+          <div class="text-lg font-black text-yellow-400 mt-1" id="p3-do">50%</div>
         </div>
+        <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
+          <span class="text-slate-400">pH Non-compliance</span>
+          <div class="text-lg font-black text-cyan-400 mt-1" id="p3-ph">18%</div>
+        </div>
+        <div class="bg-slate-800/40 p-3 rounded-xl border border-slate-800">
+          <span class="text-slate-400">TDS Exceedance</span>
+          <div class="text-lg font-black text-purple-400 mt-1" id="p3-tds">44%</div>
+        </div>
+      </div>
+
+      <!-- Source Description -->
+      <div class="mt-6 p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300">
+        <b class="text-white">Industrial & Municipal Discharge Source:</b> <span id="p3-source-desc">Tannery effluent (~1000 units) + Ganga discharge</span>
       </div>
     </div>
 
-    <!-- NAVIGATION BUTTONS -->
+    <!-- NAVIGATION -->
     <div class="flex items-center justify-between">
       <button 
         onclick="goToPage(2)"
@@ -326,7 +348,7 @@
         onclick="goToPage(4)"
         class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black px-8 py-3.5 rounded-full text-sm shadow-lg shadow-emerald-500/20 hover:scale-105 transition-all cursor-pointer"
       >
-        <span>View Remediation & Life Impact</span>
+        <span>Next: View Solutions & Life Impact</span>
         <i data-lucide="arrow-right" class="w-4 h-4"></i>
       </button>
     </div>
@@ -339,10 +361,10 @@
     <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl mb-8">
       <div class="text-center max-w-2xl mx-auto mb-8">
         <div class="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Step 4: Life Transformation
+          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Phase 4: Life Transformation & Engineering
         </div>
         <h3 class="text-3xl font-extrabold text-white">
-          Remediation Plan for <span id="p4-state-name" class="text-emerald-400">Punjab</span>
+          Remediation Blueprint for <span id="p4-name-title" class="text-emerald-400">Kanpur</span>
         </h3>
       </div>
 
@@ -351,17 +373,17 @@
         <!-- LIFE BEFORE (UNTREATED) -->
         <div class="bg-red-950/20 border border-red-500/30 p-6 rounded-2xl">
           <div class="flex items-center gap-2 text-red-400 font-extrabold text-sm uppercase tracking-wider mb-4">
-            <i data-lucide="x-octagon" class="w-5 h-5"></i> Current: Life with Untreated Water
+            <i data-lucide="x-octagon" class="w-5 h-5"></i> Current: Untreated Water Hazard
           </div>
           <ul class="space-y-3 text-sm text-slate-300">
             <li class="flex items-start gap-2">
-              <span class="text-red-400 font-bold">•</span> Severe bioaccumulation of toxic heavy metals causing organ strain.
+              <span class="text-red-400 font-bold">•</span> Extreme bio-accumulation of <b class="text-white" id="p4-metal-warn">Chromium</b> in kidneys, liver, and digestive tract.
             </li>
             <li class="flex items-start gap-2">
-              <span class="text-red-400 font-bold">•</span> Chronic skin lesion formation, digestive toxicity, and neurological fatigue.
+              <span class="text-red-400 font-bold">•</span> High incidence of skin ulcers, respiratory irritation, and chronic organ toxicity.
             </li>
             <li class="flex items-start gap-2">
-              <span class="text-red-400 font-bold">•</span> Irreversible developmental burdens on children.
+              <span class="text-red-400 font-bold">•</span> Groundwater unsuitable for infants and child cognitive development.
             </li>
           </ul>
         </div>
@@ -369,17 +391,17 @@
         <!-- LIFE AFTER (REMEDIATED) -->
         <div class="bg-emerald-950/20 border border-emerald-500/30 p-6 rounded-2xl">
           <div class="flex items-center gap-2 text-emerald-400 font-extrabold text-sm uppercase tracking-wider mb-4">
-            <i data-lucide="check-circle-2" class="w-5 h-5"></i> Life After Prescribed Solution
+            <i data-lucide="check-circle-2" class="w-5 h-5"></i> Post-Remediation Life Transformation
           </div>
           <ul class="space-y-3 text-sm text-slate-300">
             <li class="flex items-start gap-2">
-              <span class="text-emerald-400 font-bold">•</span> <b class="text-emerald-400" id="p4-impact-text">92% reduction in toxic load</b>, restoring cellular health.
+              <span class="text-emerald-400 font-bold">•</span> <b class="text-emerald-400">92%+ reduction in heavy metal toxicity</b> down to safe WHO limits.
             </li>
             <li class="flex items-start gap-2">
-              <span class="text-emerald-400 font-bold">•</span> Long-term protection against chronic kidney and liver damage.
+              <span class="text-emerald-400 font-bold">•</span> Eliminates cellular toxic stress and protects long-term cardiovascular health.
             </li>
             <li class="flex items-start gap-2">
-              <span class="text-emerald-400 font-bold">•</span> 100% pure, mineral-balanced safe drinking water.
+              <span class="text-emerald-400 font-bold">•</span> 100% pure mineral-balanced water restored for community wellness.
             </li>
           </ul>
         </div>
@@ -391,64 +413,409 @@
           <i data-lucide="wrench" class="w-6 h-6"></i>
         </div>
         <div>
-          <h4 class="text-white font-bold text-base">Prescribed Engineering Filtration Architecture</h4>
+          <h4 class="text-white font-bold text-base">Prescribed Remediation Engineering Protocol</h4>
           <p class="text-slate-300 text-sm mt-1 leading-relaxed" id="p4-solution-text">
-            Activated Alumina Adsorption filter bed + Dual-Stage Reverse Osmosis (RO) with Pre-Oxidation.
+            Strong Base Anion (SBA) Ion-Exchange Resin Bed + Dual-Stage Reverse Osmosis (RO) with Catalytic Carbon Pre-Treatment.
           </p>
         </div>
       </div>
     </div>
 
-    <!-- RESTART / RETURN BUTTON -->
+    <!-- RESTART BUTTON -->
     <div class="text-center">
       <button 
         onclick="goToPage(1)"
         class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-bold px-8 py-3.5 rounded-full text-sm transition cursor-pointer"
       >
         <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-        <span>Start Another Analysis</span>
+        <span>Start Another Location Analysis</span>
       </button>
     </div>
   </div>
 
-  <!-- JAVASCRIPT DATABASE & PAGE ROUTER -->
+  <!-- CSV DATASET & FULL ENGINE LOGIC -->
   <script>
-    const database = [
-      { name: "Punjab", aliases: ["punjab", "bathinda", "amritsar", "ludhiana", "jalandhar", "patiala"], risk: 84, status: "Critical", top: "Arsenic & Lead", as: "0.08", pb: "0.04", hg: "0.01", cd: "0.009", bod: "6.8", cod: "28.4", ph: "7.4", solution: "Activated Alumina Adsorption + Dual-Stage Reverse Osmosis (RO)", impact: "Reduces neurological disease & chronic kidney burden by 92%." },
-      { name: "West Bengal", aliases: ["west bengal", "kolkata", "bengal", "north 24 parganas", "south 24 parganas", "howrah"], risk: 91, status: "Critical", top: "Arsenic (High)", as: "0.12", pb: "0.03", hg: "0.005", cd: "0.004", bod: "5.9", cod: "22.1", ph: "7.1", solution: "Iron-Oxide Coated Sand Filter + Sub-micron Ultrafiltration", impact: "Halts skin lesion progression & safeguards child cognitive health." },
-      { name: "Bihar", aliases: ["bihar", "patna", "gaya", "bhagalpur", "muzaffarpur"], risk: 88, status: "Critical", top: "Arsenic & Iron", as: "0.09", pb: "0.035", hg: "0.004", cd: "0.003", bod: "6.2", cod: "25.0", ph: "7.3", solution: "Community Arsenic Removal Unit (AIRP) + Activated Alumina", impact: "Eliminates toxic bioaccumulation in rural drinking wells." },
-      { name: "Uttar Pradesh", aliases: ["uttar pradesh", "up", "lucknow", "kanpur", "varanasi", "noida", "ghaziabad"], risk: 79, status: "Critical", top: "Chromium & Lead", as: "0.05", pb: "0.06", hg: "0.008", cd: "0.007", bod: "7.4", cod: "32.0", ph: "7.8", solution: "Ion Exchange Resin Bed + Granular Activated Carbon (GAC)", impact: "Extracts industrial tannery runoff and heavy chromium toxicity." },
-      { name: "Rajasthan", aliases: ["rajasthan", "jaipur", "jodhpur", "udaipur", "kota"], risk: 72, status: "Critical", top: "Fluoride & Nitrate", as: "0.02", pb: "0.02", hg: "0.002", cd: "0.003", bod: "4.1", cod: "16.8", ph: "8.1", solution: "Nalgonda De-fluoridation Technique + RO Desalination", impact: "Protects against skeletal fluorosis, dental damage, and joint stiffness." },
-      { name: "Maharashtra", aliases: ["maharashtra", "mumbai", "pune", "nagpur", "nashik", "thane"], risk: 54, status: "Moderate", top: "Industrial COD & Lead", as: "0.015", pb: "0.03", hg: "0.004", cd: "0.005", bod: "4.8", cod: "19.5", ph: "7.2", solution: "Multi-media Sand Filter + Active Carbon Polishing", impact: "Clears chemical industrial runoff, restoring fresh water clarity." },
-      { name: "Karnataka", aliases: ["karnataka", "bangalore", "bengaluru", "mysore", "hubli"], risk: 42, status: "Moderate", top: "Nitrate & Iron", as: "0.01", pb: "0.01", hg: "0.001", cd: "0.002", bod: "3.4", cod: "14.2", ph: "7.6", solution: "Aeration + Activated Carbon + Catalytic Iron Filter", impact: "Removes metallic taste, protects digestive system." },
-      { name: "Tamil Nadu", aliases: ["tamil nadu", "chennai", "coimbatore", "madurai", "salem"], risk: 48, status: "Moderate", top: "Total Dissolved Solids (TDS)", as: "0.01", pb: "0.02", hg: "0.002", cd: "0.003", bod: "3.9", cod: "15.1", ph: "7.5", solution: "Brackish Water Reverse Osmosis (BWRO) + Remineralizer", impact: "Balances alkaline pH and prevents kidney stone formation." },
-      { name: "Gujarat", aliases: ["gujarat", "ahmedabad", "surat", "vadodara", "rajkot"], risk: 65, status: "Moderate", top: "Heavy Chlorides & Lead", as: "0.02", pb: "0.035", hg: "0.003", cd: "0.004", bod: "4.5", cod: "18.0", ph: "7.9", solution: "Electro-dialysis Reversal (EDR) + Micron Sediment Filter", impact: "Eliminates coastal salinity intrusion and heavy trace metals." },
-      { name: "Delhi NCR", aliases: ["delhi", "new delhi", "ncr", "gurgaon", "gurugram", "faridabad"], risk: 82, status: "Critical", top: "Ammonia, Lead & COD", as: "0.04", pb: "0.05", hg: "0.009", cd: "0.008", bod: "8.5", cod: "38.0", ph: "7.6", solution: "Ozonation + UV Sterilization + High-Recovery RO", impact: "Removes toxic sewage intrusion and carcinogenic organic loads." },
-      { name: "Kerala", aliases: ["kerala", "kochi", "cochin", "thiruvananthapuram", "trivandrum", "kozhikode"], risk: 18, status: "Safe", top: "Trace Organic Matter", as: "0.001", pb: "0.002", hg: "0.000", cd: "0.001", bod: "1.8", cod: "7.2", ph: "7.0", solution: "Basic Sediment Cartridge Filter + UV Disinfection", impact: "Preserves natural mountain minerals for pure hydration." }
-    ];
+    // 115+ Records parsed directly from your CSV
+    const csvRaw = `location_name,location_type,state_ut,city_type,surface_water_pollution_pct,groundwater_pollution_pct,arsenic_as_pct,chromium_cr_pct,lead_pb_pct,cadmium_cd_pct,zinc_zn_pct,copper_cu_pct,nickel_ni_pct,bod_exceedance_pct,cod_exceedance_pct,do_exceedance_pct,ph_exceedance_pct,tds_exceedance_pct,primary_pollutant_source,risk_level,key_heavy_metal
+Andhra Pradesh,State,Andhra Pradesh,State,38,28,38,18,22,12,6,2,2,38,44,32,26,48,State-level aggregate,High,Arsenic
+Arunachal Pradesh,State,Arunachal Pradesh,State,12,8,80,6,6,2,2,2,2,10,14,8,8,10,State-level aggregate,Low,Arsenic
+Assam,State,Assam,State,24,18,60,10,10,4,4,4,8,24,30,20,16,22,State-level aggregate,Moderate,Arsenic
+Bihar,State,Bihar,State,32,26,56,10,18,6,4,2,4,40,46,34,22,34,State-level aggregate,High,Arsenic
+Chhattisgarh,State,Chhattisgarh,State,28,22,10,20,18,8,12,8,24,36,42,30,22,34,State-level aggregate,Moderate,Nickel
+Delhi,State/UT,Delhi,State/UT,52,48,6,24,34,14,2,4,14,48,54,38,20,62,State-level aggregate,Critical,Lead
+Goa,State,Goa,State,18,14,4,10,14,6,14,14,38,16,20,12,18,30,State-level aggregate,Low,Zinc
+Gujarat,State,Gujarat,State,44,36,12,24,22,18,10,4,10,44,50,32,26,48,State-level aggregate,High,Chromium
+Haryana,State,Haryana,State,36,30,14,22,28,24,4,4,4,40,46,32,22,52,State-level aggregate,High,Lead
+Himachal Pradesh,State,Himachal Pradesh,State,16,10,50,14,14,6,6,6,4,14,18,10,12,14,State-level aggregate,Low,Arsenic
+Jharkhand,State,Jharkhand,State,42,34,22,26,24,12,6,2,8,46,52,40,22,44,State-level aggregate,High,Chromium
+Karnataka,State,Karnataka,State,26,20,2,36,24,8,16,12,2,26,32,22,22,38,State-level aggregate,Moderate,Chromium
+Kerala,State,Kerala,State,14,8,2,12,18,6,24,26,12,14,18,12,8,24,State-level aggregate,Low,Copper
+Madhya Pradesh,State,Madhya Pradesh,State,30,24,12,20,22,14,10,8,14,32,38,26,24,34,State-level aggregate,Moderate,Lead
+Maharashtra,State,Maharashtra,State,48,40,10,28,24,22,8,4,4,42,48,32,26,42,State-level aggregate,Critical,Chromium
+Manipur,State,Manipur,State,15,10,60,10,12,6,4,4,4,14,18,10,14,14,State-level aggregate,Low,Arsenic
+Meghalaya,State,Meghalaya,State,35,28,12,22,20,10,8,6,22,34,40,28,18,28,State-level aggregate,High,Chromium
+Mizoram,State,Mizoram,State,11,7,62,8,10,4,4,6,6,10,14,8,10,10,State-level aggregate,Low,Arsenic
+Nagaland,State,Nagaland,State,13,9,60,8,10,4,4,6,8,12,16,10,10,12,State-level aggregate,Low,Arsenic
+Odisha,State,Odisha,State,28,22,12,18,20,10,10,6,24,26,32,22,18,28,State-level aggregate,Moderate,Chromium
+Punjab,State,Punjab,State,40,34,12,8,32,28,4,4,12,44,50,34,20,58,State-level aggregate,High,Lead
+Rajasthan,State,Rajasthan,State,38,42,45,12,18,8,10,4,3,32,38,28,34,72,State-level aggregate,Critical,Arsenic
+Sikkim,State,Sikkim,State,8,5,70,6,8,4,4,6,2,8,12,6,6,8,State-level aggregate,Low,Arsenic
+Tamil Nadu,State,Tamil Nadu,State,32,26,2,34,26,6,12,14,6,32,38,24,24,44,State-level aggregate,High,Chromium
+Telangana,State,Telangana,State,34,30,38,20,20,12,6,2,2,40,46,32,24,42,State-level aggregate,High,Arsenic
+Tripura,State,Tripura,State,19,14,56,10,12,6,6,6,4,18,24,14,16,16,State-level aggregate,Moderate,Arsenic
+Uttar Pradesh,State,Uttar Pradesh,State,55,48,20,32,28,12,5,2,1,56,62,44,18,48,State-level aggregate,Critical,Chromium
+Uttarakhand,State,Uttarakhand,State,22,16,40,14,16,8,8,6,8,22,26,18,16,20,State-level aggregate,Moderate,Arsenic
+West Bengal,State,West Bengal,State,46,38,18,26,26,10,5,3,12,52,56,42,28,38,State-level aggregate,Critical,Chromium
+Andaman & Nicobar,UT,Andaman & Nicobar,UT,14,10,4,8,12,6,14,14,42,12,16,10,14,18,State-level aggregate,Low,Zinc
+Chandigarh,UT,Chandigarh,UT,28,22,8,18,24,12,8,6,24,28,34,22,20,32,State-level aggregate,Moderate,Lead
+Dadra & Nagar Haveli,UT,Dadra & Nagar Haveli,UT,26,20,8,22,18,10,10,8,24,26,32,20,18,28,State-level aggregate,Moderate,Chromium
+Daman & Diu,UT,Daman & Diu,UT,24,18,6,10,14,8,14,14,34,20,26,16,18,28,State-level aggregate,Moderate,Zinc
+Lakshadweep,UT,Lakshadweep,UT,10,7,4,6,8,4,14,16,48,10,12,8,10,22,State-level aggregate,Low,Zinc
+Ladakh,UT,Ladakh,UT,12,8,50,8,8,4,8,6,16,10,14,8,8,10,State-level aggregate,Low,Arsenic
+Puducherry,UT,Puducherry,UT,21,16,4,10,14,8,16,16,32,20,26,16,18,30,State-level aggregate,Moderate,Zinc
+Jammu & Kashmir,State,Jammu & Kashmir,State,18,14,18,11,13,7,10,7,34,18,23,14,15,20,State-level aggregate,Low,Arsenic
+Kanpur,City,Uttar Pradesh,Industrial (Tannery Hub),68,55,20,35,28,10,4,2,1,62,68,50,18,44,Tannery effluent (~1000 units) + Ganga discharge,Critical,Chromium
+Varanasi,City,Uttar Pradesh,State Capital / Religious City,55,46,22,28,26,12,6,3,3,58,62,46,20,40,Untreated sewage + Ganga ghats + cremation,Critical,Lead
+Lucknow,City,Uttar Pradesh,State Capital,50,44,18,28,28,12,6,4,4,54,60,42,22,46,Mixed industrial + urban sewage,Critical,Lead
+Agra,City,Uttar Pradesh,Industrial / Heritage City,48,40,18,24,26,12,8,4,8,52,58,40,24,42,Rubber + chemical industries + Yamuna,Critical,Chromium
+Prayagraj,City,Uttar Pradesh,Major Urban,46,38,22,22,24,10,8,4,10,50,56,42,22,38,Sewage discharge into Ganga-Yamuna confluence,High,Arsenic
+Meerut,City,Uttar Pradesh,Industrial,50,42,14,26,30,14,6,4,6,52,58,40,20,48,Electroplating + sports goods manufacturing,Critical,Chromium
+Moradabad,City,Uttar Pradesh,Industrial (Brass Hub),62,52,12,18,24,12,4,16,14,56,62,44,18,42,Brass smelting + e-waste dumping + Ramganga river,Critical,Copper
+New Delhi,City,Delhi,National Capital / UT Capital,52,48,6,24,34,14,2,4,14,48,54,38,20,62,Urban sewage + industrial + vehicular + Yamuna,Critical,Lead
+Delhi North (Rohini),City,Delhi,Industrial / Urban Cluster,48,52,8,22,30,16,4,4,16,46,52,36,22,58,Industrial waste + borewells + urban runoff,Critical,Lead
+Delhi South (Okhla),City,Delhi,Industrial Cluster,54,50,6,26,32,14,4,4,14,50,56,40,18,60,Chemical + textile industries + Yamuna proximity,Critical,Chromium
+Mumbai,City,Maharashtra,Financial Capital,48,40,10,28,24,22,8,4,4,42,48,32,26,42,Textile + pharmaceutical + slum sewage,Critical,Chromium
+Pune,City,Maharashtra,IT + Industrial City,38,32,8,22,22,18,10,6,14,38,44,28,24,36,Auto manufacturing + chemical industries,High,Cadmium
+Nagpur,City,Maharashtra,State Capital (Winter),30,25,6,18,18,14,12,10,22,32,38,26,22,30,Coal mining proximity + textile + orange market effluent,Moderate,Nickel
+Nashik,City,Maharashtra,Industrial City,36,30,8,20,22,16,12,8,14,38,44,30,24,34,Grape processing + pharmaceutical + plastic industries,High,Lead
+Aurangabad,City,Maharashtra,Industrial City,32,28,6,18,20,14,12,10,20,34,40,28,22,32,Auto parts + textile + pharma industries,Moderate,Lead
+Thane,City,Maharashtra,Industrial Satellite,46,38,8,26,24,20,10,6,6,44,50,34,26,40,Chemical + dye industries + urban sewage,High,Chromium
+Navi Mumbai,City,Maharashtra,Planned Industrial,42,34,8,24,22,18,12,6,10,40,46,30,24,36,MIDC industrial zone effluent,High,Cadmium
+Ahmedabad,City,Gujarat,State Capital / Industrial,48,40,12,24,22,18,10,4,10,44,50,32,26,48,Textile dyes + chemical + pharma industries + Sabarmati,Critical,Chromium
+Surat,City,Gujarat,Textile / Diamond Hub,44,36,10,22,24,16,14,6,8,42,48,30,24,44,Textile processing + dyeing units,High,Lead
+Vapi,City,Gujarat,Industrial (CETP zone),60,50,14,28,28,18,8,2,2,58,66,46,22,50,Chemical cluster - one of Asias most polluted,Critical,Chromium
+Vadodara,City,Gujarat,Industrial City,42,34,10,22,22,16,12,6,12,40,46,30,24,42,Petrochemical + pharmaceutical industries,High,Cadmium
+Rajkot,City,Gujarat,Industrial City,36,30,12,18,20,12,14,10,14,34,40,26,22,36,Brass + engineering industries,Moderate,Lead
+Kolkata,City,West Bengal,State Capital / Port City,46,38,18,26,26,10,5,3,12,52,56,42,28,38,Jute mills + tanneries + Hooghly industrial discharge,Critical,Chromium
+Howrah,City,West Bengal,Industrial Satellite,50,42,16,28,28,12,5,3,8,54,60,44,26,40,Engineering + chemical industries + Hooghly river,Critical,Lead
+Durgapur,City,West Bengal,Steel City,54,44,12,22,24,12,8,6,16,56,62,46,24,42,Steel plant + coal mining proximity,Critical,Nickel
+Asansol,City,West Bengal,Mining / Industrial,52,44,14,20,24,12,8,6,16,54,60,44,24,40,Coal mines + steel + chemical industries,Critical,Arsenic
+Siliguri,City,West Bengal,Trade Hub,28,22,16,14,18,10,8,4,30,28,34,22,18,24,Cross-border trade + limited industrial,Moderate,Arsenic
+Jamshedpur,City,Jharkhand,Steel City,50,42,12,22,24,12,8,6,16,52,58,44,22,42,Tata Steel + allied industries,Critical,Nickel
+Dhanbad,City,Jharkhand,Coal Mining City,46,38,14,18,22,10,10,8,18,50,56,44,22,40,Coal mines + acid mine drainage,High,Lead
+Ranchi,City,Jharkhand,State Capital,34,28,14,18,18,10,8,6,26,36,42,28,20,32,Mining effluent + urban sewage,Moderate,Arsenic
+Patna,City,Bihar,State Capital,36,28,24,16,24,10,6,4,16,40,46,34,22,34,Untreated sewage + Ganga discharge,High,Arsenic
+Gaya,City,Bihar,Religious City,30,24,20,14,20,8,8,4,26,34,40,28,20,28,Urban sewage + light industry,Moderate,Arsenic
+Muzaffarpur,City,Bihar,Agricultural / Small Industry,28,22,22,12,18,8,8,4,28,30,36,26,18,26,Litchi processing + urban sewage + Gandak river,Moderate,Arsenic
+Hyderabad,City,Telangana,State Capital / IT + Pharma,38,32,12,20,20,14,6,6,22,40,46,32,24,42,Pharmaceutical + chemical + Musi river discharge,High,Chromium
+Warangal,City,Telangana,Industrial City,32,26,18,16,20,12,6,4,24,34,40,26,22,32,Textile + fertilizer industries,Moderate,Arsenic
+Karimnagar,City,Telangana,Industrial,34,28,16,18,18,10,8,4,26,34,40,28,22,30,Steel + textile industries,Moderate,Lead
+Visakhapatnam,City,Andhra Pradesh,Port / Steel City,40,34,16,22,22,14,8,4,14,42,48,32,22,44,Steel plant + port + petrochemical,High,Chromium
+Vijayawada,City,Andhra Pradesh,State Capital,34,28,20,16,20,12,8,4,20,36,42,28,24,38,Krishna river + urban sewage + industrial,High,Arsenic
+Tirupati,City,Andhra Pradesh,Religious / Urban,22,16,18,12,14,8,10,4,34,24,30,18,20,24,Temple waste + limited industrial,Moderate,Arsenic
+Guntur,City,Andhra Pradesh,Agricultural / Tobacco Hub,32,26,22,12,18,10,8,4,26,34,38,26,24,36,Tobacco processing + agricultural runoff,Moderate,Arsenic
+Chennai,City,Tamil Nadu,State Capital,32,26,10,34,26,6,12,6,6,32,38,24,24,44,Tanneries (Ranipet belt) + Buckingham Canal,High,Chromium
+Coimbatore,City,Tamil Nadu,Textile / Industrial,28,22,6,24,22,8,14,12,14,28,34,22,22,36,Textile dyeing + engineering industries,Moderate,Chromium
+Madurai,City,Tamil Nadu,Industrial / Temple City,26,20,8,22,20,8,14,14,14,26,32,20,22,32,Textile + tanning industries,Moderate,Chromium
+Tiruchirappalli,City,Tamil Nadu,Industrial,28,22,8,22,20,8,14,14,14,28,34,22,22,32,Ordnance factory + textile + BHEL plant,Moderate,Chromium
+Salem,City,Tamil Nadu,Steel City,34,28,6,24,22,8,14,14,12,32,38,26,22,34,Steel plant + textile industries,High,Chromium
+Bengaluru,City,Karnataka,State Capital / IT Hub,26,20,2,36,24,8,16,12,2,26,32,22,22,38,Peenya industrial area + IT park runoff,Moderate,Chromium
+Mysuru,City,Karnataka,Tourism / Industrial,20,16,2,22,18,6,16,14,22,20,26,16,18,28,Silk + agro-industries,Low,Chromium
+Mangaluru,City,Karnataka,Port City,18,14,4,14,14,6,18,14,30,18,24,14,18,32,Port activities + fishing industry,Low,Nickel
+Hubballi,City,Karnataka,Industrial City,22,18,4,18,18,8,14,12,26,22,28,18,20,28,Cotton textiles + agricultural machinery,Moderate,Chromium
+Thiruvananthapuram,City,Kerala,State Capital,14,8,2,12,18,6,26,28,8,14,18,12,8,24,Cashew processing + coastal salinity,Low,Copper
+Kochi,City,Kerala,Port / Industrial City,18,12,2,10,16,8,24,26,14,16,20,14,16,38,Port + fish processing + Eloor industrial area,Moderate,Zinc
+Kozhikode,City,Kerala,Trade City,12,8,2,10,14,6,26,28,14,12,16,10,8,20,Minimal industry + urban sewage,Low,Copper
+Thrissur,City,Kerala,Cultural Capital,12,8,2,10,14,6,24,26,18,12,16,10,8,18,Rubber + coconut processing,Low,Zinc
+Bhopal,City,Madhya Pradesh,State Capital,32,26,12,20,22,14,10,8,14,32,38,26,24,34,Legacy of Union Carbide + urban sewage,High,Lead
+Indore,City,Madhya Pradesh,Industrial City,36,30,10,22,22,16,10,8,12,36,42,28,22,40,Textile + pharma + food processing,High,Lead
+Jabalpur,City,Madhya Pradesh,Industrial,28,22,14,18,20,12,10,8,18,28,34,22,22,30,Defense industries + ordnance + Narmada,Moderate,Lead
+Gwalior,City,Madhya Pradesh,Industrial,34,28,10,22,24,12,10,6,16,34,40,26,22,36,Chemicals + leather industries,High,Chromium
+Jaipur,City,Rajasthan,State Capital,42,48,28,18,20,10,12,4,8,34,40,24,36,68,Gem polishing + dyeing + geogenic fluoride,Critical,Arsenic
+Jodhpur,City,Rajasthan,Industrial / Heritage,34,46,30,14,18,8,10,4,16,28,34,20,36,72,Geogenic arsenic + salt industries,High,Arsenic
+Udaipur,City,Rajasthan,Mining / Tourism,30,38,24,20,18,8,10,6,14,26,32,20,28,56,Zinc smelting (HZL plant) + mining,High,Arsenic
+Kota,City,Rajasthan,Industrial City,36,40,22,22,22,10,12,4,8,34,40,26,28,60,Chemical + fertilizer + DCM Shriram industries,High,Arsenic
+Ajmer,City,Rajasthan,Religious / Urban,30,36,26,14,16,8,12,6,18,26,32,20,30,62,Geogenic contamination + urban sewage,High,Arsenic
+Chandigarh,City,Chandigarh,UT Capital,28,22,8,18,24,12,8,6,24,28,34,22,20,32,Urban sewage + industrial proximity,Moderate,Lead
+Ludhiana,City,Punjab,Industrial Hub,46,38,12,18,32,28,4,4,2,46,52,36,22,56,Dyeing + electroplating + Budda nala,Critical,Lead
+Amritsar,City,Punjab,Religious / Urban,36,30,14,16,28,24,4,6,8,40,46,30,20,52,Urban sewage + light industry,High,Lead
+Jalandhar,City,Punjab,Industrial City,40,34,12,16,30,26,4,4,8,40,46,32,20,54,Sports goods + leather industries,High,Lead
+Patiala,City,Punjab,Urban,32,28,12,14,24,22,6,6,16,34,40,26,18,46,Agricultural runoff + urban sewage,Moderate,Lead
+Faridabad,City,Haryana,Industrial City,42,36,10,24,30,22,4,4,6,44,50,34,22,52,Steel + chemical + auto industries,High,Lead
+Gurugram,City,Haryana,IT + Industrial City,38,32,8,22,28,20,4,6,12,40,46,30,22,50,IT park effluent + urban construction,High,Chromium
+Panipat,City,Haryana,Industrial City,48,42,10,22,28,24,4,4,8,48,54,38,22,54,Oil refinery + textile recycling,Critical,Cadmium
+Sonipat,City,Haryana,Industrial,40,34,10,20,28,22,4,4,12,42,48,32,22,48,Auto ancillaries + food processing,High,Lead
+Hisar,City,Haryana,Industrial,36,30,12,18,24,20,6,6,14,36,42,28,22,46,Steel + glass + cotton industries,High,Lead
+Dehradun,City,Uttarakhand,State Capital,22,16,14,14,16,8,8,6,34,22,26,18,16,18,Urban sewage + limited industry,Moderate,Arsenic
+Haridwar,City,Uttarakhand,Religious / Industrial,28,22,18,18,18,10,8,4,24,30,36,26,18,24,SIDCUL industrial estate + pilgrimage waste,Moderate,Arsenic
+Roorkee,City,Uttarakhand,Industrial / Town,22,18,14,14,16,8,10,6,32,22,26,18,16,20,IIT + small industries,Low,Arsenic
+Guwahati,City,Assam,State Capital,24,18,18,14,14,8,8,6,32,24,30,20,16,22,Urban sewage + oil refinery proximity,Moderate,Arsenic
+Dibrugarh,City,Assam,Oil Industry City,28,22,16,12,14,8,8,8,34,26,30,22,18,24,Oil refinery + tea industry effluent,Moderate,Arsenic
+Silchar,City,Assam,Commercial Hub,22,16,18,12,12,8,8,6,34,22,28,18,16,20,Urban sewage + agricultural runoff,Moderate,Arsenic
+Raipur,City,Chhattisgarh,State Capital / Steel,36,28,8,18,18,10,10,8,28,36,42,30,22,34,Steel + cement + mining industries,High,Nickel
+Bhilai,City,Chhattisgarh,Steel City,40,32,8,20,20,10,10,8,24,40,46,34,22,36,Bhilai Steel Plant effluent,High,Nickel
+Korba,City,Chhattisgarh,Energy / Industrial,42,34,8,18,18,10,12,6,28,40,46,34,22,36,Thermal power plant + aluminum industries,High,Nickel
+Bhubaneswar,City,Odisha,State Capital,26,20,12,18,18,10,10,8,24,26,32,22,18,28,Urban sewage + light industry,Moderate,Chromium
+Rourkela,City,Odisha,Steel City,38,30,10,22,22,10,10,8,18,40,46,32,20,36,Steel plant + mining,High,Chromium
+Cuttack,City,Odisha,Commercial Hub,30,24,14,16,20,10,10,6,24,30,36,24,20,28,Urban sewage + silverware industry,Moderate,Lead
+Sambalpur,City,Odisha,Industrial,32,26,12,18,20,10,10,6,24,30,36,24,20,30,Mining + Hirakud Dam proximity,Moderate,Lead
+Vijaywada (Industrial),City,Andhra Pradesh,Industrial,38,32,20,18,22,12,8,4,16,38,44,30,24,40,Cement + fertilizer industries,High,Arsenic
+Srinagar,City,Jammu & Kashmir,State Capital / Tourism,16,12,8,10,12,6,10,8,46,16,20,12,14,18,Dal Lake effluent + houseboat waste,Low,Nickel
+Jammu,City,Jammu & Kashmir,Winter Capital,20,16,10,12,14,8,10,6,40,20,26,16,16,22,Urban sewage + small industrial zone,Low,Arsenic
+Shimla,City,Himachal Pradesh,State Capital,14,10,8,10,12,6,10,8,46,14,18,10,12,14,Minimal industry + apple processing,Low,Arsenic
+Manali,City,Himachal Pradesh,Tourism City,10,6,8,8,8,4,10,8,54,10,14,8,10,10,Tourism waste + Beas river discharge,Low,Arsenic
+Panaji,City,Goa,State Capital,18,14,4,10,14,6,14,14,38,16,20,12,18,30,Tourism + limited mining,Low,Zinc
+Margao,City,Goa,Commercial Hub,16,12,4,10,12,6,14,16,38,14,18,10,16,28,Tourism + trade activities,Low,Zinc
+Shillong,City,Meghalaya,State Capital,36,30,12,22,20,10,8,6,22,34,40,28,18,28,Coal mining + urban sewage + limestone,High,Chromium
+Imphal,City,Manipur,State Capital,16,12,12,10,12,6,10,6,44,14,18,10,14,14,Urban sewage + minimal industry,Low,Arsenic
+Aizawl,City,Mizoram,State Capital,12,8,10,8,10,4,10,6,52,10,14,8,10,10,Very limited industry + forest cover,Low,Arsenic
+Kohima,City,Nagaland,State Capital,14,10,10,8,10,4,10,6,52,12,16,10,10,12,Minimal industry + urban sewage,Low,Arsenic
+Agartala,City,Tripura,State Capital,20,16,18,10,12,6,10,6,38,18,24,14,16,16,Urban sewage + rubber processing,Low,Arsenic
+Itanagar,City,Arunachal Pradesh,State Capital,12,8,8,8,8,4,10,6,56,10,14,8,8,10,Very limited industry + pristine,Low,Arsenic
+Gangtok,City,Sikkim,State Capital,8,6,8,6,8,4,10,6,58,8,12,6,6,8,Least polluted capital - tourism,Low,Arsenic
+Port Blair,City,Andaman & Nicobar,UT Capital,14,10,4,8,12,6,14,14,42,12,16,10,14,18,Island isolation + tourism,Low,Zinc
+Kavaratti,City,Lakshadweep,UT Capital,10,8,4,6,8,4,14,16,48,10,12,8,10,22,Island ecosystem + coral reef proximity,Low,Zinc
+Silvassa,City,Dadra & Nagar Haveli,UT Capital,28,22,8,22,18,10,10,8,24,26,32,20,18,28,Textile + pharma + chemical,Moderate,Chromium
+Daman,City,Daman & Diu,UT Capital,24,18,6,10,14,8,14,14,34,20,26,16,18,28,Coastal salinity + small industry,Moderate,Zinc
+Diu,City,Daman & Diu,Tourism City,18,12,4,8,10,6,16,16,40,14,18,10,14,26,Tourism + fishing,Low,Zinc
+Puducherry,City,Puducherry,UT Capital,22,18,4,10,14,8,16,16,32,20,26,16,18,30,Coastal salinity + pharma,Moderate,Zinc
+Karimpur (Ranipet),City,Tamil Nadu,Tannery Cluster,64,52,6,44,26,6,8,4,6,60,68,48,20,44,One of Asias largest tannery clusters,Critical,Chromium
+Eloor,City,Kerala,Chemical Industrial Zone,46,40,8,22,20,10,10,6,24,44,52,38,22,36,Chemical + pesticide industries in FACT complex,High,Chromium
+Leh,City,Ladakh,UT Capital,12,8,8,6,8,4,8,6,60,10,14,8,8,10,High altitude minimal pollution,Low,Arsenic
+Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial + remote,Low,Arsenic`;
 
-    let currentSelectedData = database[0]; // Default: Punjab
+    // Parse CSV rows into objects
+    const lines = csvRaw.trim().split('\n');
+    const headers = lines[0].split(',');
+    const allRecords = lines.slice(1).map(line => {
+      const vals = line.split(',');
+      return {
+        name: vals[0],
+        type: vals[1],
+        stateut: vals[2],
+        citytype: vals[3],
+        surface: parseInt(vals[4]),
+        ground: parseInt(vals[5]),
+        as: vals[6],
+        cr: vals[7],
+        pb: vals[8],
+        cd: vals[9],
+        zn: vals[10],
+        cu: vals[11],
+        ni: vals[12],
+        bod: vals[13],
+        cod: vals[14],
+        do: vals[15],
+        ph: vals[16],
+        tds: vals[17],
+        source: vals[18],
+        risk: vals[19],
+        metal: vals[20]
+      };
+    });
 
+    let currentSelected = allRecords.find(r => r.name === "Kanpur") || allRecords[0];
+
+    // Helper: Determine 4-tier color based on Pollution %
+    function getTier(pct) {
+      if (pct >= 50) return { name: "Purple", border: "border-purple-500/50", bg: "bg-purple-950/20", text: "text-purple-400", dot: "dot-purple", badge: "bg-purple-500/20 text-purple-300 border-purple-500/40", label: "🟣 50%+ Pollution" };
+      if (pct >= 40) return { name: "Red", border: "border-red-500/50", bg: "bg-red-950/20", text: "text-red-400", dot: "dot-red", badge: "bg-red-500/20 text-red-300 border-red-500/40", label: "🔴 40%-49% Pollution" };
+      if (pct >= 20) return { name: "Yellow", border: "border-amber-500/50", bg: "bg-amber-950/20", text: "text-amber-400", dot: "dot-yellow", badge: "bg-amber-500/20 text-amber-300 border-amber-500/40", label: "🟡 20%-39% Pollution" };
+      return { name: "Green", border: "border-emerald-500/50", bg: "bg-emerald-950/20", text: "text-emerald-400", dot: "dot-green", badge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40", label: "🟢 <20% Safe Quality" };
+    }
+
+    // Page 1: Render Circles Matrix
+    function renderMapCircles(filterType = "All") {
+      const container = document.getElementById('map-circles-container');
+      container.innerHTML = "";
+
+      const filtered = allRecords.filter(r => {
+        if (filterType === "All") return true;
+        if (filterType === "State") return r.type === "State";
+        if (filterType === "UT") return r.type === "UT";
+        if (filterType === "City") return r.type === "City";
+        return true;
+      });
+
+      filtered.forEach(item => {
+        const tier = getTier(item.surface);
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-2xl border ${tier.border} ${tier.bg} hover:scale-105 transition-all cursor-pointer flex flex-col justify-between`;
+        card.onclick = () => {
+          selectAndJumpToPage2(item.name);
+        };
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between gap-1 mb-2">
+            <span class="font-bold text-white text-xs truncate">${item.name}</span>
+            <div class="w-3 h-3 rounded-full ${tier.dot} shrink-0"></div>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-lg font-black ${tier.text}">${item.surface}%</span>
+            <span class="text-[10px] text-slate-400 font-semibold truncate">${item.metal}</span>
+          </div>
+          <div class="text-[10px] text-slate-500 truncate mt-1">${item.stateut}</div>
+        `;
+        container.appendChild(card);
+      });
+      lucide.createIcons();
+    }
+
+    function filterMapType(type) {
+      ['All', 'State', 'UT', 'City'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        if (t === type) {
+          btn.className = "px-4 py-2 rounded-full font-bold bg-cyan-500 text-slate-950 transition";
+        } else {
+          btn.className = "px-4 py-2 rounded-full font-bold bg-slate-900 text-slate-300 hover:bg-slate-800 transition";
+        }
+      });
+      renderMapCircles(type);
+    }
+
+    function selectAndJumpToPage2(locName) {
+      document.getElementById('search-input').value = locName;
+      goToPage(2);
+      handleSearchSubmit();
+    }
+
+    // Page 2: Search Verification Engine
+    function handleLiveSearch() {
+      // Clear errors while typing
+      document.getElementById('search-error').classList.add('hidden');
+    }
+
+    function quickPick(name) {
+      document.getElementById('search-input').value = name;
+      handleSearchSubmit();
+    }
+
+    function handleSearchSubmit() {
+      const q = document.getElementById('search-input').value.trim().toLowerCase();
+      const err = document.getElementById('search-error');
+      const succ = document.getElementById('search-success');
+      const nextBtn = document.getElementById('btn-goto-p3');
+
+      if (!q) {
+        err.classList.remove('hidden');
+        succ.classList.add('hidden');
+        nextBtn.disabled = true;
+        nextBtn.className = "inline-flex items-center gap-2 bg-slate-800 text-slate-500 font-black px-7 py-3.5 rounded-full text-sm transition-all cursor-not-allowed";
+        return;
+      }
+
+      // Search match in 115 records (name, state, source, metal)
+      const match = allRecords.find(r => 
+        r.name.toLowerCase() === q || 
+        r.name.toLowerCase().includes(q) || 
+        q.includes(r.name.toLowerCase()) ||
+        r.stateut.toLowerCase() === q
+      );
+
+      if (match) {
+        currentSelected = match;
+        const tier = getTier(match.surface);
+
+        err.classList.add('hidden');
+        succ.classList.remove('hidden');
+        succ.className = `p-5 rounded-2xl border ${tier.border} ${tier.bg} mb-6`;
+
+        document.getElementById('success-dot').className = `w-3.5 h-3.5 rounded-full shrink-0 ${tier.dot}`;
+        document.getElementById('success-category').textContent = `${match.type} • ${match.citytype}`;
+        document.getElementById('success-location-title').textContent = `${match.name}, ${match.stateut}`;
+        document.getElementById('success-risk-badge').textContent = tier.label;
+        document.getElementById('success-risk-badge').className = `text-xs px-3 py-1 rounded-full font-black uppercase border ${tier.badge}`;
+        document.getElementById('success-metal').textContent = match.metal;
+        document.getElementById('success-source').textContent = match.source;
+
+        // Enable Next Button
+        nextBtn.disabled = false;
+        nextBtn.className = "inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black px-7 py-3.5 rounded-full text-sm shadow-lg shadow-cyan-500/20 hover:scale-105 transition-all cursor-pointer";
+      } else {
+        // Not found loop
+        err.classList.remove('hidden');
+        succ.classList.add('hidden');
+        nextBtn.disabled = true;
+        nextBtn.className = "inline-flex items-center gap-2 bg-slate-800 text-slate-500 font-black px-7 py-3.5 rounded-full text-sm transition-all cursor-not-allowed";
+      }
+      lucide.createIcons();
+    }
+
+    // Page 3: Populate Telemetry
+    function populatePage3() {
+      const d = currentSelected;
+      const tier = getTier(d.surface);
+
+      document.getElementById('p3-name').textContent = d.name;
+      document.getElementById('p3-stateut').textContent = `(${d.stateut} • ${d.citytype})`;
+      document.getElementById('p3-risk-badge').textContent = `${d.risk} Risk (${tier.label})`;
+      document.getElementById('p3-risk-badge').className = `px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border ${tier.badge}`;
+
+      document.getElementById('p3-surface').textContent = d.surface + '%';
+      document.getElementById('p3-surface').className = `text-3xl font-black ${tier.text} mt-2`;
+
+      document.getElementById('p3-ground').textContent = d.ground + '%';
+      document.getElementById('p3-metal').textContent = d.metal;
+      document.getElementById('p3-citytype').textContent = d.citytype;
+
+      // Heavy metals
+      document.getElementById('m-as').textContent = d.as + '%';
+      document.getElementById('m-cr').textContent = d.cr + '%';
+      document.getElementById('m-pb').textContent = d.pb + '%';
+      document.getElementById('m-cd').textContent = d.cd + '%';
+      document.getElementById('m-zn').textContent = d.zn + '%';
+      document.getElementById('m-cu').textContent = d.cu + '%';
+      document.getElementById('m-ni').textContent = d.ni + '%';
+
+      // Parameters
+      document.getElementById('p3-bod').textContent = d.bod + '%';
+      document.getElementById('p3-cod').textContent = d.cod + '%';
+      document.getElementById('p3-do').textContent = d.do + '%';
+      document.getElementById('p3-ph').textContent = d.ph + '%';
+      document.getElementById('p3-tds').textContent = d.tds + '%';
+
+      document.getElementById('p3-source-desc').textContent = d.source;
+    }
+
+    // Page 4: Populate Solutions
+    function populatePage4() {
+      const d = currentSelected;
+      document.getElementById('p4-name-title').textContent = `${d.name} (${d.stateut})`;
+      document.getElementById('p4-metal-warn').textContent = `${d.metal} & Heavy Runoff`;
+
+      // Custom engineering solution mapping
+      let solution = "";
+      if (d.metal === "Chromium") {
+        solution = "Strong Base Anion (SBA) Ion-Exchange Resin Bed + Dual-Stage Reverse Osmosis (RO) with Catalytic Carbon Pre-Treatment to neutralize Hexavalent Chromium (Cr-VI).";
+      } else if (d.metal === "Arsenic") {
+        solution = "Activated Alumina Adsorption Bed + Iron-Oxide Coated Sand (IOCS) with Pre-Oxidation to precipitate and extract inorganic Arsenite/Arsenate.";
+      } else if (d.metal === "Lead" || d.metal === "Cadmium") {
+        solution = "Sub-micron Ultrafiltration + Thin-film Composite (TFC) Reverse Osmosis with Chelation softening to extract Lead and Cadmium ions.";
+      } else {
+        solution = "Multi-media Sand Filtration + Activated Carbon Adsorption Bed with Ozonation and Post-Remineralization for trace heavy metal extraction.";
+      }
+
+      document.getElementById('p4-solution-text').textContent = solution;
+    }
+
+    // Router
     function goToPage(pageNumber) {
-      // Hide all pages
       document.querySelectorAll('.page-screen').forEach(el => el.classList.remove('active'));
-      
-      // Show targeted page
       document.getElementById(`page-${pageNumber}`).classList.add('active');
 
-      // Update stepper pills
       for (let i = 1; i <= 4; i++) {
         const pill = document.getElementById(`step-pill-${i}`);
-        if (i === pageNumber) {
-          pill.className = "px-3 py-1 rounded-full bg-cyan-500 text-slate-950 font-bold transition-all";
-        } else if (i < pageNumber) {
-          pill.className = "px-3 py-1 rounded-full bg-slate-800 text-cyan-400 font-semibold transition-all";
-        } else {
-          pill.className = "px-3 py-1 rounded-full bg-slate-900 text-slate-500 transition-all";
+        if (pill) {
+          if (i === pageNumber) {
+            pill.className = "px-3 py-1 rounded-full bg-cyan-500 text-slate-950 font-bold transition-all";
+          } else if (i < pageNumber) {
+            pill.className = "px-3 py-1 rounded-full bg-slate-800 text-cyan-400 font-semibold transition-all";
+          } else {
+            pill.className = "px-3 py-1 rounded-full bg-slate-900 text-slate-500 transition-all";
+          }
         }
       }
 
-      // Populate pages when navigated
       if (pageNumber === 3) populatePage3();
       if (pageNumber === 4) populatePage4();
 
@@ -456,77 +823,8 @@
       lucide.createIcons();
     }
 
-    function verifyLocation() {
-      const rawInput = document.getElementById('user-location-input').value.trim().toLowerCase();
-      const errorBox = document.getElementById('error-box');
-      const successBox = document.getElementById('success-box');
-      const nextBtn = document.getElementById('btn-goto-stats');
-
-      if (!rawInput) {
-        errorBox.classList.remove('hidden');
-        successBox.classList.add('hidden');
-        return;
-      }
-
-      // Search database aliases
-      const match = database.find(item => 
-        item.name.toLowerCase() === rawInput || 
-        item.aliases.some(alias => alias.includes(rawInput) || rawInput.includes(alias))
-      );
-
-      if (match) {
-        currentSelectedData = match;
-        errorBox.classList.add('hidden');
-        successBox.classList.remove('hidden');
-        document.getElementById('verified-location-name').textContent = `${match.name}, India`;
-        
-        // Enable Next Button
-        nextBtn.disabled = false;
-        nextBtn.className = "inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black px-6 py-3 rounded-full text-sm shadow-lg shadow-cyan-500/20 hover:scale-105 transition-all cursor-pointer";
-      } else {
-        // Not found loop
-        errorBox.classList.remove('hidden');
-        successBox.classList.add('hidden');
-        nextBtn.disabled = true;
-        nextBtn.className = "inline-flex items-center gap-2 bg-slate-800 text-slate-500 font-black px-6 py-3 rounded-full text-sm transition-all cursor-not-allowed";
-      }
-      lucide.createIcons();
-    }
-
-    function fillAndSearch(stateName) {
-      document.getElementById('user-location-input').value = stateName;
-      verifyLocation();
-    }
-
-    function populatePage3() {
-      const d = currentSelectedData;
-      document.getElementById('p3-state-title').textContent = d.name;
-      document.getElementById('p3-risk-score').textContent = d.risk + '%';
-      document.getElementById('p3-hazard-badge').textContent = d.status + ' Hazard';
-      document.getElementById('p3-top-hazard').textContent = '⚠️ Primary Hazard: ' + d.top;
-
-      document.getElementById('p3-val-as').textContent = d.as + ' ppm';
-      document.getElementById('p3-val-pb').textContent = d.pb + ' ppm';
-      document.getElementById('p3-val-hg').textContent = d.hg + ' ppm';
-      document.getElementById('p3-val-cd').textContent = d.cd + ' ppm';
-
-      document.getElementById('p3-bar-as').style.width = Math.min(100, parseFloat(d.as) * 800) + '%';
-      document.getElementById('p3-bar-pb').style.width = Math.min(100, parseFloat(d.pb) * 1200) + '%';
-      document.getElementById('p3-bar-hg').style.width = Math.min(100, parseFloat(d.hg) * 3000) + '%';
-      document.getElementById('p3-bar-cd').style.width = Math.min(100, parseFloat(d.cd) * 4000) + '%';
-
-      document.getElementById('p3-val-bod').textContent = d.bod + ' mg/L';
-      document.getElementById('p3-val-cod').textContent = d.cod + ' mg/L';
-      document.getElementById('p3-val-ph').textContent = d.ph;
-    }
-
-    function populatePage4() {
-      const d = currentSelectedData;
-      document.getElementById('p4-state-name').textContent = d.name;
-      document.getElementById('p4-impact-text').textContent = d.impact;
-      document.getElementById('p4-solution-text').textContent = d.solution;
-    }
-
+    // Init
+    renderMapCircles("All");
     lucide.createIcons();
   </script>
 </body>
