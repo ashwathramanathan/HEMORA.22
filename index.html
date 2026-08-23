@@ -6,40 +6,40 @@
   <title>HEMORA - National Water Quality Intelligence Platform</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- High-Precision Geographic Vector Engine -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     .page-screen { display: none; }
     .page-screen.active { display: block; animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Map Canvas */
     .map-canvas {
-      background: radial-gradient(circle at center, #0f2744 0%, #081626 70%, #040b14 100%);
+      background: radial-gradient(circle at center, #0e294b 0%, #08172c 70%, #030a14 100%);
     }
-    .state-poly {
-      transition: all 0.25s ease;
+    .state-path {
+      transition: all 0.2s ease;
       cursor: pointer;
-      stroke: #172a3a;
-      stroke-width: 0.8;
-      stroke-linejoin: round;
+      stroke: #0a1b2d;
+      stroke-width: 0.6;
     }
-    .state-poly:hover {
-      filter: brightness(1.35) drop-shadow(0 0 12px rgba(255,255,255,0.4));
+    .state-path:hover {
+      filter: brightness(1.3) drop-shadow(0 0 10px rgba(255,255,255,0.4));
       stroke: #ffffff;
       stroke-width: 1.5;
     }
-    .pin-ring {
-      animation: pulse-pin 2s infinite ease-out;
+    .pin-pulse {
+      animation: pulse-ring 2s infinite ease-out;
     }
-    @keyframes pulse-pin {
-      0% { transform: scale(0.9); opacity: 1; }
-      100% { transform: scale(1.6); opacity: 0; }
+    @keyframes pulse-ring {
+      0% { r: 6; opacity: 1; }
+      100% { r: 18; opacity: 0; }
     }
   </style>
 </head>
-<body class="bg-[#040b14] text-slate-100 font-sans min-h-screen selection:bg-cyan-500 selection:text-black">
+<body class="bg-[#030a14] text-slate-100 font-sans min-h-screen selection:bg-cyan-500 selection:text-black">
 
   <!-- TOP HEADER -->
-  <header class="border-b border-slate-800/80 bg-[#081626]/90 backdrop-blur sticky top-0 z-50 px-6 py-3.5">
+  <header class="border-b border-slate-800/80 bg-[#08172c]/90 backdrop-blur sticky top-0 z-50 px-6 py-3.5">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-2.5 cursor-pointer" onclick="goToPage(1)">
         <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-400 via-purple-500 to-indigo-600 flex items-center justify-center font-black text-black text-sm shadow-md shadow-cyan-500/20">
@@ -68,23 +68,23 @@
   </header>
 
   <!-- ======================================================== -->
-  <!-- PAGE 1: INDIA MAP WITH STRICT 4-COLOR TIER CODES         -->
+  <!-- PAGE 1: REAL CURVED GEOGRAPHIC INDIA MAP                 -->
   <!-- ======================================================== -->
   <div id="page-1" class="page-screen active max-w-7xl mx-auto px-4 py-6">
     
     <!-- Top Pill Floating Banner -->
     <div class="flex justify-center mb-4">
-      <div class="inline-flex items-center gap-2 bg-[#0d2137]/90 border border-slate-700/60 text-slate-200 px-5 py-2 rounded-full text-xs font-semibold shadow-xl backdrop-blur">
+      <div class="inline-flex items-center gap-2 bg-[#0c223c]/90 border border-slate-700/60 text-slate-200 px-5 py-2 rounded-full text-xs font-semibold shadow-xl backdrop-blur">
         <span class="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span>
         India water quality · city and state/UT risk categories
       </div>
     </div>
 
     <!-- MAIN MAP CANVAS CONTAINER -->
-    <div class="map-canvas rounded-3xl border border-slate-800/80 p-4 sm:p-8 relative shadow-2xl overflow-hidden min-h-[580px] flex flex-col items-center justify-center">
+    <div class="map-canvas rounded-3xl border border-slate-800/80 p-4 sm:p-6 relative shadow-2xl overflow-hidden min-h-[620px] flex flex-col items-center justify-center">
 
       <!-- TOOLTIP OVERLAY (DYNAMIC ON HOVER) -->
-      <div id="map-tooltip" class="hidden absolute top-6 right-6 bg-[#0c1e33]/95 border border-slate-700 p-4 rounded-2xl shadow-2xl text-xs z-30 pointer-events-none min-w-[210px] backdrop-blur">
+      <div id="map-tooltip" class="hidden absolute top-6 right-6 bg-[#0c2038]/95 border border-slate-700 p-4 rounded-2xl shadow-2xl text-xs z-30 pointer-events-none min-w-[210px] backdrop-blur">
         <div class="font-extrabold text-white text-sm" id="tt-name">Uttar Pradesh</div>
         <div class="text-slate-400 mt-0.5" id="tt-type">State Category</div>
         <div class="mt-2 flex items-center justify-between border-t border-slate-800 pt-2">
@@ -96,124 +96,17 @@
           <b class="text-white" id="tt-metal">Chromium</b>
         </div>
         <div class="text-[10px] text-cyan-400 font-bold mt-2 text-center bg-cyan-500/10 py-1 rounded-lg">
-          Click state to view full data →
+          Click state to view full telemetry →
         </div>
       </div>
 
-      <!-- EXACT INDIA SVG MAP WITH 4-TIER GRADIENTS -->
-      <div class="w-full max-w-3xl flex justify-center relative">
-        <svg viewBox="0 0 650 720" class="w-full h-auto max-h-[520px] drop-shadow-[0_15px_30px_rgba(0,0,0,0.6)]">
-          <defs>
-            <!-- 🟣 PURPLE: 50%+ Extreme -->
-            <linearGradient id="gradPurple" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#a855f7" />
-              <stop offset="100%" stop-color="#7e22ce" />
-            </linearGradient>
-            <!-- 🔴 RED: 40% - 49% High -->
-            <linearGradient id="gradRed" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#ef4444" />
-              <stop offset="100%" stop-color="#b91c1c" />
-            </linearGradient>
-            <!-- 🟡 YELLOW OCHRE: 20% - 39% Moderate -->
-            <linearGradient id="gradYellowOchre" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#f59e0b" />
-              <stop offset="100%" stop-color="#b45309" />
-            </linearGradient>
-            <!-- 🟢 GREEN: <20% Safe -->
-            <linearGradient id="gradGreen" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#10b981" />
-              <stop offset="100%" stop-color="#047857" />
-            </linearGradient>
-          </defs>
-
-          <!-- ================= STATE PATHS (EXACT 4-TIER COLOR CODING) ================= -->
-          
-          <!-- 🟢 GREEN (<20%): Ladakh, J&K, HP, Goa, Kerala, Sikkim, Arunachal, Manipur, Mizoram, Nagaland -->
-          <path id="path-Ladakh" d="M225,45 L290,20 L330,55 L310,110 L260,115 L220,70 Z" fill="url(#gradGreen)" class="state-poly" />
-          <path id="path-Jammu & Kashmir" d="M195,55 L225,45 L245,95 L200,120 L175,90 Z" fill="url(#gradGreen)" class="state-poly" />
-          <path id="path-Himachal Pradesh" d="M230,115 L270,110 L285,150 L240,160 L220,130 Z" fill="url(#gradGreen)" class="state-poly" />
-          <path id="path-Goa" d="M175,475 L190,475 L185,495 L170,490 Z" fill="url(#gradGreen)" class="state-poly" />
-          <path id="path-Kerala" d="M205,550 L235,550 L220,640 L195,605 Z" fill="url(#gradGreen)" class="state-poly" />
-          <path id="path-Sikkim" d="M430,195 L445,190 L445,215 L425,215 Z" fill="url(#gradGreen)" class="state-poly" />
-          <path id="path-Arunachal Pradesh" d="M500,165 L585,160 L575,210 L495,205 Z" fill="url(#gradGreen)" class="state-poly" />
-          <path id="path-Nagaland" d="M555,210 L585,215 L575,250 L550,245 Z" fill="url(#gradGreen)" class="state-poly" />
-          <path id="path-Manipur" d="M550,250 L580,255 L570,285 L545,280 Z" fill="url(#gradGreen)" class="state-poly" />
-          <path id="path-Mizoram" d="M530,280 L560,280 L550,325 L525,315 Z" fill="url(#gradGreen)" class="state-poly" />
-
-          <!-- 🟡 YELLOW OCHRE (20% - 39%): Rajasthan, Bihar, Haryana, Uttarakhand, MP, Chhattisgarh, Odisha, Karnataka, AP, Telangana, TN, Assam, Meghalaya, Tripura -->
-          <path id="path-Uttarakhand" d="M265,150 L315,140 L310,185 L260,185 Z" fill="url(#gradYellowOchre)" class="state-poly" />
-          <path id="path-Haryana" d="M220,165 L255,160 L250,205 L215,200 Z" fill="url(#gradYellowOchre)" class="state-poly" />
-          <path id="path-Rajasthan" d="M130,200 L215,185 L235,270 L180,310 L125,250 Z" fill="url(#gradYellowOchre)" class="state-poly" />
-          <path id="path-Bihar" d="M350,210 L430,215 L420,270 L355,265 Z" fill="url(#gradYellowOchre)" class="state-poly" />
-          <path id="path-Madhya Pradesh" d="M200,275 L335,265 L345,345 L225,365 L185,320 Z" fill="url(#gradYellowOchre)" class="state-poly" />
-          <path id="path-Chhattisgarh" d="M315,325 L365,315 L360,420 L310,395 Z" fill="url(#gradYellowOchre)" class="state-poly" />
-          <path id="path-Odisha" d="M355,335 L430,335 L395,430 L345,395 Z" fill="url(#gradYellowOchre)" class="state-poly" />
-          <path id="path-Karnataka" d="M190,455 L255,450 L250,565 L195,540 Z" fill="url(#gradYellowOchre)" class="state-poly" />
-          <path id="path-Telangana" d="M260,410 L325,405 L315,475 L255,460 Z" fill="url(#gradYellowOchre)" class="state-poly" />
-          <path id="path-Andhra Pradesh" d="M275,455 L350,425 L320,555 L270,525 Z" fill="url(#gradYellowOchre)" class="state-poly" />
-          <path id="path-Tamil Nadu" d="M235,545 L295,540 L270,645 L220,625 Z" fill="url(#gradYellowOchre)" class="state-poly" />
-          <path id="path-Assam" d="M470,205 L555,200 L545,250 L460,250 Z" fill="url(#gradYellowOchre)" class="state-poly" />
-          <path id="path-Meghalaya" d="M465,245 L515,245 L510,270 L460,265 Z" fill="url(#gradYellowOchre)" class="state-poly" />
-          <path id="path-Tripura" d="M505,275 L528,275 L520,310 L498,300 Z" fill="url(#gradYellowOchre)" class="state-poly" />
-
-          <!-- 🔴 RED (40% - 49%): Maharashtra, West Bengal, Gujarat, Jharkhand, Punjab -->
-          <path id="path-Punjab" d="M190,135 L230,125 L235,170 L185,175 Z" fill="url(#gradRed)" class="state-poly" />
-          <path id="path-Gujarat" d="M95,280 L165,280 L180,345 L115,365 L85,320 Z" fill="url(#gradRed)" class="state-poly" />
-          <path id="path-Maharashtra" d="M165,350 L275,345 L295,445 L190,465 L155,395 Z" fill="url(#gradRed)" class="state-poly" />
-          <path id="path-Jharkhand" d="M365,265 L435,265 L425,325 L360,315 Z" fill="url(#gradRed)" class="state-poly" />
-          <path id="path-West Bengal" d="M425,235 L450,230 L455,340 L410,335 L425,285 Z" fill="url(#gradRed)" class="state-poly" />
-
-          <!-- 🟣 PURPLE (50%+ Extreme): Uttar Pradesh (55%), Delhi (52%) -->
-          <path id="path-Uttar Pradesh" d="M245,185 L350,180 L365,260 L255,275 Z" fill="url(#gradPurple)" class="state-poly" />
-          <circle id="path-Delhi" cx="248" cy="188" r="8" fill="url(#gradPurple)" stroke="#ffffff" stroke-width="2" class="state-poly" />
-
-          <!-- ISLANDS -->
-          <g fill="url(#gradGreen)">
-            <ellipse cx="505" cy="530" rx="3" ry="8" />
-            <ellipse cx="508" cy="555" rx="3" ry="12" />
-            <ellipse cx="510" cy="580" rx="3" ry="8" />
-          </g>
-
-          <!-- ================= TARGET BULLSEYE PIN MARKERS ================= -->
-          <!-- Pin 1: Kanpur (68% - Purple) -->
-          <g class="cursor-pointer" onclick="selectAndJump('Kanpur')">
-            <circle cx="280" cy="225" r="14" fill="none" stroke="#a855f7" stroke-width="1.5" class="pin-ring" />
-            <circle cx="280" cy="225" r="10" fill="#ffffff" stroke="#a855f7" stroke-width="2.5" />
-            <circle cx="280" cy="225" r="4" fill="#7e22ce" />
-          </g>
-
-          <!-- Pin 2: Delhi NCR (52% - Purple) -->
-          <g class="cursor-pointer" onclick="selectAndJump('New Delhi')">
-            <circle cx="248" cy="188" r="14" fill="none" stroke="#a855f7" stroke-width="1.5" class="pin-ring" />
-            <circle cx="248" cy="188" r="10" fill="#ffffff" stroke="#a855f7" stroke-width="2.5" />
-            <circle cx="248" cy="188" r="4" fill="#7e22ce" />
-          </g>
-
-          <!-- Pin 3: Kolkata (46% - Red) -->
-          <g class="cursor-pointer" onclick="selectAndJump('Kolkata')">
-            <circle cx="435" cy="305" r="14" fill="none" stroke="#ef4444" stroke-width="1.5" class="pin-ring" />
-            <circle cx="435" cy="305" r="10" fill="#ffffff" stroke="#ef4444" stroke-width="2.5" />
-            <circle cx="435" cy="305" r="4" fill="#b91c1c" />
-          </g>
-
-          <!-- Pin 4: Bengaluru (26% - Yellow Ochre) -->
-          <g class="cursor-pointer" onclick="selectAndJump('Bengaluru')">
-            <circle cx="230" cy="510" r="14" fill="none" stroke="#f59e0b" stroke-width="1.5" class="pin-ring" />
-            <circle cx="230" cy="510" r="10" fill="#ffffff" stroke="#f59e0b" stroke-width="2.5" />
-            <circle cx="230" cy="510" r="4" fill="#b45309" />
-          </g>
-
-          <!-- Pin 5: Kerala (14% - Green) -->
-          <g class="cursor-pointer" onclick="selectAndJump('Kochi')">
-            <circle cx="210" cy="590" r="14" fill="none" stroke="#10b981" stroke-width="1.5" class="pin-ring" />
-            <circle cx="210" cy="590" r="10" fill="#ffffff" stroke="#10b981" stroke-width="2.5" />
-            <circle cx="210" cy="590" r="4" fill="#047857" />
-          </g>
-        </svg>
+      <!-- D3 GEOGRAPHIC MAP CONTAINER -->
+      <div id="d3-india-map" class="w-full max-w-2xl flex justify-center relative min-h-[500px]">
+        <!-- Vector Map rendered via D3 -->
       </div>
 
       <!-- EXACT 4-TIER FLOATING BOTTOM LEGEND PILL -->
-      <div class="mt-4 flex flex-wrap items-center justify-center gap-4 bg-[#09182b]/95 border border-slate-700/90 px-6 py-2.5 rounded-2xl text-xs font-bold shadow-2xl backdrop-blur">
+      <div class="mt-4 flex flex-wrap items-center justify-center gap-4 bg-[#091a2f]/95 border border-slate-700/90 px-6 py-2.5 rounded-2xl text-xs font-bold shadow-2xl backdrop-blur">
         <span class="text-slate-400 font-extrabold uppercase tracking-wider text-[11px] mr-1">Risk</span>
         
         <div class="flex items-center gap-1.5">
@@ -266,7 +159,7 @@
       </p>
     </div>
 
-    <div class="bg-[#081626] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+    <div class="bg-[#08172c] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
       <!-- Search Input -->
       <div class="relative mb-4">
         <i data-lucide="map-pin" class="w-5 h-5 absolute left-4 top-4 text-cyan-400"></i>
@@ -274,7 +167,7 @@
           type="text" 
           id="search-input"
           placeholder="Type e.g. Kanpur, Kolkata, Vapi, Ludhiana, Delhi, Bengaluru..."
-          class="w-full bg-[#040b14] border border-slate-700 rounded-2xl pl-12 pr-28 py-3.5 text-base focus:outline-none focus:border-cyan-400 text-white placeholder-slate-500 transition"
+          class="w-full bg-[#030a14] border border-slate-700 rounded-2xl pl-12 pr-28 py-3.5 text-base focus:outline-none focus:border-cyan-400 text-white placeholder-slate-500 transition"
           onkeypress="if(event.key === 'Enter') handleSearchSubmit()"
         />
         <button 
@@ -304,7 +197,7 @@
       </div>
 
       <!-- SUCCESS STATE (VERIFIED CARD) -->
-      <div id="search-success" class="hidden p-5 rounded-2xl bg-[#040b14] border mb-6">
+      <div id="search-success" class="hidden p-5 rounded-2xl bg-[#030a14] border mb-6">
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div class="flex items-center gap-3">
             <div id="success-dot" class="w-3.5 h-3.5 rounded-full shrink-0"></div>
@@ -350,7 +243,7 @@
   <!-- PAGE 3: DATA & STATS TELEMETRY REPORT                    -->
   <!-- ======================================================== -->
   <div id="page-3" class="page-screen max-w-5xl mx-auto px-4 py-8">
-    <div class="bg-[#081626] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl mb-8">
+    <div class="bg-[#08172c] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl mb-8">
       <!-- Title Header -->
       <div class="flex items-center justify-between flex-wrap gap-4 border-b border-slate-800 pb-6 mb-6">
         <div>
@@ -395,31 +288,31 @@
         </h4>
 
         <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 text-center text-xs">
-          <div class="p-3 bg-[#040b14] rounded-xl border border-slate-800">
+          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800">
             <span class="text-slate-400">Arsenic (As)</span>
             <div class="text-base font-black text-red-400 mt-1" id="m-as">20%</div>
           </div>
-          <div class="p-3 bg-[#040b14] rounded-xl border border-slate-800">
+          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800">
             <span class="text-slate-400">Chromium (Cr)</span>
             <div class="text-base font-black text-purple-400 mt-1" id="m-cr">35%</div>
           </div>
-          <div class="p-3 bg-[#040b14] rounded-xl border border-slate-800">
+          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800">
             <span class="text-slate-400">Lead (Pb)</span>
             <div class="text-base font-black text-orange-400 mt-1" id="m-pb">28%</div>
           </div>
-          <div class="p-3 bg-[#040b14] rounded-xl border border-slate-800">
+          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800">
             <span class="text-slate-400">Cadmium (Cd)</span>
             <div class="text-base font-black text-yellow-400 mt-1" id="m-cd">10%</div>
           </div>
-          <div class="p-3 bg-[#040b14] rounded-xl border border-slate-800">
+          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800">
             <span class="text-slate-400">Zinc (Zn)</span>
             <div class="text-base font-black text-cyan-400 mt-1" id="m-zn">4%</div>
           </div>
-          <div class="p-3 bg-[#040b14] rounded-xl border border-slate-800">
+          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800">
             <span class="text-slate-400">Copper (Cu)</span>
             <div class="text-base font-black text-amber-400 mt-1" id="m-cu">2%</div>
           </div>
-          <div class="p-3 bg-[#040b14] rounded-xl border border-slate-800">
+          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800">
             <span class="text-slate-400">Nickel (Ni)</span>
             <div class="text-base font-black text-indigo-400 mt-1" id="m-ni">1%</div>
           </div>
@@ -451,7 +344,7 @@
       </div>
 
       <!-- Discharge Source -->
-      <div class="mt-6 p-4 rounded-xl bg-[#040b14] border border-slate-800 text-xs text-slate-300">
+      <div class="mt-6 p-4 rounded-xl bg-[#030a14] border border-slate-800 text-xs text-slate-300">
         <b class="text-white">Industrial & Municipal Discharge Source:</b> <span id="p3-source-desc">Tannery effluent (~1000 units) + Ganga discharge</span>
       </div>
     </div>
@@ -479,7 +372,7 @@
   <!-- PAGE 4: SOLUTIONS & LIFE TRANSFORMATION (BEFORE/AFTER)   -->
   <!-- ======================================================== -->
   <div id="page-4" class="page-screen max-w-5xl mx-auto px-4 py-8">
-    <div class="bg-[#081626] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl mb-8">
+    <div class="bg-[#08172c] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl mb-8">
       <div class="text-center max-w-2xl mx-auto mb-8">
         <div class="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
           <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Phase 4: Life Transformation & Engineering
@@ -554,7 +447,7 @@
     </div>
   </div>
 
-  <!-- CSV DATASET & FULL ENGINE LOGIC -->
+  <!-- CSV DATASET & REAL HIGH-RES GEOGRAPHY ENGINE -->
   <script>
     const csvRaw = `location_name,location_type,state_ut,city_type,surface_water_pollution_pct,groundwater_pollution_pct,arsenic_as_pct,chromium_cr_pct,lead_pb_pct,cadmium_cd_pct,zinc_zn_pct,copper_cu_pct,nickel_ni_pct,bod_exceedance_pct,cod_exceedance_pct,do_exceedance_pct,ph_exceedance_pct,tds_exceedance_pct,primary_pollutant_source,risk_level,key_heavy_metal
 Andhra Pradesh,State,Andhra Pradesh,State,38,28,38,18,22,12,6,2,2,38,44,32,26,48,State-level aggregate,High,Arsenic
@@ -734,41 +627,124 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
 
     let currentSelected = allRecords.find(r => r.name === "Kanpur") || allRecords[0];
 
-    // Strictly returns the 4-tier style based on user's exact specification
     function getTier(pct) {
-      if (pct >= 50) return { label: "🟣 Extreme 50%+", badge: "bg-purple-500/20 text-purple-300 border-purple-500/40", text: "text-purple-400", dot: "bg-purple-500 shadow-md shadow-purple-500/50" };
-      if (pct >= 40) return { label: "🔴 Critical 40–49%", badge: "bg-red-500/20 text-red-300 border-red-500/40", text: "text-red-400", dot: "bg-red-500 shadow-md shadow-red-500/50" };
-      if (pct >= 20) return { label: "🟡 Moderate 20–39%", badge: "bg-amber-500/20 text-amber-300 border-amber-500/40", text: "text-amber-400", dot: "bg-amber-500 shadow-md shadow-amber-500/50" };
-      return { label: "🟢 Good <20%", badge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40", text: "text-emerald-400", dot: "bg-emerald-500 shadow-md shadow-emerald-500/50" };
+      if (pct >= 50) return { fill: "#a855f7", label: "🟣 Extreme 50%+", badge: "bg-purple-500/20 text-purple-300 border-purple-500/40", text: "text-purple-400", dot: "bg-purple-500 shadow-md shadow-purple-500/50" };
+      if (pct >= 40) return { fill: "#ef4444", label: "🔴 Critical 40–49%", badge: "bg-red-500/20 text-red-300 border-red-500/40", text: "text-red-400", dot: "bg-red-500 shadow-md shadow-red-500/50" };
+      if (pct >= 20) return { fill: "#d97706", label: "🟡 Moderate 20–39%", badge: "bg-amber-500/20 text-amber-300 border-amber-500/40", text: "text-amber-400", dot: "bg-amber-500 shadow-md shadow-amber-500/50" };
+      return { fill: "#10b981", label: "🟢 Good <20%", badge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40", text: "text-emerald-400", dot: "bg-emerald-500 shadow-md shadow-emerald-500/50" };
     }
 
-    // Setup interactive map hovering & clicks
-    function setupMapInteractions() {
-      document.querySelectorAll('.state-poly').forEach(el => {
-        const stateName = el.id.replace('path-', '');
-        const record = allRecords.find(r => r.name === stateName || r.stateut === stateName);
+    // Load and Render Real Geographic Curved India GeoJSON via D3
+    function renderRealisticIndiaMap() {
+      const container = document.getElementById('d3-india-map');
+      container.innerHTML = "";
 
-        el.addEventListener('mouseenter', (e) => {
-          if (record) {
-            const tooltip = document.getElementById('map-tooltip');
-            const tier = getTier(record.surface);
-            document.getElementById('tt-name').textContent = record.name;
-            document.getElementById('tt-type').textContent = `${record.type} • ${tier.label}`;
-            document.getElementById('tt-score').textContent = record.surface + '%';
-            document.getElementById('tt-score').className = `text-base font-black ${tier.text}`;
-            document.getElementById('tt-metal').textContent = record.metal;
-            tooltip.classList.remove('hidden');
-          }
-        });
+      const width = 600;
+      const height = 550;
 
-        el.addEventListener('mouseleave', () => {
-          document.getElementById('map-tooltip').classList.add('hidden');
-        });
+      const svg = d3.select("#d3-india-map")
+        .append("svg")
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .attr("class", "w-full h-auto max-h-[500px] drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]");
 
-        el.addEventListener('click', () => {
-          if (record) {
-            currentSelected = record;
-            goToPage(3);
+      const projection = d3.geoMercator()
+        .center([82.8, 22.5])
+        .scale(1000)
+        .translate([width / 2, height / 2]);
+
+      const path = d3.geoPath().projection(projection);
+
+      // Load Official India GeoJSON with smooth geographic curves
+      d3.json("https://cdn.jsdelivr.net/gh/Subhash9325/GeoJson-Data-of-Indian-States@master/Indian_States").then(geoData => {
+        
+        // Draw State Boundaries
+        svg.selectAll(".state-path")
+          .data(geoData.features)
+          .enter()
+          .append("path")
+          .attr("d", path)
+          .attr("class", "state-path")
+          .attr("fill", d => {
+            const stateName = d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || "";
+            const match = allRecords.find(r => 
+              r.name.toLowerCase() === stateName.toLowerCase() || 
+              r.stateut.toLowerCase() === stateName.toLowerCase()
+            );
+            return match ? getTier(match.surface).fill : "#10b981";
+          })
+          .on("mouseenter", function(event, d) {
+            const stateName = d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || "";
+            const match = allRecords.find(r => 
+              r.name.toLowerCase() === stateName.toLowerCase() || 
+              r.stateut.toLowerCase() === stateName.toLowerCase()
+            );
+            if (match) {
+              const tooltip = document.getElementById('map-tooltip');
+              const tier = getTier(match.surface);
+              document.getElementById('tt-name').textContent = match.name;
+              document.getElementById('tt-type').textContent = `${match.type} • ${tier.label}`;
+              document.getElementById('tt-score').textContent = match.surface + '%';
+              document.getElementById('tt-score').className = `text-base font-black ${tier.text}`;
+              document.getElementById('tt-metal').textContent = match.metal;
+              tooltip.classList.remove('hidden');
+            }
+          })
+          .on("mouseleave", function() {
+            document.getElementById('map-tooltip').classList.add('hidden');
+          })
+          .on("click", function(event, d) {
+            const stateName = d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || "";
+            const match = allRecords.find(r => 
+              r.name.toLowerCase() === stateName.toLowerCase() || 
+              r.stateut.toLowerCase() === stateName.toLowerCase()
+            );
+            if (match) {
+              currentSelected = match;
+              goToPage(3);
+            }
+          });
+
+        // Add Realistic Target Bullseye Hotspot Pins
+        const pins = [
+          { name: "Kanpur", coords: [80.3319, 26.4499], color: "#a855f7" },
+          { name: "New Delhi", coords: [77.2090, 28.6139], color: "#a855f7" },
+          { name: "Kolkata", coords: [88.3639, 22.5726], color: "#ef4444" },
+          { name: "Bengaluru", coords: [77.5946, 12.9716], color: "#f59e0b" },
+          { name: "Kochi", coords: [76.2673, 9.9312], color: "#10b981" }
+        ];
+
+        pins.forEach(pin => {
+          const pt = projection(pin.coords);
+          if (pt) {
+            const g = svg.append("g")
+              .attr("class", "cursor-pointer")
+              .on("click", () => selectAndJump(pin.name));
+
+            // Pulsing Outer Ring
+            g.append("circle")
+              .attr("cx", pt[0])
+              .attr("cy", pt[1])
+              .attr("r", 12)
+              .attr("fill", "none")
+              .attr("stroke", pin.color)
+              .attr("stroke-width", 1.5)
+              .attr("class", "pin-pulse");
+
+            // Solid White Bullseye
+            g.append("circle")
+              .attr("cx", pt[0])
+              .attr("cy", pt[1])
+              .attr("r", 7)
+              .attr("fill", "#ffffff")
+              .attr("stroke", pin.color)
+              .attr("stroke-width", 2);
+
+            // Center Colored Core
+            g.append("circle")
+              .attr("cx", pt[0])
+              .attr("cy", pt[1])
+              .attr("r", 3)
+              .attr("fill", pin.color);
           }
         });
       });
@@ -911,8 +887,8 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       lucide.createIcons();
     }
 
-    // Init
-    setupMapInteractions();
+    // Init with real geographic map
+    renderRealisticIndiaMap();
     lucide.createIcons();
   </script>
 </body>
