@@ -1,201 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- ========================================================================== -->
+<!-- SECTION 1: CSS & LIBRARIES (Tailwind, Lucide, D3, Custom Animations)       -->
+<!-- ========================================================================== -->
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HEMORA - National Water Quality Intelligence Platform</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- High-Precision Geographic Vector Engine -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     .page-screen { display: none; }
-    .page-screen.active { display: block; animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-    .map-canvas {
-      background: radial-gradient(circle at center, #0e294b 0%, #08172c 70%, #030a14 100%);
-    }
-    .state-path {
-      transition: all 0.2s ease;
-      cursor: pointer;
-      stroke: #071526;
-      stroke-width: 0.8;
-    }
-    .state-path:hover {
-      filter: brightness(1.25) drop-shadow(0 0 10px rgba(255,255,255,0.4));
-      stroke: #ffffff;
-      stroke-width: 1.5;
-    }
-    .state-label {
-      font-size: 7.5px;
-      font-weight: 800;
-      fill: #ffffff;
-      text-anchor: middle;
-      pointer-events: none;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.9);
-      letter-spacing: 0.2px;
-    }
-    .city-pin {
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-    .city-pin:hover {
-      transform: scale(1.5);
-    }
-    .city-pulse {
-      animation: pulse-city 2s infinite ease-out;
-      transform-origin: center;
-    }
-    @keyframes pulse-city {
-      0% { r: 3; opacity: 1; }
-      100% { r: 9; opacity: 0; }
-    }
+    .page-screen.active { display: block; animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    .map-canvas { background: radial-gradient(circle at center, #0e294b 0%, #08172c 70%, #030a14 100%); }
+    .state-path { transition: all 0.2s ease; cursor: pointer; stroke: #071526; stroke-width: 0.8; }
+    .state-path:hover { filter: brightness(1.25) drop-shadow(0 0 10px rgba(255,255,255,0.4)); stroke: #ffffff; stroke-width: 1.5; }
+    .state-label { font-size: 7.5px; font-weight: 800; fill: #ffffff; text-anchor: middle; pointer-events: none; text-shadow: 0 1px 3px rgba(0,0,0,0.9); }
+    .city-pin { cursor: pointer; transition: transform 0.2s ease; }
+    .city-pin:hover { transform: scale(1.5); }
+    .city-pulse { animation: pulse-city 2s infinite ease-out; transform-origin: center; }
+    @keyframes pulse-city { 0% { r: 3; opacity: 1; } 100% { r: 9; opacity: 0; } }
   </style>
 </head>
 <body class="bg-[#030a14] text-slate-100 font-sans min-h-screen selection:bg-cyan-500 selection:text-black">
 
-  <!-- TOP HEADER -->
+  <!-- ========================================================================== -->
+  <!-- SECTION 2: HTML - HEADER & 4-PHASE MULTI-PAGE APPLICATION                  -->
+  <!-- ========================================================================== -->
+  <!-- HEADER -->
   <header class="border-b border-slate-800/80 bg-[#08172c]/90 backdrop-blur sticky top-0 z-50 px-6 py-3.5">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-2.5 cursor-pointer" onclick="goToPage(1)">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-400 via-purple-500 to-indigo-600 flex items-center justify-center font-black text-black text-sm shadow-md shadow-cyan-500/20">
-          H
-        </div>
-        <span class="font-extrabold text-lg tracking-wider bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">
-          HEMORA
-        </span>
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-400 via-purple-500 to-indigo-600 flex items-center justify-center font-black text-black text-sm shadow-md shadow-cyan-500/20">H</div>
+        <span class="font-extrabold text-lg tracking-wider bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">HEMORA</span>
       </div>
-
-      <!-- Stepper Indicator -->
       <div class="hidden md:flex items-center gap-2 text-xs font-semibold">
-        <span id="step-pill-1" class="px-3 py-1 rounded-full bg-cyan-500 text-slate-950 font-bold transition-all">1. National Map</span>
-        <span class="text-slate-600">→</span>
-        <span id="step-pill-2" class="px-3 py-1 rounded-full bg-slate-900 text-slate-400 transition-all">2. Search Location</span>
-        <span class="text-slate-600">→</span>
-        <span id="step-pill-3" class="px-3 py-1 rounded-full bg-slate-900 text-slate-400 transition-all">3. CSV Data Telemetry</span>
-        <span class="text-slate-600">→</span>
+        <span id="step-pill-1" class="px-3 py-1 rounded-full bg-cyan-500 text-slate-950 font-bold transition-all">1. National Map</span><span class="text-slate-600">→</span>
+        <span id="step-pill-2" class="px-3 py-1 rounded-full bg-slate-900 text-slate-400 transition-all">2. Search Location</span><span class="text-slate-600">→</span>
+        <span id="step-pill-3" class="px-3 py-1 rounded-full bg-slate-900 text-slate-400 transition-all">3. CSV Data Telemetry</span><span class="text-slate-600">→</span>
         <span id="step-pill-4" class="px-3 py-1 rounded-full bg-slate-900 text-slate-400 transition-all">4. Remediation Plan</span>
       </div>
-
-      <span class="text-xs bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 rounded-full font-semibold">
-        🇮🇳 115+ Verified Locations Active
-      </span>
+      <span class="text-xs bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 rounded-full font-semibold">🇮🇳 115+ Verified Locations</span>
     </div>
   </header>
 
-  <!-- ======================================================== -->
-  <!-- PAGE 1: REAL INDIA MAP WITH LABELS & CITIES              -->
-  <!-- ======================================================== -->
+  <!-- PAGE 1: INDIA MAP -->
   <div id="page-1" class="page-screen active max-w-7xl mx-auto px-4 py-6">
-    
-    <!-- Top Pill Floating Banner -->
     <div class="flex justify-center mb-3">
       <div class="inline-flex items-center gap-2 bg-[#0c223c]/90 border border-slate-700/60 text-slate-200 px-5 py-2 rounded-full text-xs font-semibold shadow-xl backdrop-blur">
-        <span class="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span>
-        India water quality · city and state/UT risk categories
+        <span class="w-2 h-2 rounded-full bg-purple-400 animate-ping"></span> India water quality · city and state/UT risk categories
       </div>
     </div>
-
-    <!-- MAIN MAP CANVAS CONTAINER -->
     <div class="map-canvas rounded-3xl border border-slate-800/80 p-4 sm:p-6 relative shadow-2xl overflow-hidden min-h-[640px] flex flex-col items-center justify-center">
-
-      <!-- TOOLTIP OVERLAY (DYNAMIC ON HOVER) -->
+      <!-- Tooltip -->
       <div id="map-tooltip" class="hidden absolute top-6 right-6 bg-[#0c2038]/95 border border-slate-700 p-4 rounded-2xl shadow-2xl text-xs z-30 pointer-events-none min-w-[220px] backdrop-blur">
         <div class="font-extrabold text-white text-sm" id="tt-name">Uttar Pradesh</div>
         <div class="text-slate-400 mt-0.5 text-[11px]" id="tt-type">State Category</div>
-        <div class="mt-2 flex items-center justify-between border-t border-slate-800 pt-2">
-          <span class="text-slate-300">Surface Pollution:</span>
-          <b class="text-base" id="tt-score">55%</b>
-        </div>
-        <div class="text-slate-400 mt-1 flex items-center justify-between">
-          <span>Primary Metal:</span>
-          <b class="text-white" id="tt-metal">Chromium</b>
-        </div>
-        <div class="text-[10px] text-cyan-400 font-bold mt-2 text-center bg-cyan-500/10 py-1 rounded-lg">
-          Click to view full data & stats →
-        </div>
+        <div class="mt-2 flex items-center justify-between border-t border-slate-800 pt-2"><span class="text-slate-300">Surface Pollution:</span><b class="text-base" id="tt-score">55%</b></div>
+        <div class="text-slate-400 mt-1 flex items-center justify-between"><span>Primary Metal:</span><b class="text-white" id="tt-metal">Chromium</b></div>
+        <div class="text-[10px] text-cyan-400 font-bold mt-2 text-center bg-cyan-500/10 py-1 rounded-lg">Click to view full data & stats →</div>
       </div>
-
-      <!-- D3 GEOGRAPHIC MAP CONTAINER -->
-      <div id="d3-india-map" class="w-full max-w-2xl flex justify-center relative min-h-[520px]">
-        <!-- Vector Map rendered via D3 -->
-      </div>
-
-      <!-- EXACT 4-TIER FLOATING BOTTOM LEGEND PILL -->
+      <!-- D3 Map Container -->
+      <div id="d3-india-map" class="w-full max-w-2xl flex justify-center relative min-h-[520px]"></div>
+      <!-- 4-Tier Legend -->
       <div class="mt-3 flex flex-wrap items-center justify-center gap-4 bg-[#091a2f]/95 border border-slate-700/90 px-6 py-2.5 rounded-2xl text-xs font-bold shadow-2xl backdrop-blur">
         <span class="text-slate-400 font-extrabold uppercase tracking-wider text-[11px] mr-1">Risk</span>
-        
-        <div class="flex items-center gap-1.5">
-          <span class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></span>
-          <span class="text-emerald-400 font-bold">🟢 Good &lt; 20%</span>
-        </div>
-
-        <div class="flex items-center gap-1.5">
-          <span class="w-3 h-3 rounded-full bg-amber-500 shadow-sm shadow-amber-500/50"></span>
-          <span class="text-amber-400 font-bold">🟡 Moderate 20–39%</span>
-        </div>
-
-        <div class="flex items-center gap-1.5">
-          <span class="w-3 h-3 rounded-full bg-red-500 shadow-sm shadow-red-500/50"></span>
-          <span class="text-red-400 font-bold">🔴 Critical 40–49%</span>
-        </div>
-
-        <div class="flex items-center gap-1.5">
-          <span class="w-3 h-3 rounded-full bg-purple-500 shadow-sm shadow-purple-500/50"></span>
-          <span class="text-purple-400 font-bold">🟣 Extreme 50%+</span>
-        </div>
+        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></span><span class="text-emerald-400 font-bold">🟢 Good &lt; 20%</span></div>
+        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500 shadow-sm shadow-amber-500/50"></span><span class="text-amber-400 font-bold">🟡 Moderate 20–39%</span></div>
+        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-red-500 shadow-sm shadow-red-500/50"></span><span class="text-red-400 font-bold">🔴 Critical 40–49%</span></div>
+        <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-purple-500 shadow-sm shadow-purple-500/50"></span><span class="text-purple-400 font-bold">🟣 Extreme 50%+</span></div>
       </div>
     </div>
-
-    <!-- PROMINENT NEXT BUTTON -->
     <div class="text-center mt-6">
-      <button 
-        onclick="goToPage(2)"
-        class="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-500 via-teal-400 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black px-10 py-4 rounded-full text-base shadow-xl shadow-cyan-500/20 hover:scale-105 transition-all cursor-pointer"
-      >
-        <span>Search Specific City or District</span>
-        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+      <button onclick="goToPage(2)" class="inline-flex items-center gap-3 bg-gradient-to-r from-cyan-500 via-teal-400 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black px-10 py-4 rounded-full text-base shadow-xl shadow-cyan-500/20 hover:scale-105 transition-all cursor-pointer">
+        <span>Search Specific City or District</span><i data-lucide="arrow-right" class="w-5 h-5"></i>
       </button>
     </div>
   </div>
 
-  <!-- ======================================================== -->
-  <!-- PAGE 2: SEARCH ENGINE & VERIFICATION LOOP                -->
-  <!-- ======================================================== -->
+  <!-- PAGE 2: SEARCH ENGINE -->
   <div id="page-2" class="page-screen max-w-3xl mx-auto px-4 py-12">
     <div class="text-center mb-8">
-      <div class="inline-flex items-center gap-2 bg-purple-500/10 text-purple-400 border border-purple-500/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
-        <i data-lucide="search" class="w-4 h-4"></i> Phase 2: Location Search Engine
-      </div>
-      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">
-        Search Your City, State or District
-      </h2>
-      <p class="text-slate-400 text-sm mt-2">
-        Type any location across India to pull verified heavy metal & contamination telemetry.
-      </p>
+      <div class="inline-flex items-center gap-2 bg-purple-500/10 text-purple-400 border border-purple-500/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-3"><i data-lucide="search" class="w-4 h-4"></i> Phase 2: Location Search Engine</div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Search Your City, State or District</h2>
+      <p class="text-slate-400 text-sm mt-2">Type any location across India to pull verified heavy metal & contamination telemetry.</p>
     </div>
-
     <div class="bg-[#08172c] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
-      <!-- Search Input -->
       <div class="relative mb-4">
         <i data-lucide="map-pin" class="w-5 h-5 absolute left-4 top-4 text-cyan-400"></i>
-        <input 
-          type="text" 
-          id="search-input"
-          placeholder="Type e.g. Kanpur, Kolkata, Vapi, Ludhiana, Delhi, Bengaluru, Srinagar, Leh..."
-          class="w-full bg-[#030a14] border border-slate-700 rounded-2xl pl-12 pr-28 py-3.5 text-base focus:outline-none focus:border-cyan-400 text-white placeholder-slate-500 transition"
-          onkeypress="if(event.key === 'Enter') handleSearchSubmit()"
-        />
-        <button 
-          onclick="handleSearchSubmit()"
-          class="absolute right-2 top-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-5 py-2 rounded-xl text-xs transition cursor-pointer"
-        >
-          Verify
-        </button>
+        <input type="text" id="search-input" placeholder="Type e.g. Kanpur, Kolkata, Vapi, Ludhiana, Delhi, Bengaluru, Srinagar, Leh..." class="w-full bg-[#030a14] border border-slate-700 rounded-2xl pl-12 pr-28 py-3.5 text-base focus:outline-none focus:border-cyan-400 text-white placeholder-slate-500 transition" onkeypress="if(event.key === 'Enter') handleSearchSubmit()"/>
+        <button onclick="handleSearchSubmit()" class="absolute right-2 top-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-5 py-2 rounded-xl text-xs transition cursor-pointer">Verify</button>
       </div>
-
-      <!-- Quick Suggestion Badges -->
       <div class="flex items-center gap-1.5 flex-wrap mb-6 text-xs">
         <span class="text-slate-500 font-medium">Quick examples:</span>
         <button onclick="quickPick('Kanpur')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-purple-300">Kanpur (🟣 50%+)</button>
@@ -204,269 +100,110 @@
         <button onclick="quickPick('Srinagar')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-emerald-300">Srinagar (🟢 J&K)</button>
         <button onclick="quickPick('Leh')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-emerald-300">Leh (🟢 Ladakh)</button>
       </div>
-
-      <!-- ERROR STATE (NOT FOUND LOOP) -->
       <div id="search-error" class="hidden p-4 rounded-2xl bg-red-950/40 border border-red-500/40 text-red-300 text-sm mb-6 flex items-start gap-3">
         <i data-lucide="alert-circle" class="w-5 h-5 text-red-400 shrink-0 mt-0.5"></i>
-        <div>
-          <b>Your location is currently not found.</b>
-          <p class="text-xs text-slate-400 mt-1">Please try another Indian state, district, or industrial hub from our database (e.g. Ludhiana, Varanasi, Ahmedabad, Patna, Chennai, Jaipur).</p>
-        </div>
+        <div><b>Your location is currently not found.</b><p class="text-xs text-slate-400 mt-1">Please try another Indian state, district, or industrial hub from our database (e.g. Ludhiana, Varanasi, Ahmedabad, Patna, Chennai, Jaipur).</p></div>
       </div>
-
-      <!-- SUCCESS STATE (VERIFIED CARD) -->
       <div id="search-success" class="hidden p-5 rounded-2xl bg-[#030a14] border mb-6">
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div class="flex items-center gap-3">
             <div id="success-dot" class="w-3.5 h-3.5 rounded-full shrink-0"></div>
-            <div>
-              <span class="text-xs font-bold uppercase tracking-wider text-slate-400" id="success-category">State / Industrial Hub</span>
-              <div class="text-xl font-black text-white" id="success-location-title">Kanpur, Uttar Pradesh</div>
-            </div>
+            <div><span class="text-xs font-bold uppercase tracking-wider text-slate-400" id="success-category">State / Industrial Hub</span><div class="text-xl font-black text-white" id="success-location-title">Kanpur, Uttar Pradesh</div></div>
           </div>
-          <span id="success-risk-badge" class="text-xs px-3 py-1 rounded-full font-black uppercase border">
-            🟣 Extreme 50%+
-          </span>
+          <span id="success-risk-badge" class="text-xs px-3 py-1 rounded-full font-black uppercase border">🟣 Extreme 50%+</span>
         </div>
         <div class="mt-3 text-xs text-slate-400 flex items-center gap-2 border-t border-slate-800 pt-3">
-          <span>⚠️ Key Heavy Metal: <b class="text-white" id="success-metal">Chromium</b></span>
-          <span>•</span>
-          <span>Source: <span class="text-slate-300" id="success-source">Tannery effluent (~1000 units)</span></span>
+          <span>⚠️ Key Heavy Metal: <b class="text-white" id="success-metal">Chromium</b></span><span>•</span><span>Source: <span class="text-slate-300" id="success-source">Tannery effluent (~1000 units)</span></span>
         </div>
       </div>
-
-      <!-- NAVIGATION -->
       <div class="flex items-center justify-between pt-4 border-t border-slate-800">
-        <button 
-          onclick="goToPage(1)"
-          class="flex items-center gap-2 text-slate-400 hover:text-white text-sm font-semibold transition"
-        >
-          <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to National Map
-        </button>
-
-        <button 
-          id="btn-goto-p3"
-          onclick="goToPage(3)"
-          disabled
-          class="inline-flex items-center gap-2 bg-slate-800 text-slate-500 font-black px-7 py-3.5 rounded-full text-sm transition-all cursor-not-allowed"
-        >
-          <span>Next: View Detailed Stats</span>
-          <i data-lucide="arrow-right" class="w-4 h-4"></i>
-        </button>
+        <button onclick="goToPage(1)" class="flex items-center gap-2 text-slate-400 hover:text-white text-sm font-semibold transition"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to National Map</button>
+        <button id="btn-goto-p3" onclick="goToPage(3)" disabled class="inline-flex items-center gap-2 bg-slate-800 text-slate-500 font-black px-7 py-3.5 rounded-full text-sm transition-all cursor-not-allowed"><span>Next: View Detailed Stats</span><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
       </div>
     </div>
   </div>
 
-  <!-- ======================================================== -->
-  <!-- PAGE 3: DATA & STATS TELEMETRY REPORT                    -->
-  <!-- ======================================================== -->
+  <!-- PAGE 3: TELEMETRY & DATA REPORT -->
   <div id="page-3" class="page-screen max-w-5xl mx-auto px-4 py-8">
     <div class="bg-[#08172c] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl mb-8">
-      <!-- Title Header -->
       <div class="flex items-center justify-between flex-wrap gap-4 border-b border-slate-800 pb-6 mb-6">
-        <div>
-          <span class="text-xs text-slate-400 uppercase font-bold tracking-wider">Phase 3: Database Telemetry</span>
-          <h2 class="text-3xl font-extrabold text-white flex items-center gap-2 mt-1">
-            <span id="p3-name" class="text-cyan-400">Kanpur</span>
-            <span class="text-sm font-normal text-slate-400" id="p3-stateut">(Uttar Pradesh)</span>
-          </h2>
-        </div>
-        <span id="p3-risk-badge" class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border">
-          🟣 50%+ Pollution
-        </span>
+        <div><span class="text-xs text-slate-400 uppercase font-bold tracking-wider">Phase 3: Database Telemetry</span><h2 class="text-3xl font-extrabold text-white flex items-center gap-2 mt-1"><span id="p3-name" class="text-cyan-400">Kanpur</span><span class="text-sm font-normal text-slate-400" id="p3-stateut">(Uttar Pradesh)</span></h2></div>
+        <span id="p3-risk-badge" class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border">🟣 50%+ Pollution</span>
       </div>
-
-      <!-- Top Row: Surface vs Groundwater & Key Metal -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl text-center">
-          <span class="text-xs uppercase text-slate-400 font-bold">Surface Water Pollution</span>
-          <div class="text-3xl font-black text-purple-400 mt-2" id="p3-surface">68%</div>
-          <span class="text-[11px] text-slate-500">River & Basin Load</span>
-        </div>
-
-        <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl text-center">
-          <span class="text-xs uppercase text-slate-400 font-bold">Groundwater Pollution</span>
-          <div class="text-3xl font-black text-purple-400 mt-2" id="p3-ground">55%</div>
-          <span class="text-[11px] text-slate-500">Aquifer Depth Contamination</span>
-        </div>
-
-        <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl text-center">
-          <span class="text-xs uppercase text-slate-400 font-bold">Primary Heavy Metal</span>
-          <div class="text-2xl font-black text-purple-400 mt-2 flex items-center justify-center gap-1.5" id="p3-metal">
-            <i data-lucide="shield-alert" class="w-5 h-5"></i> Chromium
-          </div>
-          <span class="text-[11px] text-slate-400" id="p3-citytype">Tannery Effluent Hub</span>
-        </div>
+        <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl text-center"><span class="text-xs uppercase text-slate-400 font-bold">Surface Water Pollution</span><div class="text-3xl font-black text-purple-400 mt-2" id="p3-surface">68%</div><span class="text-[11px] text-slate-500">River & Basin Load</span></div>
+        <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl text-center"><span class="text-xs uppercase text-slate-400 font-bold">Groundwater Pollution</span><div class="text-3xl font-black text-purple-400 mt-2" id="p3-ground">55%</div><span class="text-[11px] text-slate-500">Aquifer Depth Contamination</span></div>
+        <div class="bg-slate-900/60 border border-slate-800 p-5 rounded-2xl text-center"><span class="text-xs uppercase text-slate-400 font-bold">Primary Heavy Metal</span><div class="text-2xl font-black text-purple-400 mt-2 flex items-center justify-center gap-1.5" id="p3-metal"><i data-lucide="shield-alert" class="w-5 h-5"></i> Chromium</div><span class="text-[11px] text-slate-400" id="p3-citytype">Tannery Effluent Hub</span></div>
       </div>
-
-      <!-- Heavy Metal Breakdown Percentage (7 Metals) -->
       <div class="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl mb-6">
-        <h4 class="text-xs uppercase text-slate-400 font-bold mb-4 tracking-wider">
-          Heavy Metal Concentration Distribution (% of Toxicity Load)
-        </h4>
-
+        <h4 class="text-xs uppercase text-slate-400 font-bold mb-4 tracking-wider">Heavy Metal Concentration Distribution (% of Toxicity Load)</h4>
         <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 text-center text-xs">
-          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800">
-            <span class="text-slate-400">Arsenic (As)</span>
-            <div class="text-base font-black text-red-400 mt-1" id="m-as">20%</div>
-          </div>
-          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800">
-            <span class="text-slate-400">Chromium (Cr)</span>
-            <div class="text-base font-black text-purple-400 mt-1" id="m-cr">35%</div>
-          </div>
-          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800">
-            <span class="text-slate-400">Lead (Pb)</span>
-            <div class="text-base font-black text-orange-400 mt-1" id="m-pb">28%</div>
-          </div>
-          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800">
-            <span class="text-slate-400">Cadmium (Cd)</span>
-            <div class="text-base font-black text-yellow-400 mt-1" id="m-cd">10%</div>
-          </div>
-          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800">
-            <span class="text-slate-400">Zinc (Zn)</span>
-            <div class="text-base font-black text-cyan-400 mt-1" id="m-zn">4%</div>
-          </div>
-          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800">
-            <span class="text-slate-400">Copper (Cu)</span>
-            <div class="text-base font-black text-amber-400 mt-1" id="m-cu">2%</div>
-          </div>
-          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800">
-            <span class="text-slate-400">Nickel (Ni)</span>
-            <div class="text-base font-black text-indigo-400 mt-1" id="m-ni">1%</div>
-          </div>
+          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800"><span class="text-slate-400">Arsenic (As)</span><div class="text-base font-black text-red-400 mt-1" id="m-as">20%</div></div>
+          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800"><span class="text-slate-400">Chromium (Cr)</span><div class="text-base font-black text-purple-400 mt-1" id="m-cr">35%</div></div>
+          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800"><span class="text-slate-400">Lead (Pb)</span><div class="text-base font-black text-orange-400 mt-1" id="m-pb">28%</div></div>
+          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800"><span class="text-slate-400">Cadmium (Cd)</span><div class="text-base font-black text-yellow-400 mt-1" id="m-cd">10%</div></div>
+          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800"><span class="text-slate-400">Zinc (Zn)</span><div class="text-base font-black text-cyan-400 mt-1" id="m-zn">4%</div></div>
+          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800"><span class="text-slate-400">Copper (Cu)</span><div class="text-base font-black text-amber-400 mt-1" id="m-cu">2%</div></div>
+          <div class="p-3 bg-[#030a14] rounded-xl border border-slate-800"><span class="text-slate-400">Nickel (Ni)</span><div class="text-base font-black text-indigo-400 mt-1" id="m-ni">1%</div></div>
         </div>
       </div>
-
-      <!-- Biochemical Parameters -->
       <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center text-xs">
-        <div class="bg-slate-900/40 p-3 rounded-xl border border-slate-800">
-          <span class="text-slate-400">BOD Exceedance</span>
-          <div class="text-lg font-black text-amber-400 mt-1" id="p3-bod">62%</div>
-        </div>
-        <div class="bg-slate-900/40 p-3 rounded-xl border border-slate-800">
-          <span class="text-slate-400">COD Exceedance</span>
-          <div class="text-lg font-black text-red-400 mt-1" id="p3-cod">68%</div>
-        </div>
-        <div class="bg-slate-900/40 p-3 rounded-xl border border-slate-800">
-          <span class="text-slate-400">Dissolved O2 (DO)</span>
-          <div class="text-lg font-black text-yellow-400 mt-1" id="p3-do">50%</div>
-        </div>
-        <div class="bg-slate-900/40 p-3 rounded-xl border border-slate-800">
-          <span class="text-slate-400">pH Non-compliance</span>
-          <div class="text-lg font-black text-cyan-400 mt-1" id="p3-ph">18%</div>
-        </div>
-        <div class="bg-slate-900/40 p-3 rounded-xl border border-slate-800">
-          <span class="text-slate-400">TDS Exceedance</span>
-          <div class="text-lg font-black text-purple-400 mt-1" id="p3-tds">44%</div>
-        </div>
+        <div class="bg-slate-900/40 p-3 rounded-xl border border-slate-800"><span class="text-slate-400">BOD Exceedance</span><div class="text-lg font-black text-amber-400 mt-1" id="p3-bod">62%</div></div>
+        <div class="bg-slate-900/40 p-3 rounded-xl border border-slate-800"><span class="text-slate-400">COD Exceedance</span><div class="text-lg font-black text-red-400 mt-1" id="p3-cod">68%</div></div>
+        <div class="bg-slate-900/40 p-3 rounded-xl border border-slate-800"><span class="text-slate-400">Dissolved O2 (DO)</span><div class="text-lg font-black text-yellow-400 mt-1" id="p3-do">50%</div></div>
+        <div class="bg-slate-900/40 p-3 rounded-xl border border-slate-800"><span class="text-slate-400">pH Non-compliance</span><div class="text-lg font-black text-cyan-400 mt-1" id="p3-ph">18%</div></div>
+        <div class="bg-slate-900/40 p-3 rounded-xl border border-slate-800"><span class="text-slate-400">TDS Exceedance</span><div class="text-lg font-black text-purple-400 mt-1" id="p3-tds">44%</div></div>
       </div>
-
-      <!-- Discharge Source -->
       <div class="mt-6 p-4 rounded-xl bg-[#030a14] border border-slate-800 text-xs text-slate-300">
         <b class="text-white">Industrial & Municipal Discharge Source:</b> <span id="p3-source-desc">Tannery effluent (~1000 units) + Ganga discharge</span>
       </div>
     </div>
-
-    <!-- NAVIGATION -->
     <div class="flex items-center justify-between">
-      <button 
-        onclick="goToPage(2)"
-        class="flex items-center gap-2 text-slate-400 hover:text-white text-sm font-semibold transition"
-      >
-        <i data-lucide="arrow-left" class="w-4 h-4"></i> Search Another Location
-      </button>
-
-      <button 
-        onclick="goToPage(4)"
-        class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black px-8 py-3.5 rounded-full text-sm shadow-lg shadow-emerald-500/20 hover:scale-105 transition-all cursor-pointer"
-      >
-        <span>Next: View Solutions & Life Impact</span>
-        <i data-lucide="arrow-right" class="w-4 h-4"></i>
-      </button>
+      <button onclick="goToPage(2)" class="flex items-center gap-2 text-slate-400 hover:text-white text-sm font-semibold transition"><i data-lucide="arrow-left" class="w-4 h-4"></i> Search Another Location</button>
+      <button onclick="goToPage(4)" class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black px-8 py-3.5 rounded-full text-sm shadow-lg shadow-emerald-500/20 hover:scale-105 transition-all cursor-pointer"><span>Next: View Solutions & Life Impact</span><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
     </div>
   </div>
 
-  <!-- ======================================================== -->
-  <!-- PAGE 4: SOLUTIONS & LIFE TRANSFORMATION (BEFORE/AFTER)   -->
-  <!-- ======================================================== -->
+  <!-- PAGE 4: SOLUTIONS & REMEDIATION -->
   <div id="page-4" class="page-screen max-w-5xl mx-auto px-4 py-8">
     <div class="bg-[#08172c] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl mb-8">
       <div class="text-center max-w-2xl mx-auto mb-8">
-        <div class="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
-          <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Phase 4: Life Transformation & Engineering
-        </div>
-        <h3 class="text-3xl font-extrabold text-white">
-          Remediation Blueprint for <span id="p4-name-title" class="text-emerald-400">Kanpur</span>
-        </h3>
+        <div class="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2"><i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Phase 4: Life Transformation & Engineering</div>
+        <h3 class="text-3xl font-extrabold text-white">Remediation Blueprint for <span id="p4-name-title" class="text-emerald-400">Kanpur</span></h3>
       </div>
-
-      <!-- Before vs After Split Comparison -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <!-- LIFE BEFORE (UNTREATED) -->
         <div class="bg-red-950/20 border border-red-500/30 p-6 rounded-2xl">
-          <div class="flex items-center gap-2 text-red-400 font-extrabold text-sm uppercase tracking-wider mb-4">
-            <i data-lucide="x-octagon" class="w-5 h-5"></i> Current: Untreated Water Hazard
-          </div>
+          <div class="flex items-center gap-2 text-red-400 font-extrabold text-sm uppercase tracking-wider mb-4"><i data-lucide="x-octagon" class="w-5 h-5"></i> Current: Untreated Water Hazard</div>
           <ul class="space-y-3 text-sm text-slate-300">
-            <li class="flex items-start gap-2">
-              <span class="text-red-400 font-bold">•</span> Extreme bio-accumulation of <b class="text-white" id="p4-metal-warn">Chromium</b> in kidneys, liver, and digestive tract.
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-red-400 font-bold">•</span> High incidence of skin ulcers, respiratory irritation, and chronic organ toxicity.
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-red-400 font-bold">•</span> Groundwater unsuitable for infants and child cognitive development.
-            </li>
+            <li class="flex items-start gap-2"><span class="text-red-400 font-bold">•</span> Extreme bio-accumulation of <b class="text-white" id="p4-metal-warn">Chromium</b> in kidneys, liver, and digestive tract.</li>
+            <li class="flex items-start gap-2"><span class="text-red-400 font-bold">•</span> High incidence of skin ulcers, respiratory irritation, and chronic organ toxicity.</li>
+            <li class="flex items-start gap-2"><span class="text-red-400 font-bold">•</span> Groundwater unsuitable for infants and child cognitive development.</li>
           </ul>
         </div>
-
-        <!-- LIFE AFTER (REMEDIATED) -->
         <div class="bg-emerald-950/20 border border-emerald-500/30 p-6 rounded-2xl">
-          <div class="flex items-center gap-2 text-emerald-400 font-extrabold text-sm uppercase tracking-wider mb-4">
-            <i data-lucide="check-circle-2" class="w-5 h-5"></i> Post-Remediation Life Transformation
-          </div>
+          <div class="flex items-center gap-2 text-emerald-400 font-extrabold text-sm uppercase tracking-wider mb-4"><i data-lucide="check-circle-2" class="w-5 h-5"></i> Post-Remediation Life Transformation</div>
           <ul class="space-y-3 text-sm text-slate-300">
-            <li class="flex items-start gap-2">
-              <span class="text-emerald-400 font-bold">•</span> <b class="text-emerald-400">92%+ reduction in heavy metal toxicity</b> down to safe WHO limits.
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-emerald-400 font-bold">•</span> Eliminates cellular toxic stress and protects long-term cardiovascular health.
-            </li>
-            <li class="flex items-start gap-2">
-              <span class="text-emerald-400 font-bold">•</span> 100% pure mineral-balanced water restored for community wellness.
-            </li>
+            <li class="flex items-start gap-2"><span class="text-emerald-400 font-bold">•</span> <b class="text-emerald-400">92%+ reduction in heavy metal toxicity</b> down to safe WHO limits.</li>
+            <li class="flex items-start gap-2"><span class="text-emerald-400 font-bold">•</span> Eliminates cellular toxic stress and protects long-term cardiovascular health.</li>
+            <li class="flex items-start gap-2"><span class="text-emerald-400 font-bold">•</span> 100% pure mineral-balanced water restored for community wellness.</li>
           </ul>
         </div>
       </div>
-
-      <!-- Actionable Treatment Engineering -->
       <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl flex items-start gap-4">
-        <div class="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-xl text-cyan-400 shrink-0">
-          <i data-lucide="wrench" class="w-6 h-6"></i>
-        </div>
-        <div>
-          <h4 class="text-white font-bold text-base">Prescribed Remediation Engineering Protocol</h4>
-          <p class="text-slate-300 text-sm mt-1 leading-relaxed" id="p4-solution-text">
-            Strong Base Anion (SBA) Ion-Exchange Resin Bed + Dual-Stage Reverse Osmosis (RO) with Catalytic Carbon Pre-Treatment.
-          </p>
-        </div>
+        <div class="p-3 bg-cyan-500/10 border border-cyan-500/20 rounded-xl text-cyan-400 shrink-0"><i data-lucide="wrench" class="w-6 h-6"></i></div>
+        <div><h4 class="text-white font-bold text-base">Prescribed Remediation Engineering Protocol</h4><p class="text-slate-300 text-sm mt-1 leading-relaxed" id="p4-solution-text">Strong Base Anion (SBA) Ion-Exchange Resin Bed + Dual-Stage Reverse Osmosis (RO) with Catalytic Carbon Pre-Treatment.</p></div>
       </div>
     </div>
-
-    <!-- RESTART BUTTON -->
     <div class="text-center">
-      <button 
-        onclick="goToPage(1)"
-        class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-bold px-8 py-3.5 rounded-full text-sm transition cursor-pointer"
-      >
-        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-        <span>Start Another Location Analysis</span>
-      </button>
+      <button onclick="goToPage(1)" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-bold px-8 py-3.5 rounded-full text-sm transition cursor-pointer"><i data-lucide="rotate-ccw" class="w-4 h-4"></i><span>Start Another Location Analysis</span></button>
     </div>
   </div>
 
-  <!-- COMPLETE 115+ CSV DATASET & REAL HIGH-RES GEOGRAPHY ENGINE -->
+  <!-- ========================================================================== -->
+  <!-- SECTION 3: JAVASCRIPT & DATABASE ENGINE (D3 Map, Search, Telemetry, Router)-->
+  <!-- ========================================================================== -->
   <script>
+    // 115+ Regional Water Contamination Records
     const csvRaw = `location_name,location_type,state_ut,city_type,surface_water_pollution_pct,groundwater_pollution_pct,arsenic_as_pct,chromium_cr_pct,lead_pb_pct,cadmium_cd_pct,zinc_zn_pct,copper_cu_pct,nickel_ni_pct,bod_exceedance_pct,cod_exceedance_pct,do_exceedance_pct,ph_exceedance_pct,tds_exceedance_pct,primary_pollutant_source,risk_level,key_heavy_metal
 Andhra Pradesh,State,Andhra Pradesh,State,38,28,38,18,22,12,6,2,2,38,44,32,26,48,State-level aggregate,High,Arsenic
 Arunachal Pradesh,State,Arunachal Pradesh,State,12,8,80,6,6,2,2,2,2,10,14,8,8,10,State-level aggregate,Low,Arsenic
@@ -636,115 +373,20 @@ Puducherry,City,Puducherry,UT Capital,22,18,4,10,14,8,16,16,32,20,26,16,18,30,Co
 Leh,City,Ladakh,UT Capital,12,8,8,6,8,4,8,6,60,10,14,8,8,10,High altitude minimal pollution,Low,Arsenic
 Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial + remote,Low,Arsenic`;
 
-    const lines = csvRaw.trim().split('\n');
-    const allRecords = lines.slice(1).map(line => {
-      const vals = line.split(',');
-      return {
-        name: vals[0],
-        type: vals[1],
-        stateut: vals[2],
-        citytype: vals[3],
-        surface: parseInt(vals[4]),
-        ground: parseInt(vals[5]),
-        as: vals[6],
-        cr: vals[7],
-        pb: vals[8],
-        cd: vals[9],
-        zn: vals[10],
-        cu: vals[11],
-        ni: vals[12],
-        bod: vals[13],
-        cod: vals[14],
-        do: vals[15],
-        ph: vals[16],
-        tds: vals[17],
-        source: vals[18],
-        risk: vals[19],
-        metal: vals[20]
-      };
+    // Parse CSV records
+    const allRecords = csvRaw.trim().split('\n').slice(1).map(l => {
+      const v = l.split(',');
+      return { name: v[0], type: v[1], stateut: v[2], citytype: v[3], surface: parseInt(v[4]), ground: parseInt(v[5]), as: v[6], cr: v[7], pb: v[8], cd: v[9], zn: v[10], cu: v[11], ni: v[12], bod: v[13], cod: v[14], do: v[15], ph: v[16], tds: v[17], source: v[18], risk: v[19], metal: v[20] };
     });
 
     let currentSelected = allRecords.find(r => r.name === "Kanpur") || allRecords[0];
 
-    // Coordinates for all major cities / industrial clusters across India
+    // City GPS Coordinates for Vector Map
     const cityPins = [
-      { name: "Kanpur", coords: [80.3319, 26.4499], pct: 68 },
-      { name: "Varanasi", coords: [82.9739, 25.3176], pct: 55 },
-      { name: "Lucknow", coords: [80.9462, 26.8467], pct: 50 },
-      { name: "Agra", coords: [78.0081, 27.1767], pct: 48 },
-      { name: "Meerut", coords: [77.7060, 28.9845], pct: 50 },
-      { name: "Moradabad", coords: [78.7768, 28.8386], pct: 62 },
-      { name: "Bareilly", coords: [79.4304, 28.3670], pct: 42 },
-      { name: "Aligarh", coords: [78.0880, 27.8974], pct: 44 },
-      { name: "Ghaziabad", coords: [77.4538, 28.6692], pct: 48 },
-      { name: "New Delhi", coords: [77.2090, 28.6139], pct: 52 },
-      { name: "Mumbai", coords: [72.8777, 19.0760], pct: 48 },
-      { name: "Pune", coords: [73.8567, 18.5204], pct: 38 },
-      { name: "Nagpur", coords: [79.0882, 21.1458], pct: 30 },
-      { name: "Nashik", coords: [73.7898, 19.9975], pct: 36 },
-      { name: "Thane", coords: [72.9781, 19.2183], pct: 46 },
-      { name: "Ahmedabad", coords: [72.5714, 23.0225], pct: 48 },
-      { name: "Surat", coords: [72.8311, 21.1702], pct: 44 },
-      { name: "Vapi", coords: [72.9289, 20.3719], pct: 60 },
-      { name: "Vadodara", coords: [73.1812, 22.3072], pct: 42 },
-      { name: "Rajkot", coords: [70.8022, 22.3039], pct: 36 },
-      { name: "Ankleshwar", coords: [73.0035, 21.6264], pct: 58 },
-      { name: "Kolkata", coords: [88.3639, 22.5726], pct: 46 },
-      { name: "Howrah", coords: [88.3103, 22.5958], pct: 50 },
-      { name: "Durgapur", coords: [87.3119, 23.5204], pct: 54 },
-      { name: "Asansol", coords: [86.9842, 23.6889], pct: 52 },
-      { name: "Haldia", coords: [88.0645, 22.0620], pct: 48 },
-      { name: "Jamshedpur", coords: [86.2029, 22.8046], pct: 50 },
-      { name: "Dhanbad", coords: [86.4304, 23.7957], pct: 46 },
-      { name: "Ranchi", coords: [85.3096, 23.3441], pct: 34 },
-      { name: "Bokaro", coords: [85.9610, 23.6693], pct: 44 },
-      { name: "Patna", coords: [85.1376, 25.5941], pct: 36 },
-      { name: "Gaya", coords: [85.0002, 24.7914], pct: 30 },
-      { name: "Hyderabad", coords: [78.4867, 17.3850], pct: 38 },
-      { name: "Warangal", coords: [79.5941, 17.9689], pct: 32 },
-      { name: "Visakhapatnam", coords: [83.2185, 17.6868], pct: 40 },
-      { name: "Vijayawada", coords: [80.6480, 16.5062], pct: 34 },
-      { name: "Tirupati", coords: [79.4192, 13.6288], pct: 22 },
-      { name: "Chennai", coords: [80.2707, 13.0827], pct: 32 },
-      { name: "Coimbatore", coords: [76.9558, 11.0168], pct: 28 },
-      { name: "Karimpur (Ranipet)", coords: [79.3330, 12.9279], pct: 64 },
-      { name: "Tiruppur", coords: [77.3411, 11.1085], pct: 46 },
-      { name: "Bengaluru", coords: [77.5946, 12.9716], pct: 26 },
-      { name: "Mysuru", coords: [76.6394, 12.2958], pct: 20 },
-      { name: "Mangaluru", coords: [74.8560, 12.9141], pct: 18 },
-      { name: "Thiruvananthapuram", coords: [76.9366, 8.5241], pct: 14 },
-      { name: "Kochi", coords: [76.2673, 9.9312], pct: 18 },
-      { name: "Eloor", coords: [76.2996, 10.0768], pct: 46 },
-      { name: "Bhopal", coords: [77.4126, 23.2599], pct: 32 },
-      { name: "Indore", coords: [75.8577, 22.7196], pct: 36 },
-      { name: "Jabalpur", coords: [79.9864, 23.1815], pct: 28 },
-      { name: "Gwalior", coords: [78.1828, 26.2183], pct: 34 },
-      { name: "Jaipur", coords: [75.7873, 26.9124], pct: 42 },
-      { name: "Jodhpur", coords: [73.0243, 26.2389], pct: 34 },
-      { name: "Udaipur", coords: [73.7125, 24.5854], pct: 30 },
-      { name: "Kota", coords: [75.8648, 25.2138], pct: 36 },
-      { name: "Ludhiana", coords: [75.8573, 30.9010], pct: 46 },
-      { name: "Amritsar", coords: [74.8723, 31.6340], pct: 36 },
-      { name: "Jalandhar", coords: [75.5762, 31.3260], pct: 40 },
-      { name: "Faridabad", coords: [77.3178, 28.4089], pct: 42 },
-      { name: "Gurugram", coords: [77.0266, 28.4595], pct: 38 },
-      { name: "Panipat", coords: [76.9635, 29.3909], pct: 48 },
-      { name: "Dehradun", coords: [78.0322, 30.3165], pct: 22 },
-      { name: "Haridwar", coords: [78.1642, 29.9457], pct: 28 },
-      { name: "Guwahati", coords: [91.7362, 26.1445], pct: 24 },
-      { name: "Raipur", coords: [81.6296, 21.2514], pct: 36 },
-      { name: "Bhilai", coords: [81.3803, 21.1938], pct: 40 },
-      { name: "Korba", coords: [82.6841, 22.3595], pct: 42 },
-      { name: "Bhubaneswar", coords: [85.8245, 20.2961], pct: 26 },
-      { name: "Rourkela", coords: [84.8536, 22.2604], pct: 38 },
-      { name: "Srinagar", coords: [74.7973, 34.0837], pct: 16 },
-      { name: "Jammu", coords: [74.8570, 32.7266], pct: 20 },
-      { name: "Leh", coords: [77.5771, 34.1526], pct: 12 },
-      { name: "Kargil", coords: [76.1320, 34.5539], pct: 10 },
-      { name: "Shimla", coords: [77.1734, 31.1048], pct: 14 },
-      { name: "Panaji", coords: [73.8278, 15.4909], pct: 18 }
+      { name: "Kanpur", coords: [80.3319, 26.4499], pct: 68 }, { name: "Varanasi", coords: [82.9739, 25.3176], pct: 55 }, { name: "Lucknow", coords: [80.9462, 26.8467], pct: 50 }, { name: "Agra", coords: [78.0081, 27.1767], pct: 48 }, { name: "Meerut", coords: [77.7060, 28.9845], pct: 50 }, { name: "Moradabad", coords: [78.7768, 28.8386], pct: 62 }, { name: "Bareilly", coords: [79.4304, 28.3670], pct: 42 }, { name: "Aligarh", coords: [78.0880, 27.8974], pct: 44 }, { name: "Ghaziabad", coords: [77.4538, 28.6692], pct: 48 }, { name: "New Delhi", coords: [77.2090, 28.6139], pct: 52 }, { name: "Mumbai", coords: [72.8777, 19.0760], pct: 48 }, { name: "Pune", coords: [73.8567, 18.5204], pct: 38 }, { name: "Nagpur", coords: [79.0882, 21.1458], pct: 30 }, { name: "Nashik", coords: [73.7898, 19.9975], pct: 36 }, { name: "Thane", coords: [72.9781, 19.2183], pct: 46 }, { name: "Ahmedabad", coords: [72.5714, 23.0225], pct: 48 }, { name: "Surat", coords: [72.8311, 21.1702], pct: 44 }, { name: "Vapi", coords: [72.9289, 20.3719], pct: 60 }, { name: "Vadodara", coords: [73.1812, 22.3072], pct: 42 }, { name: "Rajkot", coords: [70.8022, 22.3039], pct: 36 }, { name: "Ankleshwar", coords: [73.0035, 21.6264], pct: 58 }, { name: "Kolkata", coords: [88.3639, 22.5726], pct: 46 }, { name: "Howrah", coords: [88.3103, 22.5958], pct: 50 }, { name: "Durgapur", coords: [87.3119, 23.5204], pct: 54 }, { name: "Asansol", coords: [86.9842, 23.6889], pct: 52 }, { name: "Haldia", coords: [88.0645, 22.0620], pct: 48 }, { name: "Jamshedpur", coords: [86.2029, 22.8046], pct: 50 }, { name: "Dhanbad", coords: [86.4304, 23.7957], pct: 46 }, { name: "Ranchi", coords: [85.3096, 23.3441], pct: 34 }, { name: "Bokaro", coords: [85.9610, 23.6693], pct: 44 }, { name: "Patna", coords: [85.1376, 25.5941], pct: 36 }, { name: "Gaya", coords: [85.0002, 24.7914], pct: 30 }, { name: "Hyderabad", coords: [78.4867, 17.3850], pct: 38 }, { name: "Warangal", coords: [79.5941, 17.9689], pct: 32 }, { name: "Visakhapatnam", coords: [83.2185, 17.6868], pct: 40 }, { name: "Vijayawada", coords: [80.6480, 16.5062], pct: 34 }, { name: "Tirupati", coords: [79.4192, 13.6288], pct: 22 }, { name: "Chennai", coords: [80.2707, 13.0827], pct: 32 }, { name: "Coimbatore", coords: [76.9558, 11.0168], pct: 28 }, { name: "Karimpur (Ranipet)", coords: [79.3330, 12.9279], pct: 64 }, { name: "Tiruppur", coords: [77.3411, 11.1085], pct: 46 }, { name: "Bengaluru", coords: [77.5946, 12.9716], pct: 26 }, { name: "Mysuru", coords: [76.6394, 12.2958], pct: 20 }, { name: "Mangaluru", coords: [74.8560, 12.9141], pct: 18 }, { name: "Thiruvananthapuram", coords: [76.9366, 8.5241], pct: 14 }, { name: "Kochi", coords: [76.2673, 9.9312], pct: 18 }, { name: "Eloor", coords: [76.2996, 10.0768], pct: 46 }, { name: "Bhopal", coords: [77.4126, 23.2599], pct: 32 }, { name: "Indore", coords: [75.8577, 22.7196], pct: 36 }, { name: "Jabalpur", coords: [79.9864, 23.1815], pct: 28 }, { name: "Gwalior", coords: [78.1828, 26.2183], pct: 34 }, { name: "Jaipur", coords: [75.7873, 26.9124], pct: 42 }, { name: "Jodhpur", coords: [73.0243, 26.2389], pct: 34 }, { name: "Udaipur", coords: [73.7125, 24.5854], pct: 30 }, { name: "Kota", coords: [75.8648, 25.2138], pct: 36 }, { name: "Ludhiana", coords: [75.8573, 30.9010], pct: 46 }, { name: "Amritsar", coords: [74.8723, 31.6340], pct: 36 }, { name: "Jalandhar", coords: [75.5762, 31.3260], pct: 40 }, { name: "Faridabad", coords: [77.3178, 28.4089], pct: 42 }, { name: "Gurugram", coords: [77.0266, 28.4595], pct: 38 }, { name: "Panipat", coords: [76.9635, 29.3909], pct: 48 }, { name: "Dehradun", coords: [78.0322, 30.3165], pct: 22 }, { name: "Haridwar", coords: [78.1642, 29.9457], pct: 28 }, { name: "Guwahati", coords: [91.7362, 26.1445], pct: 24 }, { name: "Raipur", coords: [81.6296, 21.2514], pct: 36 }, { name: "Bhilai", coords: [81.3803, 21.1938], pct: 40 }, { name: "Korba", coords: [82.6841, 22.3595], pct: 42 }, { name: "Bhubaneswar", coords: [85.8245, 20.2961], pct: 26 }, { name: "Rourkela", coords: [84.8536, 22.2604], pct: 38 }, { name: "Srinagar", coords: [74.7973, 34.0837], pct: 16 }, { name: "Jammu", coords: [74.8570, 32.7266], pct: 20 }, { name: "Leh", coords: [77.5771, 34.1526], pct: 12 }, { name: "Kargil", coords: [76.1320, 34.5539], pct: 10 }, { name: "Shimla", coords: [77.1734, 31.1048], pct: 14 }, { name: "Panaji", coords: [73.8278, 15.4909], pct: 18 }
     ];
 
+    // Returns exact color tier
     function getTier(pct) {
       if (pct >= 50) return { fill: "#a855f7", label: "🟣 Extreme 50%+", badge: "bg-purple-500/20 text-purple-300 border-purple-500/40", text: "text-purple-400", dot: "bg-purple-500 shadow-md shadow-purple-500/50" };
       if (pct >= 40) return { fill: "#ef4444", label: "🔴 Critical 40–49%", badge: "bg-red-500/20 text-red-300 border-red-500/40", text: "text-red-400", dot: "bg-red-500 shadow-md shadow-red-500/50" };
@@ -752,11 +394,10 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       return { fill: "#10b981", label: "🟢 Good <20%", badge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40", text: "text-emerald-400", dot: "bg-emerald-500 shadow-md shadow-emerald-500/50" };
     }
 
-    // Name Normalizer for GeoJSON variations
+    // Handles GeoJSON Name variations
     function matchDatabaseRecord(raw) {
       if (!raw) return null;
       const s = raw.toLowerCase().replace(/&/g, 'and').trim();
-
       if (s.includes("delhi")) return allRecords.find(r => r.name === "Delhi");
       if (s.includes("kashmir") || s.includes("jammu")) return allRecords.find(r => r.name === "Jammu & Kashmir");
       if (s.includes("ladakh")) return allRecords.find(r => r.name === "Ladakh");
@@ -767,142 +408,58 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       if (s.includes("dadra") || s.includes("haveli")) return allRecords.find(r => r.name.includes("Dadra"));
       if (s.includes("daman") || s.includes("diu")) return allRecords.find(r => r.name.includes("Daman"));
       if (s.includes("lakshadweep")) return allRecords.find(r => r.name === "Lakshadweep");
-
-      return allRecords.find(r => 
-        r.name.toLowerCase() === raw.toLowerCase().trim() ||
-        r.stateut.toLowerCase() === raw.toLowerCase().trim()
-      );
+      return allRecords.find(r => r.name.toLowerCase() === raw.toLowerCase().trim() || r.stateut.toLowerCase() === raw.toLowerCase().trim());
     }
 
-    // Load and Render Real Geographic Curved India GeoJSON via D3
+    // D3 Vector Map Renderer
     function renderRealisticIndiaMap() {
-      const container = document.getElementById('d3-india-map');
-      container.innerHTML = "";
-
-      const width = 600;
-      const height = 550;
-
-      const svg = d3.select("#d3-india-map")
-        .append("svg")
-        .attr("viewBox", `0 0 ${width} ${height}`)
-        .attr("class", "w-full h-auto max-h-[520px] drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]");
-
-      const projection = d3.geoMercator()
-        .center([82.8, 22.5])
-        .scale(1000)
-        .translate([width / 2, height / 2]);
-
+      const container = document.getElementById('d3-india-map'); container.innerHTML = "";
+      const width = 600, height = 550;
+      const svg = d3.select("#d3-india-map").append("svg").attr("viewBox", `0 0 ${width} ${height}`).attr("class", "w-full h-auto max-h-[520px] drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]");
+      const projection = d3.geoMercator().center([82.8, 22.5]).scale(1000).translate([width / 2, height / 2]);
       const path = d3.geoPath().projection(projection);
 
-      // Load Official India GeoJSON
       d3.json("https://cdn.jsdelivr.net/gh/Subhash9325/GeoJson-Data-of-Indian-States@master/Indian_States").then(geoData => {
-        
-        // 1. Draw State Boundaries with exact color fills
-        svg.selectAll(".state-path")
-          .data(geoData.features)
-          .enter()
-          .append("path")
-          .attr("d", path)
-          .attr("class", "state-path")
-          .attr("fill", d => {
-            const rawName = d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || "";
-            const match = matchDatabaseRecord(rawName);
-            return match ? getTier(match.surface).fill : "#10b981";
-          })
-          .on("mouseenter", function(event, d) {
-            const rawName = d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || "";
-            const match = matchDatabaseRecord(rawName);
-            if (match) {
-              const tooltip = document.getElementById('map-tooltip');
-              const tier = getTier(match.surface);
-              document.getElementById('tt-name').textContent = match.name;
-              document.getElementById('tt-type').textContent = `${match.type} • ${tier.label}`;
-              document.getElementById('tt-score').textContent = match.surface + '%';
-              document.getElementById('tt-score').className = `text-base font-black ${tier.text}`;
-              document.getElementById('tt-metal').textContent = match.metal;
-              tooltip.classList.remove('hidden');
+        // State Polygons
+        svg.selectAll(".state-path").data(geoData.features).enter().append("path").attr("d", path).attr("class", "state-path")
+          .attr("fill", d => { const m = matchDatabaseRecord(d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME); return m ? getTier(m.surface).fill : "#10b981"; })
+          .on("mouseenter", (e, d) => {
+            const m = matchDatabaseRecord(d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME);
+            if (m) {
+              const t = getTier(m.surface);
+              document.getElementById('tt-name').textContent = m.name; document.getElementById('tt-type').textContent = `${m.type} • ${t.label}`;
+              document.getElementById('tt-score').textContent = m.surface + '%'; document.getElementById('tt-score').className = `text-base font-black ${t.text}`;
+              document.getElementById('tt-metal').textContent = m.metal; document.getElementById('map-tooltip').classList.remove('hidden');
             }
           })
-          .on("mouseleave", function() {
-            document.getElementById('map-tooltip').classList.add('hidden');
-          })
-          .on("click", function(event, d) {
-            const rawName = d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || "";
-            const match = matchDatabaseRecord(rawName);
-            if (match) {
-              currentSelected = match;
-              goToPage(3);
-            }
-          });
+          .on("mouseleave", () => document.getElementById('map-tooltip').classList.add('hidden'))
+          .on("click", (e, d) => { const m = matchDatabaseRecord(d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME); if (m) { currentSelected = m; goToPage(3); } });
 
-        // 2. Draw State Names directly inside States
-        svg.selectAll(".state-label")
-          .data(geoData.features)
-          .enter()
-          .append("text")
-          .attr("class", "state-label")
-          .attr("transform", d => {
-            const centroid = path.centroid(d);
-            return isNaN(centroid[0]) ? null : `translate(${centroid[0]}, ${centroid[1]})`;
-          })
-          .text(d => {
-            const raw = d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || "";
-            if (raw.length > 12) return raw.substring(0, 10) + "..";
-            return raw;
-          });
+        // State Labels
+        svg.selectAll(".state-label").data(geoData.features).enter().append("text").attr("class", "state-label")
+          .attr("transform", d => { const c = path.centroid(d); return isNaN(c[0]) ? null : `translate(${c[0]}, ${c[1]})`; })
+          .text(d => { const r = d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || ""; return r.length > 12 ? r.substring(0, 10) + ".." : r; });
 
-        // 3. Draw Cities as Small Interactive Target Circles
+        // City Target Pins
         cityPins.forEach(city => {
           const pt = projection(city.coords);
           if (pt) {
             const tier = getTier(city.pct);
-            const g = svg.append("g")
-              .attr("class", "city-pin")
+            const g = svg.append("g").attr("class", "city-pin")
               .on("mouseenter", () => {
-                const match = allRecords.find(r => r.name.toLowerCase() === city.name.toLowerCase());
-                if (match) {
-                  const tooltip = document.getElementById('map-tooltip');
-                  document.getElementById('tt-name').textContent = match.name;
-                  document.getElementById('tt-type').textContent = `${match.type} • ${match.citytype}`;
-                  document.getElementById('tt-score').textContent = match.surface + '%';
-                  document.getElementById('tt-score').className = `text-base font-black ${tier.text}`;
-                  document.getElementById('tt-metal').textContent = match.metal;
-                  tooltip.classList.remove('hidden');
+                const m = allRecords.find(r => r.name.toLowerCase() === city.name.toLowerCase());
+                if (m) {
+                  document.getElementById('tt-name').textContent = m.name; document.getElementById('tt-type').textContent = `${m.type} • ${m.citytype}`;
+                  document.getElementById('tt-score').textContent = m.surface + '%'; document.getElementById('tt-score').className = `text-base font-black ${tier.text}`;
+                  document.getElementById('tt-metal').textContent = m.metal; document.getElementById('map-tooltip').classList.remove('hidden');
                 }
               })
-              .on("mouseleave", () => {
-                document.getElementById('map-tooltip').classList.add('hidden');
-              })
+              .on("mouseleave", () => document.getElementById('map-tooltip').classList.add('hidden'))
               .on("click", () => selectAndJump(city.name));
 
-            // Pulsing ring on high-risk industrial hotspots
-            if (city.pct >= 40) {
-              g.append("circle")
-                .attr("cx", pt[0])
-                .attr("cy", pt[1])
-                .attr("r", 4)
-                .attr("fill", "none")
-                .attr("stroke", tier.fill)
-                .attr("stroke-width", 1.2)
-                .attr("class", "city-pulse");
-            }
-
-            // Small Clean Outer Target Ring
-            g.append("circle")
-              .attr("cx", pt[0])
-              .attr("cy", pt[1])
-              .attr("r", 4)
-              .attr("fill", "#ffffff")
-              .attr("stroke", tier.fill)
-              .attr("stroke-width", 1.5)
-              .attr("class", "drop-shadow-sm");
-
-            // Colored Center Core
-            g.append("circle")
-              .attr("cx", pt[0])
-              .attr("cy", pt[1])
-              .attr("r", 1.8)
-              .attr("fill", tier.fill);
+            if (city.pct >= 40) g.append("circle").attr("cx", pt[0]).attr("cy", pt[1]).attr("r", 4).attr("fill", "none").attr("stroke", tier.fill).attr("stroke-width", 1.2).attr("class", "city-pulse");
+            g.append("circle").attr("cx", pt[0]).attr("cy", pt[1]).attr("r", 4).attr("fill", "#ffffff").attr("stroke", tier.fill).attr("stroke-width", 1.5);
+            g.append("circle").attr("cx", pt[0]).attr("cy", pt[1]).attr("r", 1.8).attr("fill", tier.fill);
           }
         });
       });
@@ -910,95 +467,42 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
 
     function selectAndJump(cityName) {
       const match = allRecords.find(r => r.name.toLowerCase() === cityName.toLowerCase());
-      if (match) {
-        currentSelected = match;
-        goToPage(3);
-      }
+      if (match) { currentSelected = match; goToPage(3); }
     }
 
-    function quickPick(name) {
-      document.getElementById('search-input').value = name;
-      handleSearchSubmit();
-    }
+    function quickPick(name) { document.getElementById('search-input').value = name; handleSearchSubmit(); }
 
     function handleSearchSubmit() {
       const q = document.getElementById('search-input').value.trim().toLowerCase();
-      const err = document.getElementById('search-error');
-      const succ = document.getElementById('search-success');
-      const nextBtn = document.getElementById('btn-goto-p3');
+      const err = document.getElementById('search-error'), succ = document.getElementById('search-success'), nextBtn = document.getElementById('btn-goto-p3');
+      if (!q) { err.classList.remove('hidden'); succ.classList.add('hidden'); nextBtn.disabled = true; nextBtn.className = "inline-flex items-center gap-2 bg-slate-800 text-slate-500 font-black px-7 py-3.5 rounded-full text-sm transition-all cursor-not-allowed"; return; }
 
-      if (!q) {
-        err.classList.remove('hidden');
-        succ.classList.add('hidden');
-        nextBtn.disabled = true;
-        nextBtn.className = "inline-flex items-center gap-2 bg-slate-800 text-slate-500 font-black px-7 py-3.5 rounded-full text-sm transition-all cursor-not-allowed";
-        return;
-      }
-
-      const match = allRecords.find(r => 
-        r.name.toLowerCase() === q || 
-        r.name.toLowerCase().includes(q) || 
-        q.includes(r.name.toLowerCase()) ||
-        r.stateut.toLowerCase() === q
-      );
-
+      const match = allRecords.find(r => r.name.toLowerCase() === q || r.name.toLowerCase().includes(q) || q.includes(r.name.toLowerCase()) || r.stateut.toLowerCase() === q);
       if (match) {
-        currentSelected = match;
-        const tier = getTier(match.surface);
-
-        err.classList.add('hidden');
-        succ.classList.remove('hidden');
+        currentSelected = match; const tier = getTier(match.surface);
+        err.classList.add('hidden'); succ.classList.remove('hidden');
         succ.className = `p-5 rounded-2xl border ${match.surface >= 50 ? 'border-purple-500/50 bg-purple-950/20' : match.surface >= 40 ? 'border-red-500/50 bg-red-950/20' : match.surface >= 20 ? 'border-amber-500/50 bg-amber-950/20' : 'border-emerald-500/50 bg-emerald-950/20'} mb-6`;
-
         document.getElementById('success-dot').className = `w-3.5 h-3.5 rounded-full shrink-0 ${tier.dot}`;
         document.getElementById('success-category').textContent = `${match.type} • ${match.citytype}`;
         document.getElementById('success-location-title').textContent = `${match.name}, ${match.stateut}`;
         document.getElementById('success-risk-badge').textContent = tier.label;
         document.getElementById('success-risk-badge').className = `text-xs px-3 py-1 rounded-full font-black uppercase border ${tier.badge}`;
-        document.getElementById('success-metal').textContent = match.metal;
-        document.getElementById('success-source').textContent = match.source;
-
-        nextBtn.disabled = false;
-        nextBtn.className = "inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black px-7 py-3.5 rounded-full text-sm shadow-lg shadow-cyan-500/20 hover:scale-105 transition-all cursor-pointer";
+        document.getElementById('success-metal').textContent = match.metal; document.getElementById('success-source').textContent = match.source;
+        nextBtn.disabled = false; nextBtn.className = "inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black px-7 py-3.5 rounded-full text-sm shadow-lg shadow-cyan-500/20 hover:scale-105 transition-all cursor-pointer";
       } else {
-        err.classList.remove('hidden');
-        succ.classList.add('hidden');
-        nextBtn.disabled = true;
-        nextBtn.className = "inline-flex items-center gap-2 bg-slate-800 text-slate-500 font-black px-7 py-3.5 rounded-full text-sm transition-all cursor-not-allowed";
+        err.classList.remove('hidden'); succ.classList.add('hidden'); nextBtn.disabled = true; nextBtn.className = "inline-flex items-center gap-2 bg-slate-800 text-slate-500 font-black px-7 py-3.5 rounded-full text-sm transition-all cursor-not-allowed";
       }
       lucide.createIcons();
     }
 
     function populatePage3() {
-      const d = currentSelected;
-      const tier = getTier(d.surface);
-
-      document.getElementById('p3-name').textContent = d.name;
-      document.getElementById('p3-stateut').textContent = `(${d.stateut} • ${d.citytype})`;
-      document.getElementById('p3-risk-badge').textContent = tier.label;
-      document.getElementById('p3-risk-badge').className = `px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border ${tier.badge}`;
-
-      document.getElementById('p3-surface').textContent = d.surface + '%';
-      document.getElementById('p3-surface').className = `text-3xl font-black ${tier.text} mt-2`;
-
-      document.getElementById('p3-ground').textContent = d.ground + '%';
-      document.getElementById('p3-metal').textContent = d.metal;
-      document.getElementById('p3-citytype').textContent = d.citytype;
-
-      document.getElementById('m-as').textContent = d.as + '%';
-      document.getElementById('m-cr').textContent = d.cr + '%';
-      document.getElementById('m-pb').textContent = d.pb + '%';
-      document.getElementById('m-cd').textContent = d.cd + '%';
-      document.getElementById('m-zn').textContent = d.zn + '%';
-      document.getElementById('m-cu').textContent = d.cu + '%';
-      document.getElementById('m-ni').textContent = d.ni + '%';
-
-      document.getElementById('p3-bod').textContent = d.bod + '%';
-      document.getElementById('p3-cod').textContent = d.cod + '%';
-      document.getElementById('p3-do').textContent = d.do + '%';
-      document.getElementById('p3-ph').textContent = d.ph + '%';
-      document.getElementById('p3-tds').textContent = d.tds + '%';
-
+      const d = currentSelected, tier = getTier(d.surface);
+      document.getElementById('p3-name').textContent = d.name; document.getElementById('p3-stateut').textContent = `(${d.stateut} • ${d.citytype})`;
+      document.getElementById('p3-risk-badge').textContent = tier.label; document.getElementById('p3-risk-badge').className = `px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border ${tier.badge}`;
+      document.getElementById('p3-surface').textContent = d.surface + '%'; document.getElementById('p3-surface').className = `text-3xl font-black ${tier.text} mt-2`;
+      document.getElementById('p3-ground').textContent = d.ground + '%'; document.getElementById('p3-metal').textContent = d.metal; document.getElementById('p3-citytype').textContent = d.citytype;
+      ['as','cr','pb','cd','zn','cu','ni'].forEach(m => document.getElementById(`m-${m}`).textContent = d[m] + '%');
+      ['bod','cod','do','ph','tds'].forEach(p => document.getElementById(`p3-${p}`).textContent = d[p] + '%');
       document.getElementById('p3-source-desc').textContent = d.source;
     }
 
@@ -1006,48 +510,25 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       const d = currentSelected;
       document.getElementById('p4-name-title').textContent = `${d.name} (${d.stateut})`;
       document.getElementById('p4-metal-warn').textContent = `${d.metal} & Heavy Runoff`;
-
-      let solution = "";
-      if (d.metal === "Chromium") {
-        solution = "Strong Base Anion (SBA) Ion-Exchange Resin Bed + Dual-Stage Reverse Osmosis (RO) with Catalytic Carbon Pre-Treatment to neutralize Hexavalent Chromium (Cr-VI).";
-      } else if (d.metal === "Arsenic") {
-        solution = "Activated Alumina Adsorption Bed + Iron-Oxide Coated Sand (IOCS) with Pre-Oxidation to precipitate and extract inorganic Arsenite/Arsenate.";
-      } else if (d.metal === "Lead" || d.metal === "Cadmium") {
-        solution = "Sub-micron Ultrafiltration + Thin-film Composite (TFC) Reverse Osmosis with Chelation softening to extract Lead and Cadmium ions.";
-      } else {
-        solution = "Multi-media Sand Filtration + Activated Carbon Adsorption Bed with Ozonation and Post-Remineralization for trace heavy metal extraction.";
-      }
-
-      document.getElementById('p4-solution-text').textContent = solution;
+      let s = "Multi-media Sand Filtration + Activated Carbon Adsorption Bed with Ozonation for trace heavy metal extraction.";
+      if (d.metal === "Chromium") s = "Strong Base Anion (SBA) Ion-Exchange Resin Bed + Dual-Stage Reverse Osmosis (RO) with Catalytic Carbon Pre-Treatment to neutralize Hexavalent Chromium (Cr-VI).";
+      else if (d.metal === "Arsenic") s = "Activated Alumina Adsorption Bed + Iron-Oxide Coated Sand (IOCS) with Pre-Oxidation to precipitate and extract inorganic Arsenite/Arsenate.";
+      else if (d.metal === "Lead" || d.metal === "Cadmium") s = "Sub-micron Ultrafiltration + Thin-film Composite (TFC) Reverse Osmosis with Chelation softening to extract Lead and Cadmium ions.";
+      document.getElementById('p4-solution-text').textContent = s;
     }
 
     function goToPage(pageNumber) {
       document.querySelectorAll('.page-screen').forEach(el => el.classList.remove('active'));
       document.getElementById(`page-${pageNumber}`).classList.add('active');
-
       for (let i = 1; i <= 4; i++) {
         const pill = document.getElementById(`step-pill-${i}`);
-        if (pill) {
-          if (i === pageNumber) {
-            pill.className = "px-3 py-1 rounded-full bg-cyan-500 text-slate-950 font-bold transition-all";
-          } else if (i < pageNumber) {
-            pill.className = "px-3 py-1 rounded-full bg-slate-800 text-cyan-400 font-semibold transition-all";
-          } else {
-            pill.className = "px-3 py-1 rounded-full bg-slate-900 text-slate-500 transition-all";
-          }
-        }
+        if (pill) pill.className = i === pageNumber ? "px-3 py-1 rounded-full bg-cyan-500 text-slate-950 font-bold transition-all" : i < pageNumber ? "px-3 py-1 rounded-full bg-slate-800 text-cyan-400 font-semibold transition-all" : "px-3 py-1 rounded-full bg-slate-900 text-slate-500 transition-all";
       }
-
-      if (pageNumber === 3) populatePage3();
-      if (pageNumber === 4) populatePage4();
-
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      lucide.createIcons();
+      if (pageNumber === 3) populatePage3(); if (pageNumber === 4) populatePage4();
+      window.scrollTo({ top: 0, behavior: 'smooth' }); lucide.createIcons();
     }
 
-    // Initialize with robust map engine
-    renderRealisticIndiaMap();
-    lucide.createIcons();
+    renderRealisticIndiaMap(); lucide.createIcons();
   </script>
 </body>
 </html>
