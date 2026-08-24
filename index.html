@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <!-- ========================================================================== -->
-<!-- SECTION 1: CSS & LIBRARIES (Tailwind, Lucide, D3, Custom Animations)       -->
+<!-- 1. STYLES & LIBRARIES (Tailwind, Lucide Icons, D3.js Geo Engine)           -->
 <!-- ========================================================================== -->
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,12 +21,15 @@
     .city-pin:hover { transform: scale(1.5); }
     .city-pulse { animation: pulse-city 2s infinite ease-out; transform-origin: center; }
     @keyframes pulse-city { 0% { r: 3; opacity: 1; } 100% { r: 9; opacity: 0; } }
+    /* Custom Scrollbar for Dropdown */
+    #search-dropdown::-webkit-scrollbar { width: 6px; }
+    #search-dropdown::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 999px; }
   </style>
 </head>
 <body class="bg-[#030a14] text-slate-100 font-sans min-h-screen selection:bg-cyan-500 selection:text-black">
 
   <!-- ========================================================================== -->
-  <!-- SECTION 2: HTML - HEADER & 4-PHASE MULTI-PAGE APPLICATION                  -->
+  <!-- 2. HTML MARKUP: HEADER & 4 GUIDED APPLICATION PAGES                        -->
   <!-- ========================================================================== -->
   <!-- HEADER -->
   <header class="border-b border-slate-800/80 bg-[#08172c]/90 backdrop-blur sticky top-0 z-50 px-6 py-3.5">
@@ -45,7 +48,7 @@
     </div>
   </header>
 
-  <!-- PAGE 1: INDIA MAP -->
+  <!-- PHASE 1: INDIA VECTOR MAP -->
   <div id="page-1" class="page-screen active max-w-7xl mx-auto px-4 py-6">
     <div class="flex justify-center mb-3">
       <div class="inline-flex items-center gap-2 bg-[#0c223c]/90 border border-slate-700/60 text-slate-200 px-5 py-2 rounded-full text-xs font-semibold shadow-xl backdrop-blur">
@@ -53,7 +56,7 @@
       </div>
     </div>
     <div class="map-canvas rounded-3xl border border-slate-800/80 p-4 sm:p-6 relative shadow-2xl overflow-hidden min-h-[640px] flex flex-col items-center justify-center">
-      <!-- Tooltip -->
+      <!-- Live Tooltip -->
       <div id="map-tooltip" class="hidden absolute top-6 right-6 bg-[#0c2038]/95 border border-slate-700 p-4 rounded-2xl shadow-2xl text-xs z-30 pointer-events-none min-w-[220px] backdrop-blur">
         <div class="font-extrabold text-white text-sm" id="tt-name">Uttar Pradesh</div>
         <div class="text-slate-400 mt-0.5 text-[11px]" id="tt-type">State Category</div>
@@ -61,7 +64,7 @@
         <div class="text-slate-400 mt-1 flex items-center justify-between"><span>Primary Metal:</span><b class="text-white" id="tt-metal">Chromium</b></div>
         <div class="text-[10px] text-cyan-400 font-bold mt-2 text-center bg-cyan-500/10 py-1 rounded-lg">Click to view full data & stats →</div>
       </div>
-      <!-- D3 Map Container -->
+      <!-- D3 SVG Container -->
       <div id="d3-india-map" class="w-full max-w-2xl flex justify-center relative min-h-[520px]"></div>
       <!-- 4-Tier Legend -->
       <div class="mt-3 flex flex-wrap items-center justify-center gap-4 bg-[#091a2f]/95 border border-slate-700/90 px-6 py-2.5 rounded-2xl text-xs font-bold shadow-2xl backdrop-blur">
@@ -79,31 +82,51 @@
     </div>
   </div>
 
-  <!-- PAGE 2: SEARCH ENGINE -->
+  <!-- PHASE 2: LOCATION SEARCH ENGINE WITH DROPDOWN -->
   <div id="page-2" class="page-screen max-w-3xl mx-auto px-4 py-12">
     <div class="text-center mb-8">
       <div class="inline-flex items-center gap-2 bg-purple-500/10 text-purple-400 border border-purple-500/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-3"><i data-lucide="search" class="w-4 h-4"></i> Phase 2: Location Search Engine</div>
       <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Search Your City, State or District</h2>
-      <p class="text-slate-400 text-sm mt-2">Type any location across India to pull verified heavy metal & contamination telemetry.</p>
+      <p class="text-slate-400 text-sm mt-2">Type or choose from the dropdown list to pull verified heavy metal & contamination telemetry.</p>
     </div>
     <div class="bg-[#08172c] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+      <!-- Search Input with Live Dropdown -->
       <div class="relative mb-4">
-        <i data-lucide="map-pin" class="w-5 h-5 absolute left-4 top-4 text-cyan-400"></i>
-        <input type="text" id="search-input" placeholder="Type e.g. Kanpur, Kolkata, Vapi, Ludhiana, Delhi, Bengaluru, Srinagar, Leh..." class="w-full bg-[#030a14] border border-slate-700 rounded-2xl pl-12 pr-28 py-3.5 text-base focus:outline-none focus:border-cyan-400 text-white placeholder-slate-500 transition" onkeypress="if(event.key === 'Enter') handleSearchSubmit()"/>
-        <button onclick="handleSearchSubmit()" class="absolute right-2 top-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-5 py-2 rounded-xl text-xs transition cursor-pointer">Verify</button>
+        <i data-lucide="map-pin" class="w-5 h-5 absolute left-4 top-4 text-cyan-400 z-10"></i>
+        <input 
+          type="text" 
+          id="search-input" 
+          autocomplete="off"
+          placeholder="Type e.g. Kanpur, Siliguri, Vapi, Ludhiana, Delhi, Bengaluru, Srinagar, Leh..." 
+          class="w-full bg-[#030a14] border border-slate-700 rounded-2xl pl-12 pr-28 py-3.5 text-base focus:outline-none focus:border-cyan-400 text-white placeholder-slate-500 transition" 
+          oninput="handleSearchInput()"
+          onfocus="handleSearchInput()"
+          onkeypress="if(event.key === 'Enter') handleSearchSubmit()"
+        />
+        <button onclick="handleSearchSubmit()" class="absolute right-2 top-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-5 py-2 rounded-xl text-xs transition cursor-pointer z-10">Verify</button>
+
+        <!-- LIVE AUTOCOMPLETE DROPDOWN -->
+        <div id="search-dropdown" class="hidden absolute left-0 right-0 top-full mt-2 bg-[#0a1c32] border border-slate-700 rounded-2xl shadow-2xl max-h-64 overflow-y-auto z-50 divide-y divide-slate-800/80 backdrop-blur"></div>
       </div>
+
+      <!-- Quick Suggestion Badges -->
       <div class="flex items-center gap-1.5 flex-wrap mb-6 text-xs">
         <span class="text-slate-500 font-medium">Quick examples:</span>
         <button onclick="quickPick('Kanpur')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-purple-300">Kanpur (🟣 50%+)</button>
         <button onclick="quickPick('Kolkata')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-red-300">Kolkata (🔴 40–49%)</button>
-        <button onclick="quickPick('Bengaluru')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-amber-300">Bengaluru (🟡 20–39%)</button>
+        <button onclick="quickPick('Siliguri')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-amber-300">Siliguri (🟡 28%)</button>
+        <button onclick="quickPick('Bengaluru')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-amber-300">Bengaluru (🟡 26%)</button>
         <button onclick="quickPick('Srinagar')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-emerald-300">Srinagar (🟢 J&K)</button>
         <button onclick="quickPick('Leh')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-emerald-300">Leh (🟢 Ladakh)</button>
       </div>
+
+      <!-- Error Card (Loop) -->
       <div id="search-error" class="hidden p-4 rounded-2xl bg-red-950/40 border border-red-500/40 text-red-300 text-sm mb-6 flex items-start gap-3">
         <i data-lucide="alert-circle" class="w-5 h-5 text-red-400 shrink-0 mt-0.5"></i>
         <div><b>Your location is currently not found.</b><p class="text-xs text-slate-400 mt-1">Please try another Indian state, district, or industrial hub from our database (e.g. Ludhiana, Varanasi, Ahmedabad, Patna, Chennai, Jaipur).</p></div>
       </div>
+
+      <!-- Verified Card -->
       <div id="search-success" class="hidden p-5 rounded-2xl bg-[#030a14] border mb-6">
         <div class="flex items-center justify-between flex-wrap gap-2">
           <div class="flex items-center gap-3">
@@ -116,6 +139,8 @@
           <span>⚠️ Key Heavy Metal: <b class="text-white" id="success-metal">Chromium</b></span><span>•</span><span>Source: <span class="text-slate-300" id="success-source">Tannery effluent (~1000 units)</span></span>
         </div>
       </div>
+
+      <!-- Actions -->
       <div class="flex items-center justify-between pt-4 border-t border-slate-800">
         <button onclick="goToPage(1)" class="flex items-center gap-2 text-slate-400 hover:text-white text-sm font-semibold transition"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to National Map</button>
         <button id="btn-goto-p3" onclick="goToPage(3)" disabled class="inline-flex items-center gap-2 bg-slate-800 text-slate-500 font-black px-7 py-3.5 rounded-full text-sm transition-all cursor-not-allowed"><span>Next: View Detailed Stats</span><i data-lucide="arrow-right" class="w-4 h-4"></i></button>
@@ -123,7 +148,7 @@
     </div>
   </div>
 
-  <!-- PAGE 3: TELEMETRY & DATA REPORT -->
+  <!-- PHASE 3: DATA & STATS TELEMETRY -->
   <div id="page-3" class="page-screen max-w-5xl mx-auto px-4 py-8">
     <div class="bg-[#08172c] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl mb-8">
       <div class="flex items-center justify-between flex-wrap gap-4 border-b border-slate-800 pb-6 mb-6">
@@ -164,7 +189,7 @@
     </div>
   </div>
 
-  <!-- PAGE 4: SOLUTIONS & REMEDIATION -->
+  <!-- PHASE 4: SOLUTIONS & REMEDIATION -->
   <div id="page-4" class="page-screen max-w-5xl mx-auto px-4 py-8">
     <div class="bg-[#08172c] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl mb-8">
       <div class="text-center max-w-2xl mx-auto mb-8">
@@ -200,10 +225,10 @@
   </div>
 
   <!-- ========================================================================== -->
-  <!-- SECTION 3: JAVASCRIPT & DATABASE ENGINE (D3 Map, Search, Telemetry, Router)-->
+  <!-- 3. JAVASCRIPT: DATASET, D3 MAP, SEARCH ENGINE & ROUTING                    -->
   <!-- ========================================================================== -->
   <script>
-    // 115+ Regional Water Contamination Records
+    // 115+ Verified Locations Dataset
     const csvRaw = `location_name,location_type,state_ut,city_type,surface_water_pollution_pct,groundwater_pollution_pct,arsenic_as_pct,chromium_cr_pct,lead_pb_pct,cadmium_cd_pct,zinc_zn_pct,copper_cu_pct,nickel_ni_pct,bod_exceedance_pct,cod_exceedance_pct,do_exceedance_pct,ph_exceedance_pct,tds_exceedance_pct,primary_pollutant_source,risk_level,key_heavy_metal
 Andhra Pradesh,State,Andhra Pradesh,State,38,28,38,18,22,12,6,2,2,38,44,32,26,48,State-level aggregate,High,Arsenic
 Arunachal Pradesh,State,Arunachal Pradesh,State,12,8,80,6,6,2,2,2,2,10,14,8,8,10,State-level aggregate,Low,Arsenic
@@ -373,7 +398,7 @@ Puducherry,City,Puducherry,UT Capital,22,18,4,10,14,8,16,16,32,20,26,16,18,30,Co
 Leh,City,Ladakh,UT Capital,12,8,8,6,8,4,8,6,60,10,14,8,8,10,High altitude minimal pollution,Low,Arsenic
 Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial + remote,Low,Arsenic`;
 
-    // Parse CSV records
+    // Parse Records
     const allRecords = csvRaw.trim().split('\n').slice(1).map(l => {
       const v = l.split(',');
       return { name: v[0], type: v[1], stateut: v[2], citytype: v[3], surface: parseInt(v[4]), ground: parseInt(v[5]), as: v[6], cr: v[7], pb: v[8], cd: v[9], zn: v[10], cu: v[11], ni: v[12], bod: v[13], cod: v[14], do: v[15], ph: v[16], tds: v[17], source: v[18], risk: v[19], metal: v[20] };
@@ -383,10 +408,10 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
 
     // City GPS Coordinates for Vector Map
     const cityPins = [
-      { name: "Kanpur", coords: [80.3319, 26.4499], pct: 68 }, { name: "Varanasi", coords: [82.9739, 25.3176], pct: 55 }, { name: "Lucknow", coords: [80.9462, 26.8467], pct: 50 }, { name: "Agra", coords: [78.0081, 27.1767], pct: 48 }, { name: "Meerut", coords: [77.7060, 28.9845], pct: 50 }, { name: "Moradabad", coords: [78.7768, 28.8386], pct: 62 }, { name: "Bareilly", coords: [79.4304, 28.3670], pct: 42 }, { name: "Aligarh", coords: [78.0880, 27.8974], pct: 44 }, { name: "Ghaziabad", coords: [77.4538, 28.6692], pct: 48 }, { name: "New Delhi", coords: [77.2090, 28.6139], pct: 52 }, { name: "Mumbai", coords: [72.8777, 19.0760], pct: 48 }, { name: "Pune", coords: [73.8567, 18.5204], pct: 38 }, { name: "Nagpur", coords: [79.0882, 21.1458], pct: 30 }, { name: "Nashik", coords: [73.7898, 19.9975], pct: 36 }, { name: "Thane", coords: [72.9781, 19.2183], pct: 46 }, { name: "Ahmedabad", coords: [72.5714, 23.0225], pct: 48 }, { name: "Surat", coords: [72.8311, 21.1702], pct: 44 }, { name: "Vapi", coords: [72.9289, 20.3719], pct: 60 }, { name: "Vadodara", coords: [73.1812, 22.3072], pct: 42 }, { name: "Rajkot", coords: [70.8022, 22.3039], pct: 36 }, { name: "Ankleshwar", coords: [73.0035, 21.6264], pct: 58 }, { name: "Kolkata", coords: [88.3639, 22.5726], pct: 46 }, { name: "Howrah", coords: [88.3103, 22.5958], pct: 50 }, { name: "Durgapur", coords: [87.3119, 23.5204], pct: 54 }, { name: "Asansol", coords: [86.9842, 23.6889], pct: 52 }, { name: "Haldia", coords: [88.0645, 22.0620], pct: 48 }, { name: "Jamshedpur", coords: [86.2029, 22.8046], pct: 50 }, { name: "Dhanbad", coords: [86.4304, 23.7957], pct: 46 }, { name: "Ranchi", coords: [85.3096, 23.3441], pct: 34 }, { name: "Bokaro", coords: [85.9610, 23.6693], pct: 44 }, { name: "Patna", coords: [85.1376, 25.5941], pct: 36 }, { name: "Gaya", coords: [85.0002, 24.7914], pct: 30 }, { name: "Hyderabad", coords: [78.4867, 17.3850], pct: 38 }, { name: "Warangal", coords: [79.5941, 17.9689], pct: 32 }, { name: "Visakhapatnam", coords: [83.2185, 17.6868], pct: 40 }, { name: "Vijayawada", coords: [80.6480, 16.5062], pct: 34 }, { name: "Tirupati", coords: [79.4192, 13.6288], pct: 22 }, { name: "Chennai", coords: [80.2707, 13.0827], pct: 32 }, { name: "Coimbatore", coords: [76.9558, 11.0168], pct: 28 }, { name: "Karimpur (Ranipet)", coords: [79.3330, 12.9279], pct: 64 }, { name: "Tiruppur", coords: [77.3411, 11.1085], pct: 46 }, { name: "Bengaluru", coords: [77.5946, 12.9716], pct: 26 }, { name: "Mysuru", coords: [76.6394, 12.2958], pct: 20 }, { name: "Mangaluru", coords: [74.8560, 12.9141], pct: 18 }, { name: "Thiruvananthapuram", coords: [76.9366, 8.5241], pct: 14 }, { name: "Kochi", coords: [76.2673, 9.9312], pct: 18 }, { name: "Eloor", coords: [76.2996, 10.0768], pct: 46 }, { name: "Bhopal", coords: [77.4126, 23.2599], pct: 32 }, { name: "Indore", coords: [75.8577, 22.7196], pct: 36 }, { name: "Jabalpur", coords: [79.9864, 23.1815], pct: 28 }, { name: "Gwalior", coords: [78.1828, 26.2183], pct: 34 }, { name: "Jaipur", coords: [75.7873, 26.9124], pct: 42 }, { name: "Jodhpur", coords: [73.0243, 26.2389], pct: 34 }, { name: "Udaipur", coords: [73.7125, 24.5854], pct: 30 }, { name: "Kota", coords: [75.8648, 25.2138], pct: 36 }, { name: "Ludhiana", coords: [75.8573, 30.9010], pct: 46 }, { name: "Amritsar", coords: [74.8723, 31.6340], pct: 36 }, { name: "Jalandhar", coords: [75.5762, 31.3260], pct: 40 }, { name: "Faridabad", coords: [77.3178, 28.4089], pct: 42 }, { name: "Gurugram", coords: [77.0266, 28.4595], pct: 38 }, { name: "Panipat", coords: [76.9635, 29.3909], pct: 48 }, { name: "Dehradun", coords: [78.0322, 30.3165], pct: 22 }, { name: "Haridwar", coords: [78.1642, 29.9457], pct: 28 }, { name: "Guwahati", coords: [91.7362, 26.1445], pct: 24 }, { name: "Raipur", coords: [81.6296, 21.2514], pct: 36 }, { name: "Bhilai", coords: [81.3803, 21.1938], pct: 40 }, { name: "Korba", coords: [82.6841, 22.3595], pct: 42 }, { name: "Bhubaneswar", coords: [85.8245, 20.2961], pct: 26 }, { name: "Rourkela", coords: [84.8536, 22.2604], pct: 38 }, { name: "Srinagar", coords: [74.7973, 34.0837], pct: 16 }, { name: "Jammu", coords: [74.8570, 32.7266], pct: 20 }, { name: "Leh", coords: [77.5771, 34.1526], pct: 12 }, { name: "Kargil", coords: [76.1320, 34.5539], pct: 10 }, { name: "Shimla", coords: [77.1734, 31.1048], pct: 14 }, { name: "Panaji", coords: [73.8278, 15.4909], pct: 18 }
+      { name: "Kanpur", coords: [80.3319, 26.4499], pct: 68 }, { name: "Varanasi", coords: [82.9739, 25.3176], pct: 55 }, { name: "Lucknow", coords: [80.9462, 26.8467], pct: 50 }, { name: "Agra", coords: [78.0081, 27.1767], pct: 48 }, { name: "Meerut", coords: [77.7060, 28.9845], pct: 50 }, { name: "Moradabad", coords: [78.7768, 28.8386], pct: 62 }, { name: "Bareilly", coords: [79.4304, 28.3670], pct: 42 }, { name: "Aligarh", coords: [78.0880, 27.8974], pct: 44 }, { name: "Ghaziabad", coords: [77.4538, 28.6692], pct: 48 }, { name: "New Delhi", coords: [77.2090, 28.6139], pct: 52 }, { name: "Mumbai", coords: [72.8777, 19.0760], pct: 48 }, { name: "Pune", coords: [73.8567, 18.5204], pct: 38 }, { name: "Nagpur", coords: [79.0882, 21.1458], pct: 30 }, { name: "Nashik", coords: [73.7898, 19.9975], pct: 36 }, { name: "Thane", coords: [72.9781, 19.2183], pct: 46 }, { name: "Ahmedabad", coords: [72.5714, 23.0225], pct: 48 }, { name: "Surat", coords: [72.8311, 21.1702], pct: 44 }, { name: "Vapi", coords: [72.9289, 20.3719], pct: 60 }, { name: "Vadodara", coords: [73.1812, 22.3072], pct: 42 }, { name: "Rajkot", coords: [70.8022, 22.3039], pct: 36 }, { name: "Ankleshwar", coords: [73.0035, 21.6264], pct: 58 }, { name: "Kolkata", coords: [88.3639, 22.5726], pct: 46 }, { name: "Howrah", coords: [88.3103, 22.5958], pct: 50 }, { name: "Durgapur", coords: [87.3119, 23.5204], pct: 54 }, { name: "Asansol", coords: [86.9842, 23.6889], pct: 52 }, { name: "Siliguri", coords: [88.4283, 26.7271], pct: 28 }, { name: "Haldia", coords: [88.0645, 22.0620], pct: 48 }, { name: "Jamshedpur", coords: [86.2029, 22.8046], pct: 50 }, { name: "Dhanbad", coords: [86.4304, 23.7957], pct: 46 }, { name: "Ranchi", coords: [85.3096, 23.3441], pct: 34 }, { name: "Bokaro", coords: [85.9610, 23.6693], pct: 44 }, { name: "Patna", coords: [85.1376, 25.5941], pct: 36 }, { name: "Gaya", coords: [85.0002, 24.7914], pct: 30 }, { name: "Hyderabad", coords: [78.4867, 17.3850], pct: 38 }, { name: "Warangal", coords: [79.5941, 17.9689], pct: 32 }, { name: "Visakhapatnam", coords: [83.2185, 17.6868], pct: 40 }, { name: "Vijayawada", coords: [80.6480, 16.5062], pct: 34 }, { name: "Tirupati", coords: [79.4192, 13.6288], pct: 22 }, { name: "Chennai", coords: [80.2707, 13.0827], pct: 32 }, { name: "Coimbatore", coords: [76.9558, 11.0168], pct: 28 }, { name: "Karimpur (Ranipet)", coords: [79.3330, 12.9279], pct: 64 }, { name: "Tiruppur", coords: [77.3411, 11.1085], pct: 46 }, { name: "Bengaluru", coords: [77.5946, 12.9716], pct: 26 }, { name: "Mysuru", coords: [76.6394, 12.2958], pct: 20 }, { name: "Mangaluru", coords: [74.8560, 12.9141], pct: 18 }, { name: "Thiruvananthapuram", coords: [76.9366, 8.5241], pct: 14 }, { name: "Kochi", coords: [76.2673, 9.9312], pct: 18 }, { name: "Eloor", coords: [76.2996, 10.0768], pct: 46 }, { name: "Bhopal", coords: [77.4126, 23.2599], pct: 32 }, { name: "Indore", coords: [75.8577, 22.7196], pct: 36 }, { name: "Jabalpur", coords: [79.9864, 23.1815], pct: 28 }, { name: "Gwalior", coords: [78.1828, 26.2183], pct: 34 }, { name: "Jaipur", coords: [75.7873, 26.9124], pct: 42 }, { name: "Jodhpur", coords: [73.0243, 26.2389], pct: 34 }, { name: "Udaipur", coords: [73.7125, 24.5854], pct: 30 }, { name: "Kota", coords: [75.8648, 25.2138], pct: 36 }, { name: "Ludhiana", coords: [75.8573, 30.9010], pct: 46 }, { name: "Amritsar", coords: [74.8723, 31.6340], pct: 36 }, { name: "Jalandhar", coords: [75.5762, 31.3260], pct: 40 }, { name: "Faridabad", coords: [77.3178, 28.4089], pct: 42 }, { name: "Gurugram", coords: [77.0266, 28.4595], pct: 38 }, { name: "Panipat", coords: [76.9635, 29.3909], pct: 48 }, { name: "Dehradun", coords: [78.0322, 30.3165], pct: 22 }, { name: "Haridwar", coords: [78.1642, 29.9457], pct: 28 }, { name: "Guwahati", coords: [91.7362, 26.1445], pct: 24 }, { name: "Raipur", coords: [81.6296, 21.2514], pct: 36 }, { name: "Bhilai", coords: [81.3803, 21.1938], pct: 40 }, { name: "Korba", coords: [82.6841, 22.3595], pct: 42 }, { name: "Bhubaneswar", coords: [85.8245, 20.2961], pct: 26 }, { name: "Rourkela", coords: [84.8536, 22.2604], pct: 38 }, { name: "Srinagar", coords: [74.7973, 34.0837], pct: 16 }, { name: "Jammu", coords: [74.8570, 32.7266], pct: 20 }, { name: "Leh", coords: [77.5771, 34.1526], pct: 12 }, { name: "Kargil", coords: [76.1320, 34.5539], pct: 10 }, { name: "Shimla", coords: [77.1734, 31.1048], pct: 14 }, { name: "Panaji", coords: [73.8278, 15.4909], pct: 18 }
     ];
 
-    // Returns exact color tier
+    // Risk Color Resolver
     function getTier(pct) {
       if (pct >= 50) return { fill: "#a855f7", label: "🟣 Extreme 50%+", badge: "bg-purple-500/20 text-purple-300 border-purple-500/40", text: "text-purple-400", dot: "bg-purple-500 shadow-md shadow-purple-500/50" };
       if (pct >= 40) return { fill: "#ef4444", label: "🔴 Critical 40–49%", badge: "bg-red-500/20 text-red-300 border-red-500/40", text: "text-red-400", dot: "bg-red-500 shadow-md shadow-red-500/50" };
@@ -394,7 +419,7 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       return { fill: "#10b981", label: "🟢 Good <20%", badge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40", text: "text-emerald-400", dot: "bg-emerald-500 shadow-md shadow-emerald-500/50" };
     }
 
-    // Handles GeoJSON Name variations
+    // GeoJSON Name Resolver
     function matchDatabaseRecord(raw) {
       if (!raw) return null;
       const s = raw.toLowerCase().replace(/&/g, 'and').trim();
@@ -411,7 +436,7 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       return allRecords.find(r => r.name.toLowerCase() === raw.toLowerCase().trim() || r.stateut.toLowerCase() === raw.toLowerCase().trim());
     }
 
-    // D3 Vector Map Renderer
+    // Render D3 Vector Map
     function renderRealisticIndiaMap() {
       const container = document.getElementById('d3-india-map'); container.innerHTML = "";
       const width = 600, height = 550;
@@ -420,7 +445,7 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       const path = d3.geoPath().projection(projection);
 
       d3.json("https://cdn.jsdelivr.net/gh/Subhash9325/GeoJson-Data-of-Indian-States@master/Indian_States").then(geoData => {
-        // State Polygons
+        // States
         svg.selectAll(".state-path").data(geoData.features).enter().append("path").attr("d", path).attr("class", "state-path")
           .attr("fill", d => { const m = matchDatabaseRecord(d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME); return m ? getTier(m.surface).fill : "#10b981"; })
           .on("mouseenter", (e, d) => {
@@ -435,12 +460,12 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
           .on("mouseleave", () => document.getElementById('map-tooltip').classList.add('hidden'))
           .on("click", (e, d) => { const m = matchDatabaseRecord(d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME); if (m) { currentSelected = m; goToPage(3); } });
 
-        // State Labels
+        // Labels
         svg.selectAll(".state-label").data(geoData.features).enter().append("text").attr("class", "state-label")
           .attr("transform", d => { const c = path.centroid(d); return isNaN(c[0]) ? null : `translate(${c[0]}, ${c[1]})`; })
           .text(d => { const r = d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || ""; return r.length > 12 ? r.substring(0, 10) + ".." : r; });
 
-        // City Target Pins
+        // City Hotspots
         cityPins.forEach(city => {
           const pt = projection(city.coords);
           if (pt) {
@@ -465,16 +490,68 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       });
     }
 
+    // Direct Jump
     function selectAndJump(cityName) {
       const match = allRecords.find(r => r.name.toLowerCase() === cityName.toLowerCase());
       if (match) { currentSelected = match; goToPage(3); }
     }
 
-    function quickPick(name) { document.getElementById('search-input').value = name; handleSearchSubmit(); }
+    // Quick Select
+    function quickPick(name) { 
+      document.getElementById('search-input').value = name; 
+      document.getElementById('search-dropdown').classList.add('hidden');
+      handleSearchSubmit(); 
+    }
 
+    // Dynamic Autocomplete Dropdown
+    function handleSearchInput() {
+      const q = document.getElementById('search-input').value.trim().toLowerCase();
+      const dd = document.getElementById('search-dropdown');
+      if (!q) { dd.classList.add('hidden'); return; }
+
+      const matches = allRecords.filter(r => 
+        r.name.toLowerCase().includes(q) || 
+        r.stateut.toLowerCase().includes(q)
+      ).slice(0, 8);
+
+      if (matches.length === 0) { dd.classList.add('hidden'); return; }
+
+      dd.innerHTML = matches.map(r => {
+        const t = getTier(r.surface);
+        return `<div onclick="selectFromDropdown('${r.name}')" class="p-3 hover:bg-slate-800/90 cursor-pointer flex items-center justify-between transition">
+          <div class="flex items-center gap-2.5">
+            <span class="w-2.5 h-2.5 rounded-full ${t.dot}"></span>
+            <span class="font-bold text-white text-sm">${r.name}</span>
+            <span class="text-xs text-slate-400">(${r.stateut})</span>
+          </div>
+          <span class="text-[11px] font-bold ${t.text}">${r.surface}% • ${r.metal}</span>
+        </div>`;
+      }).join('');
+
+      dd.classList.remove('hidden');
+    }
+
+    function selectFromDropdown(name) {
+      document.getElementById('search-input').value = name;
+      document.getElementById('search-dropdown').classList.add('hidden');
+      handleSearchSubmit();
+    }
+
+    // Close Dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      const searchBox = document.getElementById('search-input');
+      const dd = document.getElementById('search-dropdown');
+      if (searchBox && dd && !searchBox.contains(e.target) && !dd.contains(e.target)) {
+        dd.classList.add('hidden');
+      }
+    });
+
+    // Verification Logic
     function handleSearchSubmit() {
       const q = document.getElementById('search-input').value.trim().toLowerCase();
       const err = document.getElementById('search-error'), succ = document.getElementById('search-success'), nextBtn = document.getElementById('btn-goto-p3');
+      document.getElementById('search-dropdown').classList.add('hidden');
+
       if (!q) { err.classList.remove('hidden'); succ.classList.add('hidden'); nextBtn.disabled = true; nextBtn.className = "inline-flex items-center gap-2 bg-slate-800 text-slate-500 font-black px-7 py-3.5 rounded-full text-sm transition-all cursor-not-allowed"; return; }
 
       const match = allRecords.find(r => r.name.toLowerCase() === q || r.name.toLowerCase().includes(q) || q.includes(r.name.toLowerCase()) || r.stateut.toLowerCase() === q);
@@ -495,6 +572,7 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       lucide.createIcons();
     }
 
+    // Telemetry Population
     function populatePage3() {
       const d = currentSelected, tier = getTier(d.surface);
       document.getElementById('p3-name').textContent = d.name; document.getElementById('p3-stateut').textContent = `(${d.stateut} • ${d.citytype})`;
@@ -506,6 +584,7 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       document.getElementById('p3-source-desc').textContent = d.source;
     }
 
+    // Solution Population
     function populatePage4() {
       const d = currentSelected;
       document.getElementById('p4-name-title').textContent = `${d.name} (${d.stateut})`;
@@ -517,6 +596,7 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       document.getElementById('p4-solution-text').textContent = s;
     }
 
+    // Page Router
     function goToPage(pageNumber) {
       document.querySelectorAll('.page-screen').forEach(el => el.classList.remove('active'));
       document.getElementById(`page-${pageNumber}`).classList.add('active');
@@ -528,6 +608,7 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       window.scrollTo({ top: 0, behavior: 'smooth' }); lucide.createIcons();
     }
 
+    // Initialize
     renderRealisticIndiaMap(); lucide.createIcons();
   </script>
 </body>
