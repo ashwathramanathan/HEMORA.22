@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <!-- ========================================================================== -->
-<!-- 1. STYLES & LIBRARIES (Tailwind, Lucide Icons, D3.js Geo Engine)           -->
+<!-- 1. CSS & LIBRARIES (Tailwind, Lucide, D3 Geo Map Engine)                    -->
 <!-- ========================================================================== -->
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,14 +21,14 @@
     .city-pin:hover { transform: scale(1.5); }
     .city-pulse { animation: pulse-city 2s infinite ease-out; transform-origin: center; }
     @keyframes pulse-city { 0% { r: 3; opacity: 1; } 100% { r: 9; opacity: 0; } }
-    #search-dropdown::-webkit-scrollbar { width: 6px; }
-    #search-dropdown::-webkit-scrollbar-thumb { background: #334155; border-radius: 999px; }
+    #search-dropdown-menu::-webkit-scrollbar { width: 6px; }
+    #search-dropdown-menu::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 999px; }
   </style>
 </head>
 <body class="bg-[#030a14] text-slate-100 font-sans min-h-screen selection:bg-cyan-500 selection:text-black">
 
   <!-- ========================================================================== -->
-  <!-- 2. HTML MARKUP: HEADER & 4 GUIDED APPLICATION PAGES                        -->
+  <!-- 2. HTML MARKUP: HEADER & 4 GUIDED APPLICATION PHASES                       -->
   <!-- ========================================================================== -->
   <!-- HEADER -->
   <header class="border-b border-slate-800/80 bg-[#08172c]/90 backdrop-blur sticky top-0 z-50 px-6 py-3.5">
@@ -81,56 +81,49 @@
     </div>
   </div>
 
-  <!-- PHASE 2: SEARCH ENGINE WITH LIVE AUTOCOMPLETE & DROPDOWN -->
+  <!-- PHASE 2: SEARCH ENGINE WITH HIGH-PRECISION DROPDOWN -->
   <div id="page-2" class="page-screen max-w-3xl mx-auto px-4 py-12">
     <div class="text-center mb-8">
       <div class="inline-flex items-center gap-2 bg-purple-500/10 text-purple-400 border border-purple-500/20 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-3"><i data-lucide="search" class="w-4 h-4"></i> Phase 2: Location Search Engine</div>
       <h2 class="text-3xl sm:text-4xl font-extrabold text-white">Search Your City, State or District</h2>
-      <p class="text-slate-400 text-sm mt-2">Type your location or select directly from the dropdown menu.</p>
+      <p class="text-slate-400 text-sm mt-2">Click to select from the dropdown or type any location across India.</p>
     </div>
 
-    <div class="bg-[#08172c] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
-      <!-- Direct Select Dropdown -->
-      <div class="mb-4">
-        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">⚡ Or Select from All 115+ Locations:</label>
-        <select id="location-select" onchange="handleSelectDropdown(this.value)" class="w-full bg-[#030a14] border border-slate-700 rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:border-cyan-400 text-cyan-300 font-semibold cursor-pointer">
-          <option value="">-- Choose State, UT, or Industrial Hub --</option>
-        </select>
-      </div>
+    <div class="bg-[#08172c] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl relative">
+      <!-- Search Input Container with Dropdown -->
+      <div class="relative mb-6">
+        <label class="block text-xs font-bold uppercase tracking-wider text-cyan-400 mb-2">🔍 Select or Type Location:</label>
+        <div class="relative">
+          <i data-lucide="map-pin" class="w-5 h-5 absolute left-4 top-4 text-cyan-400 z-10 pointer-events-none"></i>
+          <input 
+            type="text" 
+            id="search-input" 
+            autocomplete="off"
+            placeholder="Click to browse 115+ locations or type e.g. Kanpur, Kolkata, Delhi..." 
+            class="w-full bg-[#030a14] border-2 border-slate-700 focus:border-cyan-400 rounded-2xl pl-12 pr-28 py-3.5 text-base text-white placeholder-slate-500 focus:outline-none transition shadow-inner" 
+          />
+          <button id="search-verify-btn" type="button" class="absolute right-2 top-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black px-5 py-2.5 rounded-xl text-xs transition cursor-pointer z-10">Verify</button>
+        </div>
 
-      <!-- Search Input with Native Datalist -->
-      <div class="relative mb-4">
-        <i data-lucide="map-pin" class="w-5 h-5 absolute left-4 top-4 text-cyan-400 z-10"></i>
-        <input 
-          type="text" 
-          id="search-input" 
-          list="location-datalist"
-          placeholder="Or type here e.g. Kanpur, Siliguri, Vapi, Delhi, Bengaluru..." 
-          class="w-full bg-[#030a14] border border-slate-700 rounded-2xl pl-12 pr-28 py-3.5 text-base focus:outline-none focus:border-cyan-400 text-white placeholder-slate-500 transition" 
-          oninput="handleSearchSubmit(false)"
-          onkeypress="if(event.key === 'Enter') handleSearchSubmit(true)"
-        />
-        <button onclick="handleSearchSubmit(true)" class="absolute right-2 top-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-5 py-2 rounded-xl text-xs transition cursor-pointer z-10">Verify</button>
-
-        <!-- HTML5 Datalist for Native Dropdown Support -->
-        <datalist id="location-datalist"></datalist>
+        <!-- FLOATING DROPDOWN MENU -->
+        <div id="search-dropdown-menu" class="hidden absolute left-0 right-0 top-full mt-2 bg-[#0c223c] border-2 border-cyan-500/40 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] max-h-72 overflow-y-auto z-[99999] divide-y divide-slate-800 backdrop-blur-xl"></div>
       </div>
 
       <!-- Quick Suggestion Badges -->
       <div class="flex items-center gap-1.5 flex-wrap mb-6 text-xs">
-        <span class="text-slate-500 font-medium">Quick examples:</span>
-        <button onclick="quickPick('Kanpur')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-purple-300">Kanpur (🟣 50%+)</button>
-        <button onclick="quickPick('Kolkata')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-red-300">Kolkata (🔴 40–49%)</button>
-        <button onclick="quickPick('Siliguri')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-amber-300">Siliguri (🟡 28%)</button>
-        <button onclick="quickPick('Bengaluru')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-amber-300">Bengaluru (🟡 26%)</button>
-        <button onclick="quickPick('Srinagar')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-emerald-300">Srinagar (🟢 J&K)</button>
-        <button onclick="quickPick('Leh')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-emerald-300">Leh (🟢 Ladakh)</button>
+        <span class="text-slate-500 font-medium">Quick picks:</span>
+        <button onclick="quickPick('Kanpur')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-purple-300 font-semibold">Kanpur (🟣 50%+)</button>
+        <button onclick="quickPick('Kolkata')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-red-300 font-semibold">Kolkata (🔴 40–49%)</button>
+        <button onclick="quickPick('Siliguri')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-amber-300 font-semibold">Siliguri (🟡 28%)</button>
+        <button onclick="quickPick('Bengaluru')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-amber-300 font-semibold">Bengaluru (🟡 26%)</button>
+        <button onclick="quickPick('Srinagar')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-emerald-300 font-semibold">Srinagar (🟢 J&K)</button>
+        <button onclick="quickPick('Leh')" class="px-2.5 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-emerald-300 font-semibold">Leh (🟢 Ladakh)</button>
       </div>
 
       <!-- Error Card (Loop) -->
       <div id="search-error" class="hidden p-4 rounded-2xl bg-red-950/40 border border-red-500/40 text-red-300 text-sm mb-6 flex items-start gap-3">
         <i data-lucide="alert-circle" class="w-5 h-5 text-red-400 shrink-0 mt-0.5"></i>
-        <div><b>Your location is currently not found.</b><p class="text-xs text-slate-400 mt-1">Please try another Indian state, district, or industrial hub from our database (e.g. Ludhiana, Varanasi, Ahmedabad, Patna, Chennai, Jaipur).</p></div>
+        <div><b>Location not found in database.</b><p class="text-xs text-slate-400 mt-1">Please select an Indian city or state directly from the dropdown menu.</p></div>
       </div>
 
       <!-- Verified Card -->
@@ -232,10 +225,10 @@
   </div>
 
   <!-- ========================================================================== -->
-  <!-- 3. JAVASCRIPT: DATASET, D3 MAP, SEARCH ENGINE & ROUTING                    -->
+  <!-- 3. JAVASCRIPT: DATASET, D3 MAP, ROBUST SEARCH DROPDOWN & ROUTING           -->
   <!-- ========================================================================== -->
   <script>
-    // 115+ Verified Locations Dataset
+    // 115+ Verified Database Records
     const csvRaw = `location_name,location_type,state_ut,city_type,surface_water_pollution_pct,groundwater_pollution_pct,arsenic_as_pct,chromium_cr_pct,lead_pb_pct,cadmium_cd_pct,zinc_zn_pct,copper_cu_pct,nickel_ni_pct,bod_exceedance_pct,cod_exceedance_pct,do_exceedance_pct,ph_exceedance_pct,tds_exceedance_pct,primary_pollutant_source,risk_level,key_heavy_metal
 Andhra Pradesh,State,Andhra Pradesh,State,38,28,38,18,22,12,6,2,2,38,44,32,26,48,State-level aggregate,High,Arsenic
 Arunachal Pradesh,State,Arunachal Pradesh,State,12,8,80,6,6,2,2,2,2,10,14,8,8,10,State-level aggregate,Low,Arsenic
@@ -405,7 +398,7 @@ Puducherry,City,Puducherry,UT Capital,22,18,4,10,14,8,16,16,32,20,26,16,18,30,Co
 Leh,City,Ladakh,UT Capital,12,8,8,6,8,4,8,6,60,10,14,8,8,10,High altitude minimal pollution,Low,Arsenic
 Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial + remote,Low,Arsenic`;
 
-    // Parse Records
+    // Parse Data
     const allRecords = csvRaw.trim().split('\n').slice(1).map(l => {
       const v = l.split(',');
       return { name: v[0], type: v[1], stateut: v[2], citytype: v[3], surface: parseInt(v[4]), ground: parseInt(v[5]), as: v[6], cr: v[7], pb: v[8], cd: v[9], zn: v[10], cu: v[11], ni: v[12], bod: v[13], cod: v[14], do: v[15], ph: v[16], tds: v[17], source: v[18], risk: v[19], metal: v[20] };
@@ -413,33 +406,11 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
 
     let currentSelected = allRecords.find(r => r.name === "Kanpur") || allRecords[0];
 
-    // City GPS Coordinates for Vector Map
+    // City GPS Coordinates
     const cityPins = [
       { name: "Kanpur", coords: [80.3319, 26.4499], pct: 68 }, { name: "Varanasi", coords: [82.9739, 25.3176], pct: 55 }, { name: "Lucknow", coords: [80.9462, 26.8467], pct: 50 }, { name: "Agra", coords: [78.0081, 27.1767], pct: 48 }, { name: "Meerut", coords: [77.7060, 28.9845], pct: 50 }, { name: "Moradabad", coords: [78.7768, 28.8386], pct: 62 }, { name: "Bareilly", coords: [79.4304, 28.3670], pct: 42 }, { name: "Aligarh", coords: [78.0880, 27.8974], pct: 44 }, { name: "Ghaziabad", coords: [77.4538, 28.6692], pct: 48 }, { name: "New Delhi", coords: [77.2090, 28.6139], pct: 52 }, { name: "Mumbai", coords: [72.8777, 19.0760], pct: 48 }, { name: "Pune", coords: [73.8567, 18.5204], pct: 38 }, { name: "Nagpur", coords: [79.0882, 21.1458], pct: 30 }, { name: "Nashik", coords: [73.7898, 19.9975], pct: 36 }, { name: "Thane", coords: [72.9781, 19.2183], pct: 46 }, { name: "Ahmedabad", coords: [72.5714, 23.0225], pct: 48 }, { name: "Surat", coords: [72.8311, 21.1702], pct: 44 }, { name: "Vapi", coords: [72.9289, 20.3719], pct: 60 }, { name: "Vadodara", coords: [73.1812, 22.3072], pct: 42 }, { name: "Rajkot", coords: [70.8022, 22.3039], pct: 36 }, { name: "Ankleshwar", coords: [73.0035, 21.6264], pct: 58 }, { name: "Kolkata", coords: [88.3639, 22.5726], pct: 46 }, { name: "Howrah", coords: [88.3103, 22.5958], pct: 50 }, { name: "Durgapur", coords: [87.3119, 23.5204], pct: 54 }, { name: "Asansol", coords: [86.9842, 23.6889], pct: 52 }, { name: "Siliguri", coords: [88.4283, 26.7271], pct: 28 }, { name: "Haldia", coords: [88.0645, 22.0620], pct: 48 }, { name: "Jamshedpur", coords: [86.2029, 22.8046], pct: 50 }, { name: "Dhanbad", coords: [86.4304, 23.7957], pct: 46 }, { name: "Ranchi", coords: [85.3096, 23.3441], pct: 34 }, { name: "Bokaro", coords: [85.9610, 23.6693], pct: 44 }, { name: "Patna", coords: [85.1376, 25.5941], pct: 36 }, { name: "Gaya", coords: [85.0002, 24.7914], pct: 30 }, { name: "Hyderabad", coords: [78.4867, 17.3850], pct: 38 }, { name: "Warangal", coords: [79.5941, 17.9689], pct: 32 }, { name: "Visakhapatnam", coords: [83.2185, 17.6868], pct: 40 }, { name: "Vijayawada", coords: [80.6480, 16.5062], pct: 34 }, { name: "Tirupati", coords: [79.4192, 13.6288], pct: 22 }, { name: "Chennai", coords: [80.2707, 13.0827], pct: 32 }, { name: "Coimbatore", coords: [76.9558, 11.0168], pct: 28 }, { name: "Karimpur (Ranipet)", coords: [79.3330, 12.9279], pct: 64 }, { name: "Tiruppur", coords: [77.3411, 11.1085], pct: 46 }, { name: "Bengaluru", coords: [77.5946, 12.9716], pct: 26 }, { name: "Mysuru", coords: [76.6394, 12.2958], pct: 20 }, { name: "Mangaluru", coords: [74.8560, 12.9141], pct: 18 }, { name: "Thiruvananthapuram", coords: [76.9366, 8.5241], pct: 14 }, { name: "Kochi", coords: [76.2673, 9.9312], pct: 18 }, { name: "Eloor", coords: [76.2996, 10.0768], pct: 46 }, { name: "Bhopal", coords: [77.4126, 23.2599], pct: 32 }, { name: "Indore", coords: [75.8577, 22.7196], pct: 36 }, { name: "Jabalpur", coords: [79.9864, 23.1815], pct: 28 }, { name: "Gwalior", coords: [78.1828, 26.2183], pct: 34 }, { name: "Jaipur", coords: [75.7873, 26.9124], pct: 42 }, { name: "Jodhpur", coords: [73.0243, 26.2389], pct: 34 }, { name: "Udaipur", coords: [73.7125, 24.5854], pct: 30 }, { name: "Kota", coords: [75.8648, 25.2138], pct: 36 }, { name: "Ludhiana", coords: [75.8573, 30.9010], pct: 46 }, { name: "Amritsar", coords: [74.8723, 31.6340], pct: 36 }, { name: "Jalandhar", coords: [75.5762, 31.3260], pct: 40 }, { name: "Faridabad", coords: [77.3178, 28.4089], pct: 42 }, { name: "Gurugram", coords: [77.0266, 28.4595], pct: 38 }, { name: "Panipat", coords: [76.9635, 29.3909], pct: 48 }, { name: "Dehradun", coords: [78.0322, 30.3165], pct: 22 }, { name: "Haridwar", coords: [78.1642, 29.9457], pct: 28 }, { name: "Guwahati", coords: [91.7362, 26.1445], pct: 24 }, { name: "Raipur", coords: [81.6296, 21.2514], pct: 36 }, { name: "Bhilai", coords: [81.3803, 21.1938], pct: 40 }, { name: "Korba", coords: [82.6841, 22.3595], pct: 42 }, { name: "Bhubaneswar", coords: [85.8245, 20.2961], pct: 26 }, { name: "Rourkela", coords: [84.8536, 22.2604], pct: 38 }, { name: "Srinagar", coords: [74.7973, 34.0837], pct: 16 }, { name: "Jammu", coords: [74.8570, 32.7266], pct: 20 }, { name: "Leh", coords: [77.5771, 34.1526], pct: 12 }, { name: "Kargil", coords: [76.1320, 34.5539], pct: 10 }, { name: "Shimla", coords: [77.1734, 31.1048], pct: 14 }, { name: "Panaji", coords: [73.8278, 15.4909], pct: 18 }
     ];
 
-    // Populate Datalist & Select Dropdowns on Startup
-    function initDropdowns() {
-      const dl = document.getElementById('location-datalist');
-      const sel = document.getElementById('location-select');
-      dl.innerHTML = "";
-      
-      allRecords.forEach(r => {
-        // Datalist option
-        const opt = document.createElement('option');
-        opt.value = r.name;
-        opt.label = `${r.stateut} (${r.surface}% - ${r.risk})`;
-        dl.appendChild(opt);
-
-        // Select option
-        const sOpt = document.createElement('option');
-        sOpt.value = r.name;
-        sOpt.textContent = `${r.name} (${r.stateut}) — ${r.surface}% ${r.metal}`;
-        sel.appendChild(sOpt);
-      });
-    }
-
-    // Risk Color Resolver
     function getTier(pct) {
       if (pct >= 50) return { fill: "#a855f7", label: "🟣 Extreme 50%+", badge: "bg-purple-500/20 text-purple-300 border-purple-500/40", text: "text-purple-400", dot: "bg-purple-500 shadow-md shadow-purple-500/50" };
       if (pct >= 40) return { fill: "#ef4444", label: "🔴 Critical 40–49%", badge: "bg-red-500/20 text-red-300 border-red-500/40", text: "text-red-400", dot: "bg-red-500 shadow-md shadow-red-500/50" };
@@ -447,7 +418,6 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       return { fill: "#10b981", label: "🟢 Good <20%", badge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40", text: "text-emerald-400", dot: "bg-emerald-500 shadow-md shadow-emerald-500/50" };
     }
 
-    // GeoJSON Name Resolver
     function matchDatabaseRecord(raw) {
       if (!raw) return null;
       const s = raw.toLowerCase().replace(/&/g, 'and').trim();
@@ -464,7 +434,6 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       return allRecords.find(r => r.name.toLowerCase() === raw.toLowerCase().trim() || r.stateut.toLowerCase() === raw.toLowerCase().trim());
     }
 
-    // Render D3 Vector Map
     function renderRealisticIndiaMap() {
       const container = document.getElementById('d3-india-map'); container.innerHTML = "";
       const width = 600, height = 550;
@@ -473,7 +442,6 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       const path = d3.geoPath().projection(projection);
 
       d3.json("https://cdn.jsdelivr.net/gh/Subhash9325/GeoJson-Data-of-Indian-States@master/Indian_States").then(geoData => {
-        // States
         svg.selectAll(".state-path").data(geoData.features).enter().append("path").attr("d", path).attr("class", "state-path")
           .attr("fill", d => { const m = matchDatabaseRecord(d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME); return m ? getTier(m.surface).fill : "#10b981"; })
           .on("mouseenter", (e, d) => {
@@ -488,12 +456,10 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
           .on("mouseleave", () => document.getElementById('map-tooltip').classList.add('hidden'))
           .on("click", (e, d) => { const m = matchDatabaseRecord(d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME); if (m) { currentSelected = m; goToPage(3); } });
 
-        // Labels
         svg.selectAll(".state-label").data(geoData.features).enter().append("text").attr("class", "state-label")
           .attr("transform", d => { const c = path.centroid(d); return isNaN(c[0]) ? null : `translate(${c[0]}, ${c[1]})`; })
           .text(d => { const r = d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || ""; return r.length > 12 ? r.substring(0, 10) + ".." : r; });
 
-        // City Hotspots
         cityPins.forEach(city => {
           const pt = projection(city.coords);
           if (pt) {
@@ -525,50 +491,128 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
 
     function quickPick(name) { 
       document.getElementById('search-input').value = name; 
-      handleSearchSubmit(true); 
+      verifyLocation(name); 
     }
 
-    function handleSelectDropdown(val) {
-      if (!val) return;
-      document.getElementById('search-input').value = val;
-      handleSearchSubmit(true);
+    // ==========================================
+    // BULLETPROOF SEARCH DROPDOWN ENGINE
+    // ==========================================
+    const searchInput = document.getElementById('search-input');
+    const dropdownMenu = document.getElementById('search-dropdown-menu');
+    const verifyBtn = document.getElementById('search-verify-btn');
+
+    function renderDropdown(q = '') {
+      const query = q.toLowerCase().trim();
+      let matches = [];
+
+      if (!query) {
+        // Show first 15 locations on initial click
+        matches = allRecords.slice(0, 15);
+      } else {
+        // Filter by City name or State name
+        matches = allRecords.filter(r => 
+          r.name.toLowerCase().includes(query) || 
+          r.stateut.toLowerCase().includes(query)
+        ).slice(0, 15);
+      }
+
+      if (matches.length === 0) {
+        dropdownMenu.innerHTML = `<div class="p-4 text-center text-xs text-slate-400">No matching location found.</div>`;
+      } else {
+        dropdownMenu.innerHTML = matches.map(r => {
+          const t = getTier(r.surface);
+          return `
+            <div class="dd-item px-4 py-3 hover:bg-cyan-500/10 cursor-pointer flex items-center justify-between transition-colors group" data-name="${r.name}">
+              <div class="flex items-center gap-3">
+                <span class="w-3 h-3 rounded-full shrink-0 ${t.dot}"></span>
+                <div>
+                  <div class="font-bold text-white text-sm group-hover:text-cyan-300">${r.name}</div>
+                  <div class="text-[11px] text-slate-400">${r.stateut} • ${r.type}</div>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-black ${t.text}">${r.surface}%</span>
+                <div class="text-[10px] text-slate-400 font-semibold">${r.metal}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Use mousedown with e.preventDefault() so Brave/Chrome focus loss doesn't cancel click
+        dropdownMenu.querySelectorAll('.dd-item').forEach(item => {
+          item.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            const name = item.getAttribute('data-name');
+            searchInput.value = name;
+            dropdownMenu.classList.add('hidden');
+            verifyLocation(name);
+          });
+        });
+      }
+
+      dropdownMenu.classList.remove('hidden');
     }
 
-    // Verification Engine
-    function handleSearchSubmit(showErrorOnFail = true) {
-      const q = document.getElementById('search-input').value.trim().toLowerCase();
-      const err = document.getElementById('search-error'), succ = document.getElementById('search-success'), nextBtn = document.getElementById('btn-goto-p3');
+    searchInput.addEventListener('focus', () => renderDropdown(searchInput.value));
+    searchInput.addEventListener('input', () => renderDropdown(searchInput.value));
+    searchInput.addEventListener('click', () => renderDropdown(searchInput.value));
+    searchInput.addEventListener('blur', () => {
+      setTimeout(() => dropdownMenu.classList.add('hidden'), 200);
+    });
 
-      if (!q) { 
-        if (showErrorOnFail) err.classList.remove('hidden'); 
-        succ.classList.add('hidden'); 
-        nextBtn.disabled = true; 
-        nextBtn.className = "inline-flex items-center gap-2 bg-slate-800 text-slate-500 font-black px-7 py-3.5 rounded-full text-sm transition-all cursor-not-allowed"; 
-        return; 
+    verifyBtn.addEventListener('click', () => {
+      dropdownMenu.classList.add('hidden');
+      verifyLocation(searchInput.value);
+    });
+
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        dropdownMenu.classList.add('hidden');
+        verifyLocation(searchInput.value);
+      }
+    });
+
+    function verifyLocation(rawQuery) {
+      const q = (rawQuery || '').toLowerCase().trim();
+      const err = document.getElementById('search-error');
+      const succ = document.getElementById('search-success');
+      const nextBtn = document.getElementById('btn-goto-p3');
+
+      if (!q) {
+        err.classList.remove('hidden');
+        succ.classList.add('hidden');
+        nextBtn.disabled = true;
+        nextBtn.className = "inline-flex items-center gap-2 bg-slate-800 text-slate-500 font-black px-7 py-3.5 rounded-full text-sm transition-all cursor-not-allowed";
+        return;
       }
 
       const match = allRecords.find(r => r.name.toLowerCase() === q || r.name.toLowerCase().includes(q) || q.includes(r.name.toLowerCase()) || r.stateut.toLowerCase() === q);
+
       if (match) {
-        currentSelected = match; const tier = getTier(match.surface);
-        err.classList.add('hidden'); succ.classList.remove('hidden');
+        currentSelected = match;
+        const tier = getTier(match.surface);
+        err.classList.add('hidden');
+        succ.classList.remove('hidden');
         succ.className = `p-5 rounded-2xl border ${match.surface >= 50 ? 'border-purple-500/50 bg-purple-950/20' : match.surface >= 40 ? 'border-red-500/50 bg-red-950/20' : match.surface >= 20 ? 'border-amber-500/50 bg-amber-950/20' : 'border-emerald-500/50 bg-emerald-950/20'} mb-6`;
         document.getElementById('success-dot').className = `w-3.5 h-3.5 rounded-full shrink-0 ${tier.dot}`;
         document.getElementById('success-category').textContent = `${match.type} • ${match.citytype}`;
         document.getElementById('success-location-title').textContent = `${match.name}, ${match.stateut}`;
         document.getElementById('success-risk-badge').textContent = tier.label;
         document.getElementById('success-risk-badge').className = `text-xs px-3 py-1 rounded-full font-black uppercase border ${tier.badge}`;
-        document.getElementById('success-metal').textContent = match.metal; document.getElementById('success-source').textContent = match.source;
-        nextBtn.disabled = false; nextBtn.className = "inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black px-7 py-3.5 rounded-full text-sm shadow-lg shadow-cyan-500/20 hover:scale-105 transition-all cursor-pointer";
+        document.getElementById('success-metal').textContent = match.metal;
+        document.getElementById('success-source').textContent = match.source;
+
+        nextBtn.disabled = false;
+        nextBtn.className = "inline-flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black px-7 py-3.5 rounded-full text-sm shadow-lg shadow-cyan-500/20 hover:scale-105 transition-all cursor-pointer";
       } else {
-        if (showErrorOnFail) err.classList.remove('hidden'); 
-        succ.classList.add('hidden'); 
-        nextBtn.disabled = true; 
+        err.classList.remove('hidden');
+        succ.classList.add('hidden');
+        nextBtn.disabled = true;
         nextBtn.className = "inline-flex items-center gap-2 bg-slate-800 text-slate-500 font-black px-7 py-3.5 rounded-full text-sm transition-all cursor-not-allowed";
       }
       lucide.createIcons();
     }
 
-    // Telemetry Population
     function populatePage3() {
       const d = currentSelected, tier = getTier(d.surface);
       document.getElementById('p3-name').textContent = d.name; document.getElementById('p3-stateut').textContent = `(${d.stateut} • ${d.citytype})`;
@@ -580,7 +624,6 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       document.getElementById('p3-source-desc').textContent = d.source;
     }
 
-    // Solution Population
     function populatePage4() {
       const d = currentSelected;
       document.getElementById('p4-name-title').textContent = `${d.name} (${d.stateut})`;
@@ -592,7 +635,6 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       document.getElementById('p4-solution-text').textContent = s;
     }
 
-    // Page Router
     function goToPage(pageNumber) {
       document.querySelectorAll('.page-screen').forEach(el => el.classList.remove('active'));
       document.getElementById(`page-${pageNumber}`).classList.add('active');
@@ -604,8 +646,6 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       window.scrollTo({ top: 0, behavior: 'smooth' }); lucide.createIcons();
     }
 
-    // Init
-    initDropdowns();
     renderRealisticIndiaMap(); 
     lucide.createIcons();
   </script>
