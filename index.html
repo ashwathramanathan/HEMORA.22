@@ -1,5 +1,368 @@
 <!DOCTYPE html>
 <html lang="en">
+  <style>
+/* =========================================================
+   HEMORA PROFESSIONAL OVERRIDE
+   UI ONLY - DO NOT TOUCH JAVASCRIPT / DATA
+   ========================================================= */
+
+:root {
+  --h-bg: #f5f7f6;
+  --h-surface: #ffffff;
+  --h-border: #d8e1df;
+  --h-text: #182523;
+  --h-muted: #687774;
+  --h-teal: #126b67;
+  --h-teal-dark: #0c514e;
+  --h-teal-light: #eaf4f2;
+}
+
+/* ---------- BASE ---------- */
+
+body {
+  background: var(--h-bg) !important;
+  color: var(--h-text) !important;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+}
+
+/* ---------- HEADER ---------- */
+
+header {
+  background: #ffffff !important;
+  border-bottom: 1px solid var(--h-border) !important;
+  box-shadow: 0 1px 5px rgba(20,40,38,.05) !important;
+  backdrop-filter: none !important;
+}
+
+header > div {
+  max-width: 1280px !important;
+}
+
+/* Logo */
+
+header .cursor-pointer > div:first-child {
+  background: var(--h-teal) !important;
+  background-image: none !important;
+  border-radius: 7px !important;
+  box-shadow: none !important;
+}
+
+/* HEMORA wordmark */
+
+header .cursor-pointer > span {
+  color: var(--h-text) !important;
+  letter-spacing: .12em !important;
+  font-weight: 800 !important;
+}
+
+/* ---------- TOP PHASE NAV ---------- */
+
+#step-pill-1,
+#step-pill-2,
+#step-pill-3,
+#step-pill-4 {
+  border-radius: 5px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 7px 10px !important;
+  color: #71807d !important;
+  font-weight: 600 !important;
+}
+
+#step-pill-1 {
+  background: var(--h-teal) !important;
+  color: white !important;
+}
+
+header span.text-xs {
+  border-radius: 5px !important;
+}
+
+/* ---------- ALL MAIN SURFACES ---------- */
+
+.page-screen .bg-white {
+  background: var(--h-surface) !important;
+}
+
+.page-screen .border-\[\#D6E8E8\] {
+  border-color: var(--h-border) !important;
+}
+
+/* Kill the excessive rounded AI-card aesthetic */
+
+.page-screen .rounded-3xl {
+  border-radius: 10px !important;
+}
+
+.page-screen .rounded-2xl {
+  border-radius: 8px !important;
+}
+
+.page-screen .rounded-xl {
+  border-radius: 6px !important;
+}
+
+/* ---------- SHADOWS ---------- */
+
+.page-screen .shadow-xl,
+.page-screen .shadow-2xl {
+  box-shadow: 0 3px 14px rgba(20,40,38,.055) !important;
+}
+
+.page-screen .shadow-lg {
+  box-shadow: 0 2px 8px rgba(20,40,38,.05) !important;
+}
+
+.page-screen .shadow-md,
+.page-screen .shadow-sm {
+  box-shadow: 0 1px 5px rgba(20,40,38,.04) !important;
+}
+
+/* ---------- MAP ---------- */
+
+.map-canvas {
+  background: #edf4f2 !important;
+  background-image: none !important;
+  border-radius: 10px !important;
+  border: 1px solid var(--h-border) !important;
+  box-shadow: none !important;
+}
+
+.state-path {
+  stroke: #ffffff !important;
+  stroke-width: .8 !important;
+}
+
+.state-path:hover {
+  filter: brightness(1.08) !important;
+  stroke: var(--h-teal) !important;
+  stroke-width: 1.5 !important;
+}
+
+#map-tooltip {
+  background: #ffffff !important;
+  border: 1px solid var(--h-border) !important;
+  border-radius: 7px !important;
+  box-shadow: 0 12px 30px rgba(20,40,38,.12) !important;
+  backdrop-filter: none !important;
+}
+
+/* ---------- MAP TOP STATUS ---------- */
+
+#page-1 > div:first-child > div {
+  background: #ffffff !important;
+  border: 1px solid var(--h-border) !important;
+  color: var(--h-teal-dark) !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+/* ---------- MAP LEGEND ---------- */
+
+#page-1 .map-canvas > div:last-child {
+  background: #ffffff !important;
+  border: 1px solid var(--h-border) !important;
+  border-radius: 7px !important;
+  box-shadow: 0 2px 8px rgba(20,40,38,.06) !important;
+}
+
+/* ---------- PRIMARY BUTTONS ---------- */
+
+button {
+  font-family: inherit !important;
+}
+
+button[class*="bg-gradient"] {
+  background: var(--h-teal) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  border-radius: 6px !important;
+}
+
+button[class*="bg-gradient"]:hover {
+  background: var(--h-teal-dark) !important;
+  transform: translateY(-1px) !important;
+}
+
+button.bg-\[\#005C5C\] {
+  background: var(--h-teal) !important;
+  box-shadow: none !important;
+}
+
+button.bg-\[\#005C5C\]:hover {
+  background: var(--h-teal-dark) !important;
+}
+
+/* Remove pill buttons */
+
+button.rounded-full {
+  border-radius: 6px !important;
+}
+
+/* ---------- PAGE 2 SEARCH ---------- */
+
+#page-2 {
+  max-width: 820px !important;
+}
+
+#page-2 > div:last-child {
+  background: white !important;
+  border: 1px solid var(--h-border) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 3px 14px rgba(20,40,38,.055) !important;
+}
+
+#search-input {
+  background: #fbfcfc !important;
+  border: 1px solid #cbd7d5 !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+#search-input:focus {
+  border-color: var(--h-teal) !important;
+  box-shadow: 0 0 0 3px rgba(18,107,103,.09) !important;
+}
+
+/* Verify button */
+
+#page-2 input + button,
+#page-2 button[class*="bg-[#005C5C]"] {
+  border-radius: 5px !important;
+}
+
+/* Quick examples */
+
+#page-2 button[class*="bg-purple"],
+#page-2 button[class*="bg-red"],
+#page-2 button[class*="bg-amber"],
+#page-2 button[class*="bg-emerald"] {
+  background: #f7f9f8 !important;
+  border-color: var(--h-border) !important;
+  color: #586865 !important;
+  border-radius: 5px !important;
+}
+
+#page-2 button[class*="bg-purple"]:hover,
+#page-2 button[class*="bg-red"]:hover,
+#page-2 button[class*="bg-amber"]:hover,
+#page-2 button[class*="bg-emerald"]:hover {
+  background: var(--h-teal-light) !important;
+  color: var(--h-teal-dark) !important;
+}
+
+/* ---------- SEARCH RESULTS ---------- */
+
+#search-success {
+  background: #fbfcfc !important;
+  border: 1px solid var(--h-border) !important;
+  border-radius: 7px !important;
+  box-shadow: none !important;
+}
+
+#search-error {
+  border-radius: 7px !important;
+  box-shadow: none !important;
+}
+
+/* ---------- TELEMETRY PAGE ---------- */
+
+#page-3 > div:first-child {
+  background: #ffffff !important;
+  border-radius: 10px !important;
+  border: 1px solid var(--h-border) !important;
+  box-shadow: 0 3px 14px rgba(20,40,38,.055) !important;
+}
+
+/* Main metric cards */
+
+#page-3 .grid > div {
+  border-radius: 7px !important;
+  box-shadow: none !important;
+}
+
+#page-3 .grid > div[class*="bg-[#FFFAFA]"] {
+  background: #fbfcfc !important;
+  border-color: var(--h-border) !important;
+}
+
+/* Make primary metrics less flashy */
+
+#p3-surface,
+#p3-ground {
+  color: var(--h-teal-dark) !important;
+}
+
+#p3-metal {
+  color: var(--h-teal-dark) !important;
+}
+
+/* Metal cards */
+
+#page-3 .grid > div > div {
+  box-shadow: none !important;
+}
+
+/* ---------- REMEDIATION ---------- */
+
+#page-4 > div:first-child {
+  background: white !important;
+  border-radius: 10px !important;
+  border: 1px solid var(--h-border) !important;
+  box-shadow: 0 3px 14px rgba(20,40,38,.055) !important;
+}
+
+/* ---------- TEXT ---------- */
+
+.page-screen h1,
+.page-screen h2,
+.page-screen h3,
+.page-screen h4 {
+  color: var(--h-text) !important;
+}
+
+.page-screen p,
+.page-screen span {
+  /* Don't force all spans, preserve risk colors */
+}
+
+/* ---------- REMOVE EXCESSIVE GLOW ---------- */
+
+[class*="shadow-[#005C5C]"] {
+  box-shadow: none !important;
+}
+
+/* ---------- MOBILE ---------- */
+
+@media (max-width: 767px) {
+
+  header {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .page-screen {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .map-canvas {
+    border-radius: 8px !important;
+    min-height: 530px !important;
+  }
+
+  #page-2 > div:last-child,
+  #page-3 > div:first-child,
+  #page-4 > div:first-child {
+    border-radius: 8px !important;
+  }
+
+  #page-1 button {
+    border-radius: 6px !important;
+  }
+}
+</style>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,616 +371,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- High-Precision Geographic Vector Engine -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
-  <style>
-  /* =========================================================
-     HEMORA — PROFESSIONAL UI SYSTEM
-     VISUAL LAYER ONLY
-     ========================================================= */
-
-  :root {
-    --hemora-ink: #12201f;
-    --hemora-muted: #667573;
-    --hemora-subtle: #8b9997;
-    --hemora-teal: #0f6b67;
-    --hemora-teal-dark: #0b514e;
-    --hemora-teal-soft: #eaf4f3;
-    --hemora-border: #d9e4e2;
-    --hemora-bg: #f6f8f7;
-    --hemora-surface: #ffffff;
-    --hemora-danger: #c83c3c;
-    --hemora-warning: #b7791f;
-    --hemora-success: #287a59;
-    --hemora-extreme: #7654a8;
-  }
-
-  * {
-    box-sizing: border-box;
-  }
-
-  html {
-    scroll-behavior: smooth;
-  }
-
-  body {
-    margin: 0;
-    background: var(--hemora-bg) !important;
-    color: var(--hemora-ink) !important;
-    font-family:
-      Inter,
-      ui-sans-serif,
-      system-ui,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      sans-serif !important;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  ::selection {
-    background: #cde7e4;
-    color: var(--hemora-ink);
-  }
-
-  /* -------------------------
-     PAGE TRANSITIONS
-     ------------------------- */
-
-  .page-screen {
-    display: none;
-  }
-
-  .page-screen.active {
-    display: block;
-    animation: hemoraFade 0.22s ease-out;
-  }
-
-  @keyframes hemoraFade {
-    from {
-      opacity: 0;
-      transform: translateY(3px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* -------------------------
-     GLOBAL HEADER
-     ------------------------- */
-
-  header {
-    background: rgba(255, 255, 255, 0.97) !important;
-    border-bottom: 1px solid var(--hemora-border) !important;
-    box-shadow: 0 1px 8px rgba(18, 32, 31, 0.045) !important;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-  }
-
-  header > div {
-    min-height: 42px;
-  }
-
-  header .cursor-pointer {
-    gap: 10px !important;
-  }
-
-  /* HEMORA logo block */
-  header .cursor-pointer > div:first-child {
-    width: 34px !important;
-    height: 34px !important;
-    border-radius: 8px !important;
-    background: var(--hemora-teal) !important;
-    box-shadow: none !important;
-  }
-
-  header .cursor-pointer > span {
-    color: var(--hemora-ink) !important;
-    font-size: 17px !important;
-    letter-spacing: 0.08em !important;
-    font-weight: 800 !important;
-  }
-
-  /* -------------------------
-     PHASE NAVIGATION
-     ------------------------- */
-
-  #step-pill-1,
-  #step-pill-2,
-  #step-pill-3,
-  #step-pill-4 {
-    border-radius: 6px !important;
-    padding: 7px 10px !important;
-    background: transparent !important;
-    color: #71807e !important;
-    box-shadow: none !important;
-    font-weight: 600 !important;
-    transition: all 0.18s ease !important;
-  }
-
-  #step-pill-1 {
-    background: var(--hemora-teal) !important;
-    color: white !important;
-    font-weight: 700 !important;
-  }
-
-  header .hidden.md\:flex {
-    gap: 3px !important;
-  }
-
-  header .hidden.md\:flex > span:not([id]) {
-    color: #b6c1bf !important;
-    font-size: 10px !important;
-  }
-
-  header > div > span:last-child {
-    background: var(--hemora-teal-soft) !important;
-    color: var(--hemora-teal-dark) !important;
-    border: 1px solid #c9dfdc !important;
-    border-radius: 6px !important;
-    padding: 6px 10px !important;
-    font-weight: 700 !important;
-  }
-
-  /* -------------------------
-     MAIN PAGE CONTAINERS
-     ------------------------- */
-
-  .page-screen {
-    color: var(--hemora-ink);
-  }
-
-  .page-screen > div[class*="bg-white"],
-  .page-screen > div[class*="rounded-3xl"] {
-    border-radius: 10px !important;
-    border-color: var(--hemora-border) !important;
-    box-shadow: 0 2px 10px rgba(18, 32, 31, 0.045) !important;
-  }
-
-  /* -------------------------
-     MAP
-     ------------------------- */
-
-  .map-canvas {
-    background:
-      linear-gradient(
-        145deg,
-        #f5f9f8 0%,
-        #edf5f3 55%,
-        #e7f0ee 100%
-      ) !important;
-
-    border-radius: 10px !important;
-    border: 1px solid var(--hemora-border) !important;
-    box-shadow: none !important;
-  }
-
-  #d3-india-map {
-    min-height: 520px;
-  }
-
-  .state-path {
-    stroke: #ffffff !important;
-    stroke-width: 0.8 !important;
-    transition:
-      filter 0.15s ease,
-      stroke 0.15s ease,
-      stroke-width 0.15s ease !important;
-  }
-
-  .state-path:hover {
-    filter: brightness(1.08) !important;
-    stroke: var(--hemora-teal) !important;
-    stroke-width: 1.5 !important;
-  }
-
-  .city-pin:hover {
-    transform: scale(1.35);
-  }
-
-  /* Map tooltip */
-  #map-tooltip {
-    background: rgba(255, 255, 255, 0.98) !important;
-    border: 1px solid var(--hemora-border) !important;
-    border-radius: 8px !important;
-    box-shadow: 0 10px 30px rgba(18, 32, 31, 0.12) !important;
-    backdrop-filter: blur(8px);
-  }
-
-  #tt-name {
-    color: var(--hemora-teal-dark) !important;
-  }
-
-  #tt-type,
-  #map-tooltip span {
-    color: var(--hemora-muted) !important;
-  }
-
-  /* -------------------------
-     SMALL SECTION LABELS
-     ------------------------- */
-
-  .page-screen [class*="uppercase"][class*="tracking"] {
-    letter-spacing: 0.08em !important;
-  }
-
-  /* -------------------------
-     PHASE LABELS
-     ------------------------- */
-
-  .page-screen .inline-flex[class*="rounded-full"] {
-    border-radius: 5px !important;
-    background: var(--hemora-teal-soft) !important;
-    color: var(--hemora-teal-dark) !important;
-    border-color: #c9dfdc !important;
-    box-shadow: none !important;
-  }
-
-  /* -------------------------
-     HEADINGS
-     ------------------------- */
-
-  h1,
-  h2,
-  h3,
-  h4 {
-    color: var(--hemora-ink) !important;
-    letter-spacing: -0.025em;
-  }
-
-  h2,
-  h3 {
-    font-weight: 750 !important;
-  }
-
-  /* -------------------------
-     BUTTON SYSTEM
-     ------------------------- */
-
-  button {
-    font-family: inherit !important;
-  }
-
-  button:not(:disabled) {
-    transition:
-      background-color 0.16s ease,
-      border-color 0.16s ease,
-      color 0.16s ease,
-      transform 0.16s ease !important;
-  }
-
-  /* Remove decorative gradients from action buttons */
-  .page-screen button[class*="bg-gradient-to-r"] {
-    background: var(--hemora-teal) !important;
-    box-shadow: none !important;
-  }
-
-  .page-screen button[class*="bg-gradient-to-r"]:hover {
-    background: var(--hemora-teal-dark) !important;
-    transform: translateY(-1px) !important;
-  }
-
-  /* Primary buttons */
-  .page-screen button.bg-\[\#005C5C\] {
-    background: var(--hemora-teal) !important;
-    box-shadow: none !important;
-  }
-
-  .page-screen button.bg-\[\#005C5C\]:hover {
-    background: var(--hemora-teal-dark) !important;
-  }
-
-  /* Remove giant pill buttons */
-  .page-screen button[class*="rounded-full"] {
-    border-radius: 6px !important;
-  }
-
-  /* Back buttons */
-  .page-screen button.flex.items-center.gap-2:not([class*="bg-"]) {
-    color: #667573 !important;
-  }
-
-  .page-screen button.flex.items-center.gap-2:not([class*="bg-"]):hover {
-    color: var(--hemora-teal-dark) !important;
-  }
-
-  /* -------------------------
-     MAP NEXT BUTTON
-     ------------------------- */
-
-  #page-1 button {
-    border-radius: 7px !important;
-    padding: 13px 22px !important;
-    font-size: 14px !important;
-    font-weight: 700 !important;
-  }
-
-  /* -------------------------
-     SEARCH PAGE
-     ------------------------- */
-
-  #page-2 {
-    max-width: 820px !important;
-  }
-
-  #page-2 > div:last-child {
-    border-radius: 10px !important;
-    padding: 28px !important;
-    box-shadow: 0 2px 10px rgba(18, 32, 31, 0.045) !important;
-  }
-
-  #search-input {
-    background: #fbfcfc !important;
-    border: 1px solid #cbd9d7 !important;
-    border-radius: 7px !important;
-    box-shadow: none !important;
-    color: var(--hemora-ink) !important;
-  }
-
-  #search-input:focus {
-    border-color: var(--hemora-teal) !important;
-    box-shadow: 0 0 0 3px rgba(15, 107, 103, 0.09) !important;
-  }
-
-  #search-input::placeholder {
-    color: #9aa7a5 !important;
-  }
-
-  #search-verify-btn {
-    background: var(--hemora-teal) !important;
-    border-radius: 5px !important;
-    box-shadow: none !important;
-  }
-
-  #search-verify-btn:hover {
-    background: var(--hemora-teal-dark) !important;
-  }
-
-  #search-dropdown-menu {
-    background: white !important;
-    border: 1px solid var(--hemora-border) !important;
-    border-radius: 7px !important;
-    box-shadow: 0 14px 35px rgba(18, 32, 31, 0.12) !important;
-  }
-
-  /* Quick examples */
-  #page-2 button[class*="bg-purple-50"],
-  #page-2 button[class*="bg-red-50"],
-  #page-2 button[class*="bg-amber-50"],
-  #page-2 button[class*="bg-emerald-50"] {
-    background: #f7f9f8 !important;
-    border: 1px solid var(--hemora-border) !important;
-    color: #50605e !important;
-    border-radius: 5px !important;
-  }
-
-  #page-2 button[class*="bg-purple-50"]:hover,
-  #page-2 button[class*="bg-red-50"]:hover,
-  #page-2 button[class*="bg-amber-50"]:hover,
-  #page-2 button[class*="bg-emerald-50"]:hover {
-    background: var(--hemora-teal-soft) !important;
-    color: var(--hemora-teal-dark) !important;
-  }
-
-  /* Search success/error */
-  #search-success,
-  #search-error {
-    border-radius: 7px !important;
-    box-shadow: none !important;
-  }
-
-  #search-success {
-    background: #fbfcfc !important;
-    border-color: var(--hemora-border) !important;
-  }
-
-  /* -------------------------
-     TELEMETRY DASHBOARD
-     ------------------------- */
-
-  #page-3 > div:first-child,
-  #page-4 > div:first-child {
-    border-radius: 10px !important;
-    box-shadow: 0 2px 10px rgba(18, 32, 31, 0.045) !important;
-  }
-
-  /* Primary metric cards */
-  #page-3 .grid > div {
-    border-radius: 7px !important;
-    box-shadow: none !important;
-  }
-
-  #page-3 .grid > div[class*="bg-[#FFFAFA]"] {
-    background: #fbfcfc !important;
-    border-color: var(--hemora-border) !important;
-  }
-
-  #p3-surface,
-  #p3-ground {
-    color: var(--hemora-teal-dark) !important;
-  }
-
-  #p3-metal {
-    color: var(--hemora-teal-dark) !important;
-  }
-
-  /* Metal breakdown */
-  #page-3 .grid > div > div[class*="bg-white"] {
-    border-radius: 6px !important;
-    box-shadow: none !important;
-  }
-
-  /* Data values */
-  #page-3 .text-3xl,
-  #page-3 .text-2xl {
-    letter-spacing: -0.035em;
-  }
-
-  /* Source panel */
-  #p3-source-desc {
-    color: var(--hemora-ink);
-  }
-
-  /* -------------------------
-     REMEDIATION PAGE
-     ------------------------- */
-
-  #page-4 > div:first-child {
-    box-shadow: 0 2px 10px rgba(18, 32, 31, 0.045) !important;
-  }
-
-  #p4-warning-banner {
-    border-radius: 7px !important;
-    box-shadow: none !important;
-  }
-
-  /* Dynamically generated remediation cards */
-  #p4-solutions-container > div {
-    border-radius: 8px !important;
-    box-shadow: none !important;
-  }
-
-  #p4-solutions-container [class*="rounded-2xl"],
-  #p4-solutions-container [class*="rounded-xl"] {
-    border-radius: 7px !important;
-  }
-
-  /* -------------------------
-     RISK PRESENTATION
-     Keep risk colors meaningful,
-     remove decorative glow.
-     ------------------------- */
-
-  [class*="shadow-purple"],
-  [class*="shadow-red"],
-  [class*="shadow-emerald"],
-  [class*="shadow-amber"],
-  [class*="shadow-cyan"] {
-    box-shadow: none !important;
-  }
-
-  /* -------------------------
-     REMOVE EXCESSIVE ROUNDING
-     ------------------------- */
-
-  .rounded-3xl {
-    border-radius: 10px !important;
-  }
-
-  .rounded-2xl {
-    border-radius: 8px !important;
-  }
-
-  .rounded-xl {
-    border-radius: 6px !important;
-  }
-
-  .rounded-lg {
-    border-radius: 6px !important;
-  }
-
-  /* Keep tiny status dots circular */
-  .rounded-full.w-2,
-  .rounded-full.w-3,
-  .rounded-full.w-3\.5,
-  .rounded-full.h-2,
-  .rounded-full.h-3 {
-    border-radius: 9999px !important;
-  }
-
-  /* -------------------------
-     SHADOW REDUCTION
-     ------------------------- */
-
-  .shadow-xl,
-  .shadow-2xl {
-    box-shadow: 0 2px 12px rgba(18, 32, 31, 0.055) !important;
-  }
-
-  .shadow-lg {
-    box-shadow: 0 2px 8px rgba(18, 32, 31, 0.05) !important;
-  }
-
-  .shadow-md,
-  .shadow-sm {
-    box-shadow: 0 1px 5px rgba(18, 32, 31, 0.045) !important;
-  }
-
-  /* -------------------------
-     DIVIDERS
-     ------------------------- */
-
-  .border-\[\#D6E8E8\] {
-    border-color: var(--hemora-border) !important;
-  }
-
-  /* -------------------------
-     MOBILE
-     ------------------------- */
-
-  @media (max-width: 767px) {
-
-    header {
-      padding-left: 16px !important;
-      padding-right: 16px !important;
-    }
-
-    header > div {
-      gap: 10px;
-    }
-
-    header > div > span:last-child {
-      font-size: 10px !important;
-      padding: 5px 7px !important;
-    }
-
-    .page-screen {
-      padding-left: 14px !important;
-      padding-right: 14px !important;
-    }
-
-    #page-1 {
-      padding-top: 16px !important;
-    }
-
-    .map-canvas {
-      min-height: 540px !important;
-      padding: 10px !important;
-    }
-
-    #d3-india-map {
-      min-height: 450px !important;
-    }
-
-    #page-2,
-    #page-3,
-    #page-4 {
-      padding-top: 24px !important;
-      padding-bottom: 24px !important;
-    }
-
-    #page-2 > div:last-child,
-    #page-3 > div:first-child,
-    #page-4 > div:first-child {
-      padding: 18px !important;
-    }
-
-    #page-3 .grid {
-      gap: 8px !important;
-    }
-
-    #page-1 button {
-      width: 100%;
-      justify-content: center;
-    }
-
-    #search-input {
-      font-size: 14px !important;
-    }
-  }
-  </style>
+  
 </head>
 <body class="bg-[#FFFAFA] text-[#0F172A] font-sans min-h-screen selection:bg-[#005C5C] selection:text-white">
 
