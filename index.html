@@ -3,876 +3,518 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HEMORA - National Water Quality & Heavy Metal Remediation Platform</title>
+  <title>HEMORA — National Heavy Metal Pollution & Water Quality Information System</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- High-Precision Geographic Vector Engine -->
+  <!-- Geographic Vector Engine -->
   <script src="https://d3js.org/d3.v7.min.js"></script>
-    <style>
-/* =========================================================================
-   HEMORA — INSTITUTIONAL ENVIRONMENTAL MONITORING PLATFORM
-   Visual redesign only. No JavaScript, data, routing, or D3 logic touched.
-   Palette: deep teal / white / charcoal — scientific, restrained, factual.
-   ========================================================================= */
-
-:root {
-  --h-bg:          #F4F6F5;   /* page background — cool off-white */
-  --h-surface:     #FFFFFF;   /* card / panel surface */
-  --h-surface-alt: #FAFBFB;   /* secondary surface (metric tiles) */
-  --h-border:      #D7DEDC;   /* hairline borders */
-  --h-border-strong: #C2CCC9;
-  --h-text:        #1C2523;   /* charcoal body text */
-  --h-text-soft:   #3D4A47;
-  --h-muted:       #667572;   /* secondary / label text */
-  --h-muted-soft:  #8A9794;
-
-  --h-teal:        #0E5C58;   /* primary institutional teal */
-  --h-teal-dark:   #093F3C;   /* pressed / hover state */
-  --h-teal-deep:   #072E2B;   /* headers, high-emphasis text */
-  --h-teal-tint:   #E6EFEE;   /* light teal fill for chips/badges */
-  --h-teal-tint-2: #D3E4E2;   /* slightly stronger tint */
-
-  --h-risk-good:     #1F7A4D;
-  --h-risk-moderate: #B4700A;
-  --h-risk-critical: #B0242A;
-  --h-risk-extreme:  #5B3A9E;
-
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-
-  --shadow-1: 0 1px 2px rgba(15, 30, 28, 0.06);
-  --shadow-2: 0 2px 6px rgba(15, 30, 28, 0.07);
-  --shadow-3: 0 4px 14px rgba(15, 30, 28, 0.08);
-}
-
-/* ---------- BASE ---------- */
-
-* { box-sizing: border-box; }
-
-body {
-  background: var(--h-bg) !important;
-  color: var(--h-text) !important;
-  font-family: "Inter", ui-sans-serif, system-ui, -apple-system,
-    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-  -webkit-font-smoothing: antialiased;
-  letter-spacing: -0.006em;
-}
-
-/* Kill selection glow */
-::selection { background: var(--h-teal-tint-2) !important; color: var(--h-teal-deep) !important; }
-
-/* ---------- TYPOGRAPHY NORMALIZATION ---------- */
-
-.page-screen h1,
-.page-screen h2,
-.page-screen h3,
-.page-screen h4,
-.page-screen h5 {
-  color: var(--h-teal-deep) !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.015em !important;
-}
-
-/* Tone down oversized "black" weights across the app to a disciplined 600-700 */
-.page-screen .font-black   { font-weight: 700 !important; }
-.page-screen .font-extrabold { font-weight: 700 !important; }
-
-.page-screen p { color: var(--h-text-soft); }
-
-/* ---------- HEADER ---------- */
-
-header {
-  background: var(--h-surface) !important;
-  border-bottom: 1px solid var(--h-border) !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-}
-
-header > div { max-width: 1280px !important; }
-
-/* Logo mark */
-header .cursor-pointer > div:first-child {
-  background: var(--h-teal) !important;
-  background-image: none !important;
-  border-radius: var(--radius-sm) !important;
-  box-shadow: none !important;
-  width: 30px !important;
-  height: 30px !important;
-  font-weight: 700 !important;
-  font-size: 13px !important;
-}
-
-/* Wordmark */
-header .cursor-pointer > span {
-  color: var(--h-teal-deep) !important;
-  letter-spacing: 0.09em !important;
-  font-weight: 700 !important;
-  font-size: 15px !important;
-}
-
-/* ---------- TOP PHASE STEPPER ---------- */
-
-header .hidden.md\:flex {
-  gap: 2px !important;
-  background: var(--h-surface-alt);
-  border: 1px solid var(--h-border);
-  border-radius: var(--radius-md);
-  padding: 3px;
-}
-
-header .hidden.md\:flex > span.text-\[\#D6E8E8\],
-header .hidden.md\:flex > span:not([id^="step-pill"]) {
-  color: var(--h-border-strong) !important;
-  font-size: 11px;
-  padding: 0 2px;
-}
-
-#step-pill-1,
-#step-pill-2,
-#step-pill-3,
-#step-pill-4 {
-  border-radius: var(--radius-sm) !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: 6px 11px !important;
-  color: var(--h-muted) !important;
-  font-weight: 600 !important;
-  font-size: 11.5px !important;
-  letter-spacing: 0.01em;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-#step-pill-1 {
-  background: var(--h-teal) !important;
-  color: #ffffff !important;
-}
-
-/* Visited-state pill (set inline by goToPage JS using bg-[#E6F5F5] / text-[#005C5C]) */
-header span[class*="bg-\[\#E6F5F5\]"] {
-  background: var(--h-teal-tint) !important;
-  color: var(--h-teal) !important;
-  border-color: var(--h-border) !important;
-}
-
-/* Locations-active badge (top right) */
-header > div > span.text-xs {
-  background: var(--h-surface-alt) !important;
-  color: var(--h-teal-deep) !important;
-  border: 1px solid var(--h-border) !important;
-  border-radius: var(--radius-sm) !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.02em;
-}
-
-/* ---------- SURFACES / CARDS ---------- */
-
-.page-screen .bg-white {
-  background: var(--h-surface) !important;
-}
-
-.page-screen .border-\[\#D6E8E8\] {
-  border-color: var(--h-border) !important;
-}
-
-/* Flatten corner radii to an institutional scale — no giant pill cards */
-.page-screen .rounded-3xl { border-radius: var(--radius-lg) !important; }
-.page-screen .rounded-2xl { border-radius: var(--radius-md) !important; }
-.page-screen .rounded-xl  { border-radius: var(--radius-sm) !important; }
-
-/* Primary content panels get a slightly firmer border + minimal shadow */
-#page-2 > div:last-child,
-#page-3 > div:first-child,
-#page-4 > div:first-child {
-  border: 1px solid var(--h-border) !important;
-  box-shadow: var(--shadow-2) !important;
-  border-radius: var(--radius-lg) !important;
-}
-
-/* ---------- SHADOW DISCIPLINE ---------- */
-
-.page-screen .shadow-xl,
-.page-screen .shadow-2xl { box-shadow: var(--shadow-2) !important; }
-.page-screen .shadow-lg  { box-shadow: var(--shadow-1) !important; }
-.page-screen .shadow-md,
-.page-screen .shadow-sm  { box-shadow: var(--shadow-1) !important; }
-
-/* Remove any lingering colored glow shadows entirely */
-[class*="shadow-[#005C5C]"],
-[class*="shadow-[#059669]"],
-[class*="shadow-[#D97706]"],
-[class*="shadow-[#DC2626]"],
-[class*="shadow-[#7C3AED]"] {
-  box-shadow: none !important;
-}
-
-/* Remove blur/glass effects site-wide */
-.backdrop-blur,
-[class*="backdrop-blur"] {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-
-/* ---------- BUTTONS ---------- */
-
-button {
-  font-family: inherit !important;
-  letter-spacing: 0.005em;
-}
-
-/* Primary gradient CTAs → flat institutional teal */
-button[class*="bg-gradient"] {
-  background: var(--h-teal) !important;
-  background-image: none !important;
-  box-shadow: none !important;
-  border-radius: var(--radius-sm) !important;
-  font-weight: 600 !important;
-  transition: background 0.15s ease !important;
-}
-
-button[class*="bg-gradient"]:hover {
-  background: var(--h-teal-dark) !important;
-  transform: none !important;
-}
-
-button.bg-\[\#005C5C\] {
-  background: var(--h-teal) !important;
-  box-shadow: none !important;
-  border-radius: var(--radius-sm) !important;
-  font-weight: 600 !important;
-}
-
-button.bg-\[\#005C5C\]:hover {
-  background: var(--h-teal-dark) !important;
-  transform: none !important;
-}
-
-/* All pill-shaped buttons → rectangular institutional radius */
-button.rounded-full {
-  border-radius: var(--radius-sm) !important;
-}
-
-/* Remove hover-scale "AI app" bounce effect everywhere */
-.hover\:scale-105:hover { transform: none !important; }
-
-/* Secondary / back-link buttons */
-.page-screen button.text-\[\#4B6F6F\] {
-  color: var(--h-muted) !important;
-  font-weight: 600 !important;
-}
-.page-screen button.text-\[\#4B6F6F\]:hover {
-  color: var(--h-teal-deep) !important;
-}
-
-/* ---------- PAGE 1 — NATIONAL MAP ---------- */
-
-#page-1 > div:first-child {
-  margin-bottom: 14px !important;
-}
-
-/* Status pill above map */
-#page-1 > div:first-child > div {
-  background: var(--h-surface) !important;
-  border: 1px solid var(--h-border) !important;
-  color: var(--h-teal-deep) !important;
-  border-radius: var(--radius-sm) !important;
-  box-shadow: none !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.01em;
-  padding: 7px 16px !important;
-}
-
-#page-1 > div:first-child > div span.animate-ping {
-  animation: none !important;
-  background: var(--h-teal) !important;
-  opacity: 0.85;
-}
-
-/* Map canvas */
-.map-canvas {
-  background: #FFFFFF !important;
-  background-image:
-    linear-gradient(var(--h-border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--h-border) 1px, transparent 1px) !important;
-  background-size: 28px 28px !important;
-  background-position: center !important;
-  border-radius: var(--radius-lg) !important;
-  border: 1px solid var(--h-border) !important;
-  box-shadow: var(--shadow-1) !important;
-}
-
-/* State fills — desaturate slightly for a scientific (not neon) look */
-.state-path {
-  stroke: #FFFFFF !important;
-  stroke-width: 0.9 !important;
-  filter: saturate(0.82) brightness(1.02);
-}
-
-.state-path:hover {
-  filter: saturate(0.95) brightness(1.05) !important;
-  stroke: var(--h-teal) !important;
-  stroke-width: 1.4 !important;
-  cursor: pointer;
-}
-
-/* State / place labels — small, thin, unobtrusive (per spec ~6px, weight 400-500) */
-.state-label {
-  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
-  font-size: 6px;
-  font-weight: 500;
-  fill: rgba(9, 30, 28, 0.55);
-  text-anchor: middle;
-  pointer-events: none;
-  letter-spacing: 0.01em;
-}
-
-.city-pin { cursor: pointer; }
-.city-pulse { animation: none !important; opacity: 0.55; }
-
-/* Tooltip */
-#map-tooltip {
-  background: var(--h-surface) !important;
-  border: 1px solid var(--h-border) !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: var(--shadow-3) !important;
-  backdrop-filter: none !important;
-}
-
-/* Bottom risk legend */
-#page-1 .map-canvas > div:last-child {
-  background: var(--h-surface) !important;
-  border: 1px solid var(--h-border) !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: var(--shadow-1) !important;
-}
-
-/* Lakshadweep inset panel (added structurally — styled here) */
-.lakshadweep-inset {
-  position: absolute;
-  bottom: 14px;
-  left: 14px;
-  background: var(--h-surface);
-  border: 1px solid var(--h-border);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-1);
-  padding: 4px;
-  z-index: 5;
-}
-
-.lakshadweep-inset-label {
-  font-size: 8px;
-  font-weight: 600;
-  color: var(--h-muted);
-  text-align: center;
-  letter-spacing: 0.02em;
-  margin-top: 2px;
-}
-
-/* ---------- PAGE 2 — SEARCH ---------- */
-
-#page-2 { max-width: 780px !important; }
-
-#search-input {
-  background: var(--h-surface) !important;
-  border: 1px solid var(--h-border-strong) !important;
-  border-radius: var(--radius-sm) !important;
-  box-shadow: none !important;
-  font-weight: 500;
-}
-
-#search-input:focus {
-  border-color: var(--h-teal) !important;
-  box-shadow: 0 0 0 3px rgba(14, 92, 88, 0.10) !important;
-}
-
-#page-2 input + button,
-#page-2 button[class*="bg-[#005C5C]"] {
-  border-radius: var(--radius-sm) !important;
-}
-
-/* Quick example chips — neutral until hover */
-#page-2 button[class*="bg-purple"],
-#page-2 button[class*="bg-red"],
-#page-2 button[class*="bg-amber"],
-#page-2 button[class*="bg-emerald"] {
-  background: var(--h-surface-alt) !important;
-  border-color: var(--h-border) !important;
-  color: var(--h-text-soft) !important;
-  border-radius: var(--radius-sm) !important;
-  font-weight: 500 !important;
-}
-
-#page-2 button[class*="bg-purple"]:hover,
-#page-2 button[class*="bg-red"]:hover,
-#page-2 button[class*="bg-amber"]:hover,
-#page-2 button[class*="bg-emerald"]:hover {
-  background: var(--h-teal-tint) !important;
-  color: var(--h-teal-deep) !important;
-  border-color: var(--h-border-strong) !important;
-}
-
-/* Search states */
-#search-error {
-  border-radius: var(--radius-md) !important;
-  box-shadow: none !important;
-  background: #FBF1F1 !important;
-  border-color: #E3B9BA !important;
-}
-
-#search-success {
-  background: var(--h-surface-alt) !important;
-  border: 1px solid var(--h-border) !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: none !important;
-}
-
-/* ---------- PAGE 3 — TELEMETRY ---------- */
-
-#page-3 .grid > div {
-  border-radius: var(--radius-md) !important;
-  box-shadow: none !important;
-}
-
-#page-3 .grid > div[class*="bg-[#FFFAFA]"] {
-  background: var(--h-surface-alt) !important;
-  border-color: var(--h-border) !important;
-}
-
-#p3-surface,
-#p3-ground,
-#p3-metal {
-  color: var(--h-teal-deep) !important;
-}
-
-#page-3 .grid > div > div { box-shadow: none !important; }
-
-/* Metal / biochem metric tiles */
-#page-3 .grid.grid-cols-2 > div,
-#page-3 .grid.sm\:grid-cols-4 > div,
-#page-3 .grid.lg\:grid-cols-7 > div {
-  border: 1px solid var(--h-border) !important;
-}
-
-/* ---------- PAGE 4 — REMEDIATION ---------- */
-
-#p4-warning-banner {
-  border-radius: var(--radius-md) !important;
-  box-shadow: none !important;
-}
-
-/* Tier badges + solution cards keep their semantic colors,
-   but corners/shadows are normalized to the institutional scale */
-#p4-solutions-container .rounded-2xl { border-radius: var(--radius-md) !important; }
-#p4-solutions-container [style*="linear-gradient"] {
-  box-shadow: var(--shadow-1) !important;
-  border-width: 1px !important;
-}
-
-/* ---------- RISK COLOR TEXT — preserved semantics, muted saturation ---------- */
-/* (Intentionally not overridden: risk badge fills/text colors carry meaning
-   and must remain exactly as set by JS — Good/Moderate/Critical/Extreme.) */
-
-/* ---------- MOBILE ---------- */
-
-@media (max-width: 767px) {
-  header {
-    padding-left: 14px !important;
-    padding-right: 14px !important;
-  }
-
-  .page-screen {
-    padding-left: 14px !important;
-    padding-right: 14px !important;
-  }
-
-  .map-canvas {
-    border-radius: var(--radius-md) !important;
-    min-height: 530px !important;
-  }
-
-  #page-2 > div:last-child,
-  #page-3 > div:first-child,
-  #page-4 > div:first-child {
-    border-radius: var(--radius-md) !important;
-  }
-
-  #page-1 button { border-radius: var(--radius-sm) !important; }
-
-  .state-label { font-size: 5px; }
-}
-</style>
+  <style>
+    /* =========================================================================
+       HEMORA — INSTITUTIONAL ENVIRONMENTAL MONITORING PLATFORM
+       Strict, Clean, Scientific, Institutional (CPCB / US EPA Standard)
+       Palette: Deep Teal (#0f5956), Clean White, Charcoal/Slate (#0f172a, #334155)
+       ========================================================================= */
+
+    :root {
+      --hemora-teal-900: #072e2c;
+      --hemora-teal-800: #0b4340;
+      --hemora-teal-700: #0f5956;
+      --hemora-teal-600: #14706c;
+      --hemora-teal-50:  #f0f7f6;
+      
+      --hemora-slate-900: #0f172a;
+      --hemora-slate-800: #1e293b;
+      --hemora-slate-700: #334155;
+      --hemora-slate-600: #475569;
+      --hemora-slate-500: #64748b;
+      --hemora-slate-300: #cbd5e1;
+      --hemora-slate-200: #e2e8f0;
+      --hemora-slate-100: #f1f5f9;
+      --hemora-slate-50:  #f8fafc;
+
+      --risk-good:     #059669;
+      --risk-moderate: #d97706;
+      --risk-critical: #dc2626;
+      --risk-extreme:  #7c3aed;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      background-color: var(--hemora-slate-50);
+      color: var(--hemora-slate-900);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* CRITICAL FIX: HARD MULTI-PAGE VIEW ISOLATION */
+    /* Only the active phase is rendered. All other pages are strictly hidden */
+    .page-screen {
+      display: none !important;
+    }
+    .page-screen.active {
+      display: block !important;
+    }
+
+    /* D3 Map Canvas & Styling */
+    .map-canvas {
+      background-color: #f1f6f5;
+      border: 1px solid var(--hemora-slate-200);
+    }
+
+    .state-path {
+      stroke: #ffffff;
+      stroke-width: 0.75;
+      cursor: pointer;
+      transition: fill 0.15s ease, stroke-width 0.15s ease, filter 0.15s ease;
+    }
+
+    .state-path:hover {
+      filter: brightness(1.08);
+      stroke: var(--hemora-teal-800);
+      stroke-width: 1.5;
+    }
+
+    .state-label {
+      font-size: 6px;
+      font-weight: 500;
+      fill: #334155;
+      text-anchor: middle;
+      pointer-events: none;
+      user-select: none;
+      letter-spacing: -0.01em;
+      opacity: 0.85;
+    }
+
+    .island-label {
+      font-size: 7px;
+      font-weight: 600;
+      fill: #0f5956;
+      text-anchor: middle;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .city-pin {
+      cursor: pointer;
+    }
+
+    .city-pin:hover circle:first-child {
+      stroke-width: 2.2;
+    }
+
+    @keyframes pulse-ring {
+      0% { r: 3.5px; opacity: 0.9; }
+      50% { r: 6.5px; opacity: 0.25; }
+      100% { r: 3.5px; opacity: 0.9; }
+    }
+
+    .city-pulse {
+      animation: pulse-ring 2.2s infinite ease-in-out;
+      transform-origin: center;
+    }
+  </style>
 </head>
-<body class="bg-[#FFFAFA] text-[#0F172A] font-sans min-h-screen selection:bg-[#005C5C] selection:text-white">
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-900">
 
-  <!-- TOP HEADER -->
-  <header class="border-b border-[#D6E8E8] bg-white/95 backdrop-blur sticky top-0 z-50 px-6 py-3.5 shadow-sm">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <div class="flex items-center gap-2.5 cursor-pointer" onclick="goToPage(1)">
-        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#005C5C] via-[#2FA3A3] to-teal-500 flex items-center justify-center font-black text-white text-sm shadow-md shadow-[#005C5C]/20">
-          H
+  <!-- ======================================================== -->
+  <!-- INSTITUTIONAL TOP HEADER (STATIONARY)                    -->
+  <!-- ======================================================== -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        
+        <!-- Platform Logo & Title -->
+        <div class="flex items-center gap-3 cursor-pointer select-none" onclick="goToPage(1)">
+          <div class="w-9 h-9 rounded bg-[#0f5956] text-white flex items-center justify-center font-bold text-base tracking-wider border border-[#0b4340] shrink-0">
+            H
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-lg tracking-tight text-slate-900">HEMORA</span>
+              <span class="text-[10px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">v2.2 Production</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-medium hidden sm:block">National Heavy Metal Pollution & Water Quality Information System</p>
+          </div>
         </div>
-        <span class="font-extrabold text-lg tracking-wider text-[#005C5C]">
-          HEMORA
-        </span>
-      </div>
 
-      <!-- Stepper Indicator -->
-      <div class="hidden md:flex items-center gap-2 text-xs font-semibold">
-        <span id="step-pill-1" class="px-3 py-1 rounded-full bg-[#005C5C] text-white font-bold transition-all shadow-sm">1. National Map</span>
-        <span class="text-[#D6E8E8]">→</span>
-        <span id="step-pill-2" class="px-3 py-1 rounded-full bg-slate-100 text-[#4B6F6F] transition-all">2. Search Location</span>
-        <span class="text-[#D6E8E8]">→</span>
-        <span id="step-pill-3" class="px-3 py-1 rounded-full bg-slate-100 text-[#4B6F6F] transition-all">3. CSV Data Telemetry</span>
-        <span class="text-[#D6E8E8]">→</span>
-        <span id="step-pill-4" class="px-3 py-1 rounded-full bg-slate-100 text-[#4B6F6F] transition-all">4. Remediation Plan</span>
-      </div>
+        <!-- Strict Phase Stepper Navigation -->
+        <nav class="hidden md:flex items-center gap-1 text-xs font-semibold bg-slate-50 p-1 rounded-md border border-slate-200">
+          <button id="step-pill-1" onclick="goToPage(1)" class="px-3 py-1.5 rounded text-white bg-[#0f5956] font-medium transition cursor-pointer">
+            1. National Map
+          </button>
+          <span class="text-slate-300">/</span>
+          <button id="step-pill-2" onclick="goToPage(2)" class="px-3 py-1.5 rounded text-slate-600 hover:text-slate-900 transition cursor-pointer">
+            2. Search Location
+          </button>
+          <span class="text-slate-300">/</span>
+          <button id="step-pill-3" onclick="goToPage(3)" class="px-3 py-1.5 rounded text-slate-600 hover:text-slate-900 transition cursor-pointer">
+            3. Telemetry Report
+          </button>
+          <span class="text-slate-300">/</span>
+          <button id="step-pill-4" onclick="goToPage(4)" class="px-3 py-1.5 rounded text-slate-600 hover:text-slate-900 transition cursor-pointer">
+            4. Remediation Plan
+          </button>
+        </nav>
 
-      <span class="text-xs bg-[#E6F5F5] text-[#005C5C] border border-[#2FA3A3]/30 px-3 py-1 rounded-full font-semibold">
-        🇮🇳 115+ Verified Locations Active
-      </span>
+        <!-- Status Indicator -->
+        <div class="flex items-center gap-2 text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-md">
+          <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+          <span>167 Verified Monitoring Stations Active</span>
+        </div>
+      </div>
     </div>
   </header>
 
   <!-- ======================================================== -->
-  <!-- PAGE 1: REAL INDIA MAP WITH LABELS & CITIES              -->
+  <!-- MAIN MULTI-PAGE CONTAINER                                -->
   <!-- ======================================================== -->
-  <div id="page-1" class="page-screen active max-w-7xl mx-auto px-4 py-6">
-    
-    <!-- Top Pill Floating Banner -->
-    <div class="flex justify-center mb-3">
-      <div class="inline-flex items-center gap-2 bg-white/90 border border-[#D6E8E8] text-[#005C5C] px-5 py-2 rounded-full text-xs font-bold shadow-md backdrop-blur">
-        <span class="w-2 h-2 rounded-full bg-[#2FA3A3] animate-ping"></span>
-        India water quality · city and state/UT risk categories
-      </div>
-    </div>
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-    <!-- MAIN MAP CANVAS CONTAINER -->
-    <div class="map-canvas rounded-3xl border border-[#D6E8E8] p-4 sm:p-6 relative shadow-xl overflow-hidden min-h-[640px] flex flex-col items-center justify-center">
-
-      <!-- TOOLTIP OVERLAY (DYNAMIC ON HOVER) -->
-      <div id="map-tooltip" class="hidden absolute top-6 right-6 bg-white/95 border border-[#D6E8E8] p-4 rounded-2xl shadow-2xl text-xs z-30 pointer-events-none min-w-[220px] backdrop-blur text-[#0F172A]">
-        <div class="font-extrabold text-[#005C5C] text-sm" id="tt-name">Uttar Pradesh</div>
-        <div class="text-[#4B6F6F] mt-0.5 text-[11px]" id="tt-type">State Category</div>
-        <div class="mt-2 flex items-center justify-between border-t border-[#D6E8E8] pt-2">
-          <span class="text-[#4B6F6F]">Surface Pollution:</span>
-          <b class="text-base font-black" id="tt-score">55%</b>
-        </div>
-        <div class="text-[#4B6F6F] mt-1 flex items-center justify-between">
-          <span>Primary Metal:</span>
-          <b class="text-[#0F172A]" id="tt-metal">Chromium</b>
-        </div>
-        <div class="text-[10px] text-[#005C5C] font-bold mt-2 text-center bg-[#E6F5F5] py-1 rounded-lg border border-[#D6E8E8]">
-          Click to view full data & stats →
-        </div>
-      </div>
-
-      <!-- D3 GEOGRAPHIC MAP CONTAINER -->
-      <div id="d3-india-map" class="w-full max-w-2xl flex justify-center relative min-h-[520px]">
-        <!-- Vector Map rendered via D3 -->
-
-        <!-- LAKSHADWEEP INSET (geographically separated, southwest of Kerala) -->
-        <div class="lakshadweep-inset">
-          <div id="d3-lakshadweep-inset"></div>
-          <div class="lakshadweep-inset-label">Lakshadweep</div>
-        </div>
-      </div>
-
-      <!-- EXACT 4-TIER FLOATING BOTTOM LEGEND PILL -->
-      <div class="mt-3 flex flex-wrap items-center justify-center gap-4 bg-white/95 border border-[#D6E8E8] px-6 py-2.5 rounded-2xl text-xs font-bold shadow-lg backdrop-blur text-[#0F172A]">
-        <span class="text-[#4B6F6F] font-extrabold uppercase tracking-wider text-[11px] mr-1">Risk</span>
-        
-        <div class="flex items-center gap-1.5">
-          <span class="w-3 h-3 rounded-full bg-[#059669] shadow-sm shadow-[#059669]/50"></span>
-          <span class="text-[#059669] font-bold">🟢 Good &lt; 20%</span>
-        </div>
-
-        <div class="flex items-center gap-1.5">
-          <span class="w-3 h-3 rounded-full bg-[#D97706] shadow-sm shadow-[#D97706]/50"></span>
-          <span class="text-[#D97706] font-bold">🟡 Moderate 20–39%</span>
-        </div>
-
-        <div class="flex items-center gap-1.5">
-          <span class="w-3 h-3 rounded-full bg-[#DC2626] shadow-sm shadow-[#DC2626]/50"></span>
-          <span class="text-[#DC2626] font-bold">🔴 Critical 40–49%</span>
-        </div>
-
-        <div class="flex items-center gap-1.5">
-          <span class="w-3 h-3 rounded-full bg-[#7C3AED] shadow-sm shadow-[#7C3AED]/50"></span>
-          <span class="text-[#7C3AED] font-bold">🟣 Extreme 50%+</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- PROMINENT NEXT BUTTON -->
-    <div class="text-center mt-6">
-      <button 
-        onclick="goToPage(2)"
-        class="inline-flex items-center gap-3 bg-gradient-to-r from-[#005C5C] via-[#2FA3A3] to-teal-600 hover:from-[#004d4d] hover:to-[#258585] text-white font-black px-10 py-4 rounded-full text-base shadow-xl shadow-[#005C5C]/20 hover:scale-105 transition-all cursor-pointer"
-      >
-        <span>Search Specific City or District</span>
-        <i data-lucide="arrow-right" class="w-5 h-5"></i>
-      </button>
-    </div>
-  </div>
-
-  <!-- ======================================================== -->
-  <!-- PAGE 2: SEARCH ENGINE & VERIFICATION LOOP                -->
-  <!-- ======================================================== -->
-  <div id="page-2" class="page-screen max-w-3xl mx-auto px-4 py-12">
-    <div class="text-center mb-8">
-      <div class="inline-flex items-center gap-2 bg-[#E6F5F5] text-[#005C5C] border border-[#2FA3A3]/30 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
-        <i data-lucide="search" class="w-4 h-4"></i> Phase 2: Location Search Engine
-      </div>
-      <h2 class="text-3xl sm:text-4xl font-extrabold text-[#0F172A]">
-        Search Your City, State or District
-      </h2>
-      <p class="text-[#4B6F6F] text-sm mt-2">
-        Type any location across India to pull verified heavy metal & contamination telemetry.
-      </p>
-    </div>
-
-    <div class="bg-white border border-[#D6E8E8] rounded-3xl p-6 sm:p-8 shadow-xl">
-      <!-- Search Input -->
-      <div class="relative mb-4">
-        <i data-lucide="map-pin" class="w-5 h-5 absolute left-4 top-4 text-[#005C5C]"></i>
-        <input 
-          type="text" 
-          id="search-input"
-          placeholder="Type e.g. Kanpur, Kolkata, Vapi, Ludhiana, Delhi, Bengaluru, Srinagar, Leh..."
-          class="w-full bg-[#FFFAFA] border border-[#D6E8E8] rounded-2xl pl-12 pr-28 py-3.5 text-base focus:outline-none focus:border-[#005C5C] focus:ring-2 focus:ring-[#005C5C]/20 text-[#0F172A] placeholder-[#4B6F6F]/60 transition"
-          onkeypress="if(event.key === 'Enter') handleSearchSubmit()"
-        />
-        <button 
-          onclick="handleSearchSubmit()"
-          class="absolute right-2 top-2 bg-[#005C5C] hover:bg-[#004d4d] text-white font-bold px-5 py-2 rounded-xl text-xs transition cursor-pointer"
-        >
-          Verify
-        </button>
-      </div>
-
-      <!-- Quick Suggestion Badges -->
-      <div class="flex items-center gap-1.5 flex-wrap mb-6 text-xs">
-        <span class="text-[#4B6F6F] font-medium">Quick examples:</span>
-        <button onclick="quickPick('Kanpur')" class="px-2.5 py-1 rounded-lg bg-purple-50 hover:bg-purple-100 text-[#7C3AED] border border-[#7C3AED]/20 font-medium">Kanpur (🟣 50%+)</button>
-        <button onclick="quickPick('Kolkata')" class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-[#DC2626] border border-[#DC2626]/20 font-medium">Kolkata (🔴 40–49%)</button>
-        <button onclick="quickPick('Bengaluru')" class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-[#D97706] border border-[#D97706]/20 font-medium">Bengaluru (🟡 20–39%)</button>
-        <button onclick="quickPick('Srinagar')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#059669] border border-[#059669]/20 font-medium">Srinagar (🟢 J&K)</button>
-        <button onclick="quickPick('Leh')" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[#059669] border border-[#059669]/20 font-medium">Leh (🟢 Ladakh)</button>
-      </div>
-
-      <!-- ERROR STATE (NOT FOUND LOOP) -->
-      <div id="search-error" class="hidden p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-sm mb-6 flex items-start gap-3">
-        <i data-lucide="alert-circle" class="w-5 h-5 text-red-500 shrink-0 mt-0.5"></i>
+    <!-- ======================================================== -->
+    <!-- PAGE 1 (ROLE: NATIONAL GEOGRAPHIC RISK OVERVIEW)        -->
+    <!-- ======================================================== -->
+    <section id="page-1" class="page-screen active space-y-5">
+      
+      <!-- Top Action Bar -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
         <div>
-          <b>Your location is currently not found.</b>
-          <p class="text-xs text-red-600 mt-1">Please try another Indian state, district, or industrial hub from our database (e.g. Ludhiana, Varanasi, Ahmedabad, Patna, Chennai, Jaipur).</p>
+          <h1 class="text-xl font-bold text-slate-900 tracking-tight">National Water Quality & Heavy Metal Risk Map</h1>
+          <p class="text-xs text-slate-500 mt-0.5">Vector telemetry visualization across Indian States, Union Territories & Major Industrial Corridors.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button 
+            onclick="goToPage(2)"
+            class="inline-flex items-center gap-2 bg-[#0f5956] hover:bg-[#0b4340] text-white text-xs font-semibold px-4 py-2 rounded-md transition border border-[#072e2c] shadow-xs cursor-pointer"
+          >
+            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+            <span>Search Specific District or Hub</span>
+          </button>
         </div>
       </div>
 
-      <!-- SUCCESS STATE (VERIFIED CARD) -->
-      <div id="search-success" class="hidden p-5 rounded-2xl bg-white border border-[#D6E8E8] mb-6 shadow-sm">
-        <div class="flex items-center justify-between flex-wrap gap-2">
-          <div class="flex items-center gap-3">
-            <div id="success-dot" class="w-3.5 h-3.5 rounded-full shrink-0"></div>
-            <div>
-              <span class="text-xs font-bold uppercase tracking-wider text-[#4B6F6F]" id="success-category">State / Industrial Hub</span>
-              <div class="text-xl font-black text-[#0F172A]" id="success-location-title">Kanpur, Uttar Pradesh</div>
+      <!-- MAIN MAP CANVAS CONTAINER -->
+      <div class="map-canvas rounded-lg p-4 relative overflow-hidden min-h-[580px] flex flex-col items-center justify-center shadow-xs">
+
+        <!-- FLOATING SCIENTIFIC TOOLTIP -->
+        <div id="map-tooltip" class="hidden absolute top-4 right-4 bg-white border border-slate-300 p-3.5 rounded-md shadow-md text-xs z-30 pointer-events-none min-w-[240px] text-slate-800">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-1.5 mb-2">
+            <span class="font-bold text-slate-900 text-sm" id="tt-name">Uttar Pradesh</span>
+            <span class="text-[10px] text-slate-500 font-semibold uppercase" id="tt-type">State</span>
+          </div>
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-slate-600 text-[11px]">Surface Water Index:</span>
+              <b class="text-xs font-bold" id="tt-score">55%</b>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-slate-600 text-[11px]">Primary Metal Contaminant:</span>
+              <b class="text-xs font-bold text-slate-900" id="tt-metal">Chromium</b>
             </div>
           </div>
-          <span id="success-risk-badge" class="text-xs px-3 py-1 rounded-full font-black uppercase border">
-            🟣 Extreme 50%+
-          </span>
+          <div class="text-[10px] text-[#0f5956] font-semibold mt-2.5 pt-1.5 border-t border-slate-100 flex items-center justify-between">
+            <span>Click to load full station telemetry</span>
+            <i data-lucide="arrow-right" class="w-3 h-3"></i>
+          </div>
         </div>
-        <div class="mt-3 text-xs text-[#4B6F6F] flex items-center gap-2 border-t border-[#D6E8E8] pt-3">
-          <span>⚠️ Key Heavy Metal: <b class="text-[#0F172A]" id="success-metal">Chromium</b></span>
-          <span>•</span>
-          <span>Source: <span class="text-[#0F172A]" id="success-source">Tannery effluent (~1000 units)</span></span>
+
+        <!-- D3 MAP CONTAINER -->
+        <div id="d3-india-map" class="w-full max-w-2xl flex justify-center relative min-h-[480px]">
+          <!-- Vector Map dynamically rendered via D3 -->
+        </div>
+
+        <!-- 4-TIER ENVIRONMENTAL RISK LEGEND -->
+        <div class="mt-3 w-full max-w-2xl bg-white border border-slate-200 px-4 py-2 rounded-md text-xs shadow-xs flex flex-wrap items-center justify-between gap-3">
+          <span class="text-slate-500 font-bold uppercase tracking-wider text-[10px]">CPCB Pollution Index:</span>
+          
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-sm bg-[#059669]"></span>
+            <span class="text-slate-700 font-medium text-[11px]">Good (&lt;20%)</span>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-sm bg-[#d97706]"></span>
+            <span class="text-slate-700 font-medium text-[11px]">Moderate (20–39%)</span>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-sm bg-[#dc2626]"></span>
+            <span class="text-slate-700 font-medium text-[11px]">Critical (40–49%)</span>
+          </div>
+
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-sm bg-[#7c3aed]"></span>
+            <span class="text-slate-700 font-medium text-[11px]">Extreme (≥50%)</span>
+          </div>
         </div>
       </div>
 
-      <!-- NAVIGATION -->
-      <div class="flex items-center justify-between pt-4 border-t border-[#D6E8E8]">
-        <button 
-          onclick="goToPage(1)"
-          class="flex items-center gap-2 text-[#4B6F6F] hover:text-[#0F172A] text-sm font-semibold transition cursor-pointer"
-        >
-          <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to National Map
-        </button>
+    </section>
 
-        <button 
-          id="btn-goto-p3"
-          onclick="goToPage(3)"
-          disabled
-          class="inline-flex items-center gap-2 bg-slate-100 text-slate-400 font-black px-7 py-3.5 rounded-full text-sm transition-all cursor-not-allowed"
-        >
-          <span>Next: View Detailed Stats</span>
-          <i data-lucide="arrow-right" class="w-4 h-4"></i>
-        </button>
+    <!-- ======================================================== -->
+    <!-- PAGE 2 (ROLE: LOCATION SEARCH & VERIFICATION)           -->
+    <!-- ======================================================== -->
+    <section id="page-2" class="page-screen max-w-3xl mx-auto space-y-6 py-4">
+      
+      <div class="border-b border-slate-200 pb-3">
+        <h2 class="text-xl font-bold text-slate-900 tracking-tight">Phase 2: Location Search & Verification</h2>
+        <p class="text-xs text-slate-500 mt-0.5">Search across 167 verified monitoring stations, cities, industrial clusters, and Union Territories.</p>
       </div>
-    </div>
-  </div>
 
-  <!-- ======================================================== -->
-  <!-- PAGE 3: DATA & STATS TELEMETRY REPORT                    -->
-  <!-- ======================================================== -->
-  <div id="page-3" class="page-screen max-w-5xl mx-auto px-4 py-8">
-    <div class="bg-white border border-[#D6E8E8] rounded-3xl p-6 sm:p-8 shadow-xl mb-8">
-      <!-- Title Header -->
-      <div class="flex items-center justify-between flex-wrap gap-4 border-b border-[#D6E8E8] pb-6 mb-6">
+      <div class="bg-white border border-slate-200 rounded-lg p-6 shadow-xs space-y-5">
+        
+        <!-- Search Input Bar -->
+        <div class="space-y-1.5">
+          <label for="search-input" class="block text-xs font-bold uppercase tracking-wider text-slate-700">Enter Location Name</label>
+          <div class="relative">
+            <i data-lucide="map-pin" class="w-4 h-4 absolute left-3.5 top-3 text-slate-400"></i>
+            <input 
+              type="text" 
+              id="search-input"
+              placeholder="e.g. Kanpur, Kolkata, Vapi, Ludhiana, Delhi, Bengaluru, Srinagar, Kavaratti, Leh..."
+              class="w-full bg-slate-50 border border-slate-300 rounded-md pl-10 pr-24 py-2.5 text-sm focus:outline-none focus:border-[#0f5956] focus:ring-1 focus:ring-[#0f5956] text-slate-900 placeholder-slate-400 transition"
+              onkeypress="if(event.key === 'Enter') handleSearchSubmit()"
+            />
+            <button 
+              onclick="handleSearchSubmit()"
+              class="absolute right-1.5 top-1.5 bg-[#0f5956] hover:bg-[#0b4340] text-white font-medium px-4 py-1.5 rounded text-xs transition cursor-pointer"
+            >
+              Verify
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Search Chips -->
+        <div class="flex items-center gap-1.5 flex-wrap text-xs">
+          <span class="text-slate-500 text-[11px] font-medium mr-1">Sample Hotspots:</span>
+          <button onclick="quickPick('Kanpur')" class="px-2.5 py-1 rounded bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 font-medium text-[11px] cursor-pointer">Kanpur (Extreme 50%+)</button>
+          <button onclick="quickPick('Kolkata')" class="px-2.5 py-1 rounded bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-medium text-[11px] cursor-pointer">Kolkata (Critical 40–49%)</button>
+          <button onclick="quickPick('Bengaluru')" class="px-2.5 py-1 rounded bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-medium text-[11px] cursor-pointer">Bengaluru (Moderate 20–39%)</button>
+          <button onclick="quickPick('Kavaratti')" class="px-2.5 py-1 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-medium text-[11px] cursor-pointer">Kavaratti (Lakshadweep)</button>
+          <button onclick="quickPick('Srinagar')" class="px-2.5 py-1 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-medium text-[11px] cursor-pointer">Srinagar (Good)</button>
+        </div>
+
+        <!-- ERROR STATE -->
+        <div id="search-error" class="hidden p-3.5 rounded-md bg-red-50 border border-red-200 text-red-800 text-xs flex items-start gap-2.5">
+          <i data-lucide="alert-circle" class="w-4 h-4 text-red-600 shrink-0 mt-0.5"></i>
+          <div>
+            <span class="font-bold">Location not found in active telemetry database.</span>
+            <p class="text-red-700 mt-0.5">Please check spelling or choose from our 167 verified stations (e.g. Ludhiana, Ahmedabad, Chennai, Jaipur, Patna, Durgapur, Kavaratti).</p>
+          </div>
+        </div>
+
+        <!-- SUCCESS CARD -->
+        <div id="search-success" class="hidden p-4 rounded-md bg-slate-50 border border-slate-200 space-y-3">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center gap-2.5">
+              <div id="success-dot" class="w-3 h-3 rounded-full shrink-0"></div>
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500" id="success-category">Monitoring Station</span>
+                <div class="text-base font-bold text-slate-900" id="success-location-title">Kanpur, Uttar Pradesh</div>
+              </div>
+            </div>
+            <span id="success-risk-badge" class="text-xs px-2.5 py-1 rounded font-bold uppercase border">
+              Extreme (≥50%)
+            </span>
+          </div>
+          <div class="text-xs text-slate-600 flex items-center gap-3 border-t border-slate-200 pt-2.5">
+            <span>Primary Contaminant: <b class="text-slate-900" id="success-metal">Chromium</b></span>
+            <span>•</span>
+            <span>Discharge Source: <span class="text-slate-800" id="success-source">Tannery effluent (~1000 units)</span></span>
+          </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="flex items-center justify-between pt-4 border-t border-slate-200">
+          <button 
+            onclick="goToPage(1)"
+            class="inline-flex items-center gap-1.5 text-slate-600 hover:text-slate-900 text-xs font-semibold transition cursor-pointer"
+          >
+            <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back to National Map
+          </button>
+
+          <button 
+            id="btn-goto-p3"
+            onclick="goToPage(3)"
+            disabled
+            class="inline-flex items-center gap-1.5 bg-slate-200 text-slate-400 font-semibold px-5 py-2 rounded-md text-xs transition cursor-not-allowed"
+          >
+            <span>Proceed to Telemetry Report</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- PAGE 3 (ROLE: SCIENTIFIC TELEMETRY & CHEMICAL REPORT)   -->
+    <!-- ======================================================== -->
+    <section id="page-3" class="page-screen max-w-5xl mx-auto space-y-6 py-4">
+      
+      <!-- Top Title -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
         <div>
-          <span class="text-xs text-[#4B6F6F] uppercase font-bold tracking-wider">Phase 3: Database Telemetry</span>
-          <h2 class="text-3xl font-extrabold text-[#0F172A] flex items-center gap-2 mt-1">
-            <span id="p3-name" class="text-[#005C5C]">Kanpur</span>
-            <span class="text-sm font-normal text-[#4B6F6F]" id="p3-stateut">(Uttar Pradesh)</span>
+          <span class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Phase 3 Telemetry Analysis</span>
+          <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2 mt-0.5">
+            <span id="p3-name" class="text-[#0f5956]">Kanpur</span>
+            <span class="text-xs font-normal text-slate-500" id="p3-stateut">(Uttar Pradesh)</span>
           </h2>
         </div>
-        <span id="p3-risk-badge" class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border">
-          🟣 50%+ Pollution
+        <span id="p3-risk-badge" class="px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border self-start sm:self-auto">
+          Extreme Risk
         </span>
       </div>
 
-      <!-- Top Row: Surface vs Groundwater & Key Metal -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div class="bg-[#FFFAFA] border border-[#D6E8E8] p-5 rounded-2xl text-center shadow-sm">
-          <span class="text-xs uppercase text-[#4B6F6F] font-bold">Surface Water Pollution</span>
-          <div class="text-3xl font-black text-[#7C3AED] mt-2" id="p3-surface">68%</div>
-          <span class="text-[11px] text-[#4B6F6F]">River & Basin Load</span>
+      <!-- Primary Indices Row -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white border border-slate-200 p-4 rounded-md shadow-xs">
+          <span class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Surface Water Pollution</span>
+          <div class="text-2xl font-black text-slate-900 mt-1" id="p3-surface">68%</div>
+          <span class="text-[11px] text-slate-500">River load & surface catchment index</span>
         </div>
 
-        <div class="bg-[#FFFAFA] border border-[#D6E8E8] p-5 rounded-2xl text-center shadow-sm">
-          <span class="text-xs uppercase text-[#4B6F6F] font-bold">Groundwater Pollution</span>
-          <div class="text-3xl font-black text-[#7C3AED] mt-2" id="p3-ground">55%</div>
-          <span class="text-[11px] text-[#4B6F6F]">Aquifer Depth Contamination</span>
+        <div class="bg-white border border-slate-200 p-4 rounded-md shadow-xs">
+          <span class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Groundwater Pollution</span>
+          <div class="text-2xl font-black text-slate-900 mt-1" id="p3-ground">55%</div>
+          <span class="text-[11px] text-slate-500">Aquifer depth contamination index</span>
         </div>
 
-        <div class="bg-[#FFFAFA] border border-[#D6E8E8] p-5 rounded-2xl text-center shadow-sm">
-          <span class="text-xs uppercase text-[#4B6F6F] font-bold">Primary Heavy Metal</span>
-          <div class="text-2xl font-black text-[#005C5C] mt-2 flex items-center justify-center gap-1.5" id="p3-metal">
-            <i data-lucide="shield-alert" class="w-5 h-5"></i> Chromium
+        <div class="bg-white border border-slate-200 p-4 rounded-md shadow-xs">
+          <span class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Primary Hazard Indicator</span>
+          <div class="text-xl font-black text-[#0f5956] mt-1 flex items-center gap-1.5" id="p3-metal">
+            <i data-lucide="shield-alert" class="w-4 h-4"></i> Chromium
           </div>
-          <span class="text-[11px] text-[#4B6F6F]" id="p3-citytype">Tannery Effluent Hub</span>
+          <span class="text-[11px] text-slate-500" id="p3-citytype">Industrial Zone</span>
         </div>
       </div>
 
-      <!-- Heavy Metal Breakdown Percentage (7 Metals) -->
-      <div class="bg-[#FFFAFA] border border-[#D6E8E8] p-6 rounded-2xl mb-6 shadow-sm">
-        <h4 class="text-xs uppercase text-[#4B6F6F] font-bold mb-4 tracking-wider">
-          Heavy Metal Concentration Distribution (% of Toxicity Load)
-        </h4>
+      <!-- Heavy Metal Distribution (7 Parameters) -->
+      <div class="bg-white border border-slate-200 p-5 rounded-md shadow-xs space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+          <h3 class="text-xs uppercase text-slate-700 font-bold tracking-wider">Heavy Metal Toxicity Share</h3>
+          <span class="text-[11px] text-slate-400 font-medium">Standard ICP-MS Spectrometry Array</span>
+        </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 text-center text-xs">
-          <div class="p-3 bg-white rounded-xl border border-[#D6E8E8] shadow-sm">
-            <span class="text-[#4B6F6F] font-medium">Arsenic (As)</span>
-            <div class="text-base font-black text-[#DC2626] mt-1" id="m-as">20%</div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2.5 text-center text-xs">
+          <div class="p-2.5 bg-slate-50 rounded border border-slate-200">
+            <span class="text-slate-500 font-medium text-[11px]">Arsenic (As)</span>
+            <div class="text-sm font-bold text-slate-900 mt-0.5" id="m-as">20%</div>
           </div>
-          <div class="p-3 bg-white rounded-xl border border-[#D6E8E8] shadow-sm">
-            <span class="text-[#4B6F6F] font-medium">Chromium (Cr)</span>
-            <div class="text-base font-black text-[#7C3AED] mt-1" id="m-cr">35%</div>
+          <div class="p-2.5 bg-slate-50 rounded border border-slate-200">
+            <span class="text-slate-500 font-medium text-[11px]">Chromium (Cr)</span>
+            <div class="text-sm font-bold text-slate-900 mt-0.5" id="m-cr">35%</div>
           </div>
-          <div class="p-3 bg-white rounded-xl border border-[#D6E8E8] shadow-sm">
-            <span class="text-[#4B6F6F] font-medium">Lead (Pb)</span>
-            <div class="text-base font-black text-[#D97706] mt-1" id="m-pb">28%</div>
+          <div class="p-2.5 bg-slate-50 rounded border border-slate-200">
+            <span class="text-slate-500 font-medium text-[11px]">Lead (Pb)</span>
+            <div class="text-sm font-bold text-slate-900 mt-0.5" id="m-pb">28%</div>
           </div>
-          <div class="p-3 bg-white rounded-xl border border-[#D6E8E8] shadow-sm">
-            <span class="text-[#4B6F6F] font-medium">Cadmium (Cd)</span>
-            <div class="text-base font-black text-amber-600 mt-1" id="m-cd">10%</div>
+          <div class="p-2.5 bg-slate-50 rounded border border-slate-200">
+            <span class="text-slate-500 font-medium text-[11px]">Cadmium (Cd)</span>
+            <div class="text-sm font-bold text-slate-900 mt-0.5" id="m-cd">10%</div>
           </div>
-          <div class="p-3 bg-white rounded-xl border border-[#D6E8E8] shadow-sm">
-            <span class="text-[#4B6F6F] font-medium">Zinc (Zn)</span>
-            <div class="text-base font-black text-[#005C5C] mt-1" id="m-zn">4%</div>
+          <div class="p-2.5 bg-slate-50 rounded border border-slate-200">
+            <span class="text-slate-500 font-medium text-[11px]">Zinc (Zn)</span>
+            <div class="text-sm font-bold text-slate-900 mt-0.5" id="m-zn">4%</div>
           </div>
-          <div class="p-3 bg-white rounded-xl border border-[#D6E8E8] shadow-sm">
-            <span class="text-[#4B6F6F] font-medium">Copper (Cu)</span>
-            <div class="text-base font-black text-teal-600 mt-1" id="m-cu">2%</div>
+          <div class="p-2.5 bg-slate-50 rounded border border-slate-200">
+            <span class="text-slate-500 font-medium text-[11px]">Copper (Cu)</span>
+            <div class="text-sm font-bold text-slate-900 mt-0.5" id="m-cu">2%</div>
           </div>
-          <div class="p-3 bg-white rounded-xl border border-[#D6E8E8] shadow-sm">
-            <span class="text-[#4B6F6F] font-medium">Nickel (Ni)</span>
-            <div class="text-base font-black text-indigo-600 mt-1" id="m-ni">1%</div>
+          <div class="p-2.5 bg-slate-50 rounded border border-slate-200">
+            <span class="text-slate-500 font-medium text-[11px]">Nickel (Ni)</span>
+            <div class="text-sm font-bold text-slate-900 mt-0.5" id="m-ni">1%</div>
           </div>
         </div>
       </div>
 
       <!-- Biochemical Parameters -->
-      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center text-xs">
-        <div class="bg-[#FFFAFA] p-3 rounded-xl border border-[#D6E8E8] shadow-sm">
-          <span class="text-[#4B6F6F] font-medium">BOD Exceedance</span>
-          <div class="text-lg font-black text-[#D97706] mt-1" id="p3-bod">62%</div>
+      <div class="bg-white border border-slate-200 p-5 rounded-md shadow-xs space-y-3">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+          <h3 class="text-xs uppercase text-slate-700 font-bold tracking-wider">Biochemical Exceedance Parameters</h3>
+          <span class="text-[11px] text-slate-400 font-medium">IS 10500 Compliance Limits</span>
         </div>
-        <div class="bg-[#FFFAFA] p-3 rounded-xl border border-[#D6E8E8] shadow-sm">
-          <span class="text-[#4B6F6F] font-medium">COD Exceedance</span>
-          <div class="text-lg font-black text-[#DC2626] mt-1" id="p3-cod">68%</div>
-        </div>
-        <div class="bg-[#FFFAFA] p-3 rounded-xl border border-[#D6E8E8] shadow-sm">
-          <span class="text-[#4B6F6F] font-medium">Dissolved O2 (DO)</span>
-          <div class="text-lg font-black text-amber-600 mt-1" id="p3-do">50%</div>
-        </div>
-        <div class="bg-[#FFFAFA] p-3 rounded-xl border border-[#D6E8E8] shadow-sm">
-          <span class="text-[#4B6F6F] font-medium">pH Non-compliance</span>
-          <div class="text-lg font-black text-[#005C5C] mt-1" id="p3-ph">18%</div>
-        </div>
-        <div class="bg-[#FFFAFA] p-3 rounded-xl border border-[#D6E8E8] shadow-sm">
-          <span class="text-[#4B6F6F] font-medium">TDS Exceedance</span>
-          <div class="text-lg font-black text-[#7C3AED] mt-1" id="p3-tds">44%</div>
-        </div>
-      </div>
 
-      <!-- Discharge Source -->
-      <div class="mt-6 p-4 rounded-xl bg-[#E6F5F5] border border-[#D6E8E8] text-xs text-[#0F172A]">
-        <b class="text-[#005C5C]">Industrial & Municipal Discharge Source:</b> <span id="p3-source-desc">Tannery effluent (~1000 units) + Ganga discharge</span>
-      </div>
-    </div>
-
-    <!-- NAVIGATION -->
-    <div class="flex items-center justify-between">
-      <button 
-        onclick="goToPage(2)"
-        class="flex items-center gap-2 text-[#4B6F6F] hover:text-[#0F172A] text-sm font-semibold transition cursor-pointer"
-      >
-        <i data-lucide="arrow-left" class="w-4 h-4"></i> Search Another Location
-      </button>
-
-      <button 
-        onclick="goToPage(4)"
-        class="inline-flex items-center gap-2 bg-gradient-to-r from-[#005C5C] to-[#2FA3A3] hover:from-[#004d4d] hover:to-[#258585] text-white font-black px-8 py-3.5 rounded-full text-sm shadow-lg shadow-[#005C5C]/20 hover:scale-105 transition-all cursor-pointer"
-      >
-        <span>Next: View Solutions & Action Plan</span>
-        <i data-lucide="arrow-right" class="w-4 h-4"></i>
-      </button>
-    </div>
-  </div>
-
-  <!-- ======================================================== -->
-  <!-- PAGE 4: PLAIN-LANGUAGE REMEDIATION ACTION PLAN           -->
-  <!-- ======================================================== -->
-  <div id="page-4" class="page-screen max-w-5xl mx-auto px-4 py-8">
-    <div class="bg-white border border-[#D6E8E8] rounded-3xl p-6 sm:p-8 shadow-xl mb-8">
-      
-      <!-- Page Header -->
-      <div class="text-center max-w-2xl mx-auto mb-8">
-        <div class="inline-flex items-center gap-2 bg-[#E6F5F5] text-[#005C5C] border border-[#2FA3A3]/30 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">
-          <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Phase 4: Action Remediation Plan
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center text-xs">
+          <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+            <span class="text-slate-500 font-medium text-[11px]">BOD Exceedance</span>
+            <div class="text-sm font-bold text-slate-900 mt-0.5" id="p3-bod">62%</div>
+          </div>
+          <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+            <span class="text-slate-500 font-medium text-[11px]">COD Exceedance</span>
+            <div class="text-sm font-bold text-slate-900 mt-0.5" id="p3-cod">68%</div>
+          </div>
+          <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+            <span class="text-slate-500 font-medium text-[11px]">Dissolved O₂ Deficit</span>
+            <div class="text-sm font-bold text-slate-900 mt-0.5" id="p3-do">50%</div>
+          </div>
+          <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+            <span class="text-slate-500 font-medium text-[11px]">pH Non-compliance</span>
+            <div class="text-sm font-bold text-slate-900 mt-0.5" id="p3-ph">18%</div>
+          </div>
+          <div class="bg-slate-50 p-2.5 rounded border border-slate-200">
+            <span class="text-slate-500 font-medium text-[11px]">TDS Exceedance</span>
+            <div class="text-sm font-bold text-slate-900 mt-0.5" id="p3-tds">44%</div>
+          </div>
         </div>
-        <h3 class="text-3xl font-extrabold text-[#0F172A]">
-          Remediation Steps for <span id="p4-name-title" class="text-[#005C5C]">Kanpur</span>
-        </h3>
-        <p class="text-[#4B6F6F] text-sm mt-2">
-          Clear, practical solutions grouped by cost tier to protect family health. No complex stats or numbers.
-        </p>
-      </div>
 
-      <!-- DANGER WARNING BANNER (TOP) -->
-      <div id="p4-warning-banner" class="p-6 rounded-2xl mb-8 border transition-all">
-        <div class="flex items-start gap-3.5">
-          <i id="p4-warning-icon" data-lucide="alert-triangle" class="w-6 h-6 shrink-0 mt-0.5"></i>
+        <!-- Discharge Source Notice -->
+        <div class="p-3 rounded bg-slate-50 border border-slate-200 text-xs text-slate-700 mt-3 flex items-start gap-2">
+          <i data-lucide="info" class="w-4 h-4 text-slate-500 shrink-0 mt-0.5"></i>
           <div>
-            <h4 id="p4-warning-title" class="font-extrabold text-base mb-1 text-[#0F172A]">Contamination Notice</h4>
-            <p id="p4-warning-desc" class="text-sm font-medium leading-relaxed text-[#0F172A]">
-              Loading water risk notice...
+            <b class="text-slate-900 font-semibold">Primary Contaminant Vector:</b> 
+            <span id="p3-source-desc">Tannery effluent (~1000 units) + Ganga discharge</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Navigation -->
+      <div class="flex items-center justify-between pt-2">
+        <button 
+          onclick="goToPage(2)"
+          class="inline-flex items-center gap-1.5 text-slate-600 hover:text-slate-900 text-xs font-semibold transition cursor-pointer"
+        >
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Search Another Location
+        </button>
+
+        <button 
+          onclick="goToPage(4)"
+          class="inline-flex items-center gap-2 bg-[#0f5956] hover:bg-[#0b4340] text-white text-xs font-semibold px-5 py-2.5 rounded-md transition border border-[#072e2c] shadow-xs cursor-pointer"
+        >
+          <span>View Action Remediation Plan</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- PAGE 4 (ROLE: REMEDIATION & MITIGATION PROTOCOLS)       -->
+    <!-- ======================================================== -->
+    <section id="page-4" class="page-screen max-w-5xl mx-auto space-y-6 py-4">
+      
+      <!-- Top Title -->
+      <div class="border-b border-slate-200 pb-3">
+        <span class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Phase 4 Action Plan</span>
+        <h2 class="text-xl font-bold text-slate-900 mt-0.5">
+          Remediation Protocols for <span id="p4-name-title" class="text-[#0f5956]">Kanpur (Uttar Pradesh)</span>
+        </h2>
+        <p class="text-xs text-slate-500 mt-0.5">Clear, actionable solutions categorized by economic feasibility and risk severity.</p>
+      </div>
+
+      <!-- HAZARD WARNING BANNER -->
+      <div id="p4-warning-banner" class="p-4 rounded-md border text-xs space-y-2">
+        <div class="flex items-start gap-3">
+          <i id="p4-warning-icon" data-lucide="alert-triangle" class="w-5 h-5 shrink-0 mt-0.5"></i>
+          <div class="space-y-1">
+            <h3 id="p4-warning-title" class="font-bold text-sm">Contamination Alert</h3>
+            <p id="p4-warning-desc" class="text-slate-700 leading-relaxed">
+              Loading water risk protocols...
             </p>
-            <div class="mt-3">
-              <span id="p4-at-risk-tag" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 border border-current text-xs font-bold shadow-xs">
-                <span>👥 Who is at risk:</span>
-                <b id="p4-risk-target">Loading...</b>
+            <div class="pt-1.5">
+              <span id="p4-at-risk-tag" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-white border border-slate-200 text-[11px] font-semibold text-slate-700">
+                <span>Vulnerable Groups:</span>
+                <b id="p4-risk-target" class="text-slate-900">Loading...</b>
               </span>
             </div>
           </div>
@@ -880,33 +522,36 @@ button.rounded-full {
       </div>
 
       <!-- DYNAMIC ACTION CARDS CONTAINER GROUPED BY TIER -->
-      <div id="p4-solutions-container" class="space-y-8 mb-8">
+      <div id="p4-solutions-container" class="space-y-6">
         <!-- Rendered dynamically by populatePage4() -->
       </div>
 
-    </div>
+      <!-- FOOTER NAVIGATION -->
+      <div class="flex items-center justify-between pt-4 border-t border-slate-200">
+        <button 
+          onclick="goToPage(3)"
+          class="inline-flex items-center gap-1.5 text-slate-600 hover:text-slate-900 text-xs font-semibold transition cursor-pointer"
+        >
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Back to Telemetry Report
+        </button>
 
-    <!-- RESTART & NAVIGATION BUTTONS -->
-    <div class="flex items-center justify-between">
-      <button 
-        onclick="goToPage(3)"
-        class="flex items-center gap-2 text-[#4B6F6F] hover:text-[#0F172A] text-sm font-semibold transition cursor-pointer"
-      >
-        <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Stats Telemetry
-      </button>
+        <button 
+          onclick="goToPage(1)"
+          class="inline-flex items-center gap-1.5 bg-[#0f5956] hover:bg-[#0b4340] text-white text-xs font-semibold px-4 py-2 rounded-md transition border border-[#072e2c] shadow-xs cursor-pointer"
+        >
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+          <span>Analyze Another Location</span>
+        </button>
+      </div>
+    </section>
 
-      <button 
-        onclick="goToPage(1)"
-        class="inline-flex items-center gap-2 bg-[#005C5C] hover:bg-[#004d4d] text-white font-bold px-8 py-3.5 rounded-full text-sm shadow-md shadow-[#005C5C]/20 hover:scale-105 transition cursor-pointer"
-      >
-        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-        <span>Start Another Location Analysis</span>
-      </button>
-    </div>
-  </div>
+  </main>
 
-  <!-- COMPLETE 115+ CSV DATASET & REAL HIGH-RES GEOGRAPHY ENGINE -->
+  <!-- JAVASCRIPT: DATA & D3 VECTOR ENGINE -->
   <script>
+    // ========================================================
+    // CSV DATASET (167 Stations: 37 States/UTs + 130 Cities/Hubs)
+    // ========================================================
     const csvRaw = `location_name,location_type,state_ut,city_type,surface_water_pollution_pct,groundwater_pollution_pct,arsenic_as_pct,chromium_cr_pct,lead_pb_pct,cadmium_cd_pct,zinc_zn_pct,copper_cu_pct,nickel_ni_pct,bod_exceedance_pct,cod_exceedance_pct,do_exceedance_pct,ph_exceedance_pct,tds_exceedance_pct,primary_pollutant_source,risk_level,key_heavy_metal
 Andhra Pradesh,State,Andhra Pradesh,State,38,28,38,18,22,12,6,2,2,38,44,32,26,48,State-level aggregate,High,Arsenic
 Arunachal Pradesh,State,Arunachal Pradesh,State,12,8,80,6,6,2,2,2,2,10,14,8,8,10,State-level aggregate,Low,Arsenic
@@ -1077,7 +722,7 @@ Leh,City,Ladakh,UT Capital,12,8,8,6,8,4,8,6,60,10,14,8,8,10,High altitude minima
 Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial + remote,Low,Arsenic`;
 
     // ==========================================
-    // DATASET — SOLUTIONS (41 rows)
+    // MITIGATION DATABASE — STRUCTURED SOLUTIONS
     // ==========================================
     const solutionsData = [
       // ARSENIC
@@ -1136,6 +781,7 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       { contaminant_id:"mercury", contaminant_name:"Mercury", risk_factor:"Extreme", danger_warning:"EMERGENCY: Lethal neurotoxin level mercury! Extreme risk of permanent brain damage, blindness, and paralysis. DO NOT TOUCH OR DRINK.", who_is_at_risk:"EVERYONE: Catastrophic toxicity hazard", solution_tier:"Medium Cost", solution_title:"Sealed Certified Water Bottles", what_to_do:"Rely solely on certified sealed bottled water for all ingestion, cooking, and mouth rinsing until authorities remediate the water source.", where_to_get:"Certified packaged water distributors", works_best_for:"Immediate emergency household survival" }
     ];
 
+    // Parse CSV data
     const lines = csvRaw.trim().split('\n');
     const allRecords = lines.slice(1).map(line => {
       const vals = line.split(',');
@@ -1166,7 +812,7 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
 
     let currentSelected = allRecords.find(r => r.name === "Kanpur") || allRecords[0];
 
-    // Coordinates for all major cities / industrial clusters across India
+    // City & Station Coordinate Locations
     const cityPins = [
       { name: "Kanpur", coords: [80.3319, 26.4499], pct: 68 },
       { name: "Varanasi", coords: [82.9739, 25.3176], pct: 55 },
@@ -1242,59 +888,60 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       { name: "Leh", coords: [77.5771, 34.1526], pct: 12 },
       { name: "Kargil", coords: [76.1320, 34.5539], pct: 10 },
       { name: "Shimla", coords: [77.1734, 31.1048], pct: 14 },
-      { name: "Panaji", coords: [73.8278, 15.4909], pct: 18 }
+      { name: "Panaji", coords: [73.8278, 15.4909], pct: 18 },
+      { name: "Port Blair", coords: [92.7400, 11.6234], pct: 14 },
+      { name: "Kavaratti", coords: [72.6420, 10.5667], pct: 10 }
     ];
 
     function getTier(pct) {
       if (pct >= 50) {
         return {
-          fill: "#7C3AED",
-          label: "🟣 Extreme 50%+",
+          fill: "#7c3aed",
+          label: "Extreme (≥50%)",
           riskFactor: "Extreme",
-          badge: "bg-purple-100 text-[#7C3AED] border-[#7C3AED]/40",
-          text: "text-[#7C3AED]",
-          dot: "bg-[#7C3AED] shadow-md shadow-[#7C3AED]/40",
-          bannerBg: "bg-purple-50 border-[#7C3AED]/40 text-purple-950",
-          bannerIcon: "text-[#7C3AED]"
+          badge: "bg-purple-50 text-purple-700 border-purple-200",
+          text: "text-purple-700",
+          dot: "bg-purple-600",
+          bannerBg: "bg-purple-50 border-purple-200 text-purple-900",
+          bannerIcon: "text-purple-600"
         };
       }
       if (pct >= 40) {
         return {
-          fill: "#DC2626",
-          label: "🔴 Critical 40–49%",
+          fill: "#dc2626",
+          label: "Critical (40–49%)",
           riskFactor: "Critical",
-          badge: "bg-red-100 text-[#DC2626] border-[#DC2626]/40",
-          text: "text-[#DC2626]",
-          dot: "bg-[#DC2626] shadow-md shadow-[#DC2626]/40",
-          bannerBg: "bg-red-50 border-[#DC2626]/40 text-red-950",
-          bannerIcon: "text-[#DC2626]"
+          badge: "bg-red-50 text-red-700 border-red-200",
+          text: "text-red-700",
+          dot: "bg-red-600",
+          bannerBg: "bg-red-50 border-red-200 text-red-900",
+          bannerIcon: "text-red-600"
         };
       }
       if (pct >= 20) {
         return {
-          fill: "#D97706",
-          label: "🟡 Moderate 20–39%",
+          fill: "#d97706",
+          label: "Moderate (20–39%)",
           riskFactor: "Moderate",
-          badge: "bg-amber-100 text-[#D97706] border-[#D97706]/40",
-          text: "text-[#D97706]",
-          dot: "bg-[#D97706] shadow-md shadow-[#D97706]/40",
-          bannerBg: "bg-amber-50 border-[#D97706]/40 text-amber-950",
-          bannerIcon: "text-[#D97706]"
+          badge: "bg-amber-50 text-amber-700 border-amber-200",
+          text: "text-amber-700",
+          dot: "bg-amber-600",
+          bannerBg: "bg-amber-50 border-amber-200 text-amber-900",
+          bannerIcon: "text-amber-600"
         };
       }
       return {
         fill: "#059669",
-        label: "🟢 Good < 20%",
+        label: "Good (<20%)",
         riskFactor: "Good",
-        badge: "bg-emerald-100 text-[#059669] border-[#059669]/40",
-        text: "text-[#059669]",
-        dot: "bg-[#059669] shadow-md shadow-[#059669]/40",
-        bannerBg: "bg-emerald-50 border-[#059669]/40 text-emerald-950",
-        bannerIcon: "text-[#059669]"
+        badge: "bg-emerald-50 text-emerald-700 border-emerald-200",
+        text: "text-emerald-700",
+        dot: "bg-emerald-600",
+        bannerBg: "bg-emerald-50 border-emerald-200 text-emerald-900",
+        bannerIcon: "text-emerald-600"
       };
     }
 
-    // Name Normalizer for GeoJSON variations
     function matchDatabaseRecord(raw) {
       if (!raw) return null;
       const s = raw.toLowerCase().replace(/&/g, 'and').trim();
@@ -1316,48 +963,37 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
       );
     }
 
-    // Load and Render Real Geographic Curved India GeoJSON via D3
+    // High-Precision D3 Vector Render with Geographically Accurate Lakshadweep & Andaman
     function renderRealisticIndiaMap() {
       const container = document.getElementById('d3-india-map');
       container.innerHTML = "";
 
       const width = 600;
-      const height = 550;
+      const height = 520;
 
       const svg = d3.select("#d3-india-map")
         .append("svg")
         .attr("viewBox", `0 0 ${width} ${height}`)
-        .attr("class", "w-full h-auto max-h-[520px] drop-shadow-[0_15px_30px_rgba(0,92,92,0.15)]");
+        .attr("class", "w-full h-auto max-h-[500px]");
 
       const projection = d3.geoMercator()
         .center([82.8, 22.5])
-        .scale(1000)
+        .scale(980)
         .translate([width / 2, height / 2]);
 
       const path = d3.geoPath().projection(projection);
 
       // Load Official India GeoJSON
       d3.json("https://cdn.jsdelivr.net/gh/Subhash9325/GeoJson-Data-of-Indian-States@master/Indian_States").then(geoData => {
+        
+        // 1. Draw Mainland and Island State Boundaries
+        const cleanFeatures = geoData.features.filter(d => {
+          const name = (d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || "").toLowerCase();
+          return !name.includes("lakshadweep");
+        });
 
-        // Helper: is this feature Lakshadweep? (used to exclude it from the
-        // mainland map and route it to its own inset instead)
-        const isLakshadweep = (d) => {
-          const name = (
-            d.properties.NAME_1 ||
-            d.properties.st_nm ||
-            d.properties.NAME ||
-            ""
-          ).toLowerCase();
-          return name.includes("lakshadweep");
-        };
-
-        const mainlandFeatures = geoData.features.filter(d => !isLakshadweep(d));
-        const lakshadweepFeature = geoData.features.find(d => isLakshadweep(d));
-
-        // 1. Draw State Boundaries with exact color fills (mainland + A&N only —
-        //    Lakshadweep is rendered separately below in its own inset panel)
         svg.selectAll(".state-path")
-          .data(mainlandFeatures)
+          .data(cleanFeatures)
           .enter()
           .append("path")
           .attr("d", path)
@@ -1370,20 +1006,9 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
           .on("mouseenter", function(event, d) {
             const rawName = d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || "";
             const match = matchDatabaseRecord(rawName);
-            if (match) {
-              const tooltip = document.getElementById('map-tooltip');
-              const tier = getTier(match.surface);
-              document.getElementById('tt-name').textContent = match.name;
-              document.getElementById('tt-type').textContent = `${match.type} • ${tier.label}`;
-              document.getElementById('tt-score').textContent = match.surface + '%';
-              document.getElementById('tt-score').className = `text-base font-black ${tier.text}`;
-              document.getElementById('tt-metal').textContent = match.metal;
-              tooltip.classList.remove('hidden');
-            }
+            if (match) showTooltip(match);
           })
-          .on("mouseleave", function() {
-            document.getElementById('map-tooltip').classList.add('hidden');
-          })
+          .on("mouseleave", hideTooltip)
           .on("click", function(event, d) {
             const rawName = d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || "";
             const match = matchDatabaseRecord(rawName);
@@ -1393,11 +1018,75 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
             }
           });
 
-        // 2. Draw State Names directly inside States (Lakshadweep excluded here too —
-        //    its label lives in the inset panel instead, so it never floats
-        //    detached over the mainland)
+        // 2. Render Geographically Correct Lakshadweep Archipelago (Southwest of Kerala)
+        const lakshadweepMatch = allRecords.find(r => r.name === "Lakshadweep") || { name: "Lakshadweep", type: "UT", surface: 10, metal: "Zinc" };
+        const lakshadweepTier = getTier(lakshadweepMatch.surface);
+
+        // Accurate Lakshadweep Island Coordinates [Longitude, Latitude]
+        const lakshadweepIslands = [
+          { name: "Chetlat / Kiltan", coords: [72.70, 11.70], r: 2.2 },
+          { name: "Kadmat / Amini", coords: [72.78, 11.23], r: 2.5 },
+          { name: "Agatti Island", coords: [72.18, 10.85], r: 2.8 },
+          { name: "Kavaratti (Capital)", coords: [72.64, 10.56], r: 3.2 },
+          { name: "Andrott Island", coords: [73.68, 10.82], r: 2.8 },
+          { name: "Kalpeni Island", coords: [73.65, 10.08], r: 2.5 },
+          { name: "Minicoy Island", coords: [73.05, 8.28], r: 3.0 }
+        ];
+
+        const lakshadweepGroup = svg.append("g")
+          .attr("class", "lakshadweep-archipelago cursor-pointer")
+          .on("mouseenter", () => showTooltip(lakshadweepMatch))
+          .on("mouseleave", hideTooltip)
+          .on("click", () => {
+            currentSelected = lakshadweepMatch;
+            goToPage(3);
+          });
+
+        // Inset Frame for Lakshadweep
+        const p1 = projection([71.5, 12.2]);
+        const p2 = projection([74.2, 7.8]);
+        if (p1 && p2) {
+          lakshadweepGroup.append("rect")
+            .attr("x", p1[0] - 4)
+            .attr("y", p1[1] - 4)
+            .attr("width", (p2[0] - p1[0]) + 8)
+            .attr("height", (p2[1] - p1[1]) + 8)
+            .attr("fill", "rgba(255,255,255,0.5)")
+            .attr("stroke", "#cbd5e1")
+            .attr("stroke-width", 0.6)
+            .attr("stroke-dasharray", "2 2")
+            .attr("rx", 3);
+        }
+
+        // Render islands
+        lakshadweepIslands.forEach(isl => {
+          const pt = projection(isl.coords);
+          if (pt) {
+            lakshadweepGroup.append("ellipse")
+              .attr("cx", pt[0])
+              .attr("cy", pt[1])
+              .attr("rx", isl.r)
+              .attr("ry", isl.r * 1.3)
+              .attr("class", "state-path")
+              .attr("fill", lakshadweepTier.fill)
+              .attr("stroke", "#ffffff")
+              .attr("stroke-width", 0.6);
+          }
+        });
+
+        // Label for Lakshadweep
+        const lakLabelPt = projection([72.5, 9.4]);
+        if (lakLabelPt) {
+          svg.append("text")
+            .attr("x", lakLabelPt[0])
+            .attr("y", lakLabelPt[1])
+            .attr("class", "island-label")
+            .text("Lakshadweep (UT)");
+        }
+
+        // 3. Subtle & Clean State Typography (Thinner 6px, restrained font-weight)
         svg.selectAll(".state-label")
-          .data(mainlandFeatures)
+          .data(cleanFeatures)
           .enter()
           .append("text")
           .attr("class", "state-label")
@@ -1407,48 +1096,402 @@ Kargil,City,Ladakh,Urban,10,6,8,4,8,4,8,6,62,8,12,6,6,8,Very minimal industrial 
           })
           .text(d => {
             const raw = d.properties.NAME_1 || d.properties.st_nm || d.properties.NAME || "";
-            if (raw.length > 12) return raw.substring(0, 10) + "..";
+            if (raw.length > 12) return raw.substring(0, 9) + "…";
             return raw;
           });
 
-        // 2b. Render Lakshadweep in its own small, correctly-scaled inset box
-        //     (geographically it sits southwest of Kerala; showing it as a
-        //     separate inset — the standard cartographic convention used on
-        //     official India maps — keeps it visible without distorting the
-        //     mainland projection). Its data/search/click behavior is identical
-        //     to every other state.
-        if (lakshadweepFeature) {
-          const insetContainer = document.getElementById('d3-lakshadweep-inset');
-          insetContainer.innerHTML = "";
+        // 4. Interactive City & Hotspot Monitoring Pins
+        cityPins.forEach(city => {
+          const pt = projection(city.coords);
+          if (pt) {
+            const tier = getTier(city.pct);
+            const g = svg.append("g")
+              .attr("class", "city-pin")
+              .on("mouseenter", () => {
+                const match = allRecords.find(r => r.name.toLowerCase() === city.name.toLowerCase());
+                if (match) showTooltip(match);
+              })
+              .on("mouseleave", hideTooltip)
+              .on("click", () => selectAndJump(city.name));
 
-          const insetWidth = 46;
-          const insetHeight = 40;
+            // Pulsing alert ring on critical & extreme stations
+            if (city.pct >= 40) {
+              g.append("circle")
+                .attr("cx", pt[0])
+                .attr("cy", pt[1])
+                .attr("r", 4)
+                .attr("fill", "none")
+                .attr("stroke", tier.fill)
+                .attr("stroke-width", 1)
+                .attr("class", "city-pulse");
+            }
 
-          const insetSvg = d3.select("#d3-lakshadweep-inset")
-            .append("svg")
-            .attr("viewBox", `0 0 ${insetWidth} ${insetHeight}`)
-            .attr("width", insetWidth)
-            .attr("height", insetHeight);
+            // Outer target ring
+            g.append("circle")
+              .attr("cx", pt[0])
+              .attr("cy", pt[1])
+              .attr("r", 3.2)
+              .attr("fill", "#ffffff")
+              .attr("stroke", tier.fill)
+              .attr("stroke-width", 1.2);
 
-          const insetProjection = d3.geoMercator()
-            .fitSize([insetWidth - 8, insetHeight - 8], lakshadweepFeature);
-          const insetPath = d3.geoPath().projection(insetProjection);
+            // Center core dot
+            g.append("circle")
+              .attr("cx", pt[0])
+              .attr("cy", pt[1])
+              .attr("r", 1.5)
+              .attr("fill", tier.fill);
+          }
+        });
+      });
+    }
 
-          const lakMatch = matchDatabaseRecord("Lakshadweep");
-          const lakFill = lakMatch ? getTier(lakMatch.surface).fill : "#059669";
+    function showTooltip(match) {
+      const tooltip = document.getElementById('map-tooltip');
+      const tier = getTier(match.surface);
+      document.getElementById('tt-name').textContent = match.name;
+      document.getElementById('tt-type').textContent = `${match.type} • ${tier.label}`;
+      document.getElementById('tt-score').textContent = match.surface + '%';
+      document.getElementById('tt-score').className = `text-xs font-bold ${tier.text}`;
+      document.getElementById('tt-metal').textContent = match.metal;
+      tooltip.classList.remove('hidden');
+    }
 
-          insetSvg.append("g")
-            .attr("transform", "translate(4,4)")
-            .append("path")
-            .datum(lakshadweepFeature)
-            .attr("d", insetPath)
-            .attr("class", "state-path")
-            .attr("fill", lakFill)
-            .style("cursor", "pointer")
-            .on("mouseenter", function() {
-              if (lakMatch) {
-                const tooltip = document.getElementById('map-tooltip');
-                const tier = getTier(lakMatch.surface);
-                document.getElementById('tt-name').textContent = lakMatch.name;
-                document.getElementById('tt-type').textContent = `${lakMatch.type} • ${tier.label}`;
-  
+    function hideTooltip() {
+      document.getElementById('map-tooltip').classList.add('hidden');
+    }
+
+    function selectAndJump(cityName) {
+      const match = allRecords.find(r => r.name.toLowerCase() === cityName.toLowerCase());
+      if (match) {
+        currentSelected = match;
+        goToPage(3);
+      }
+    }
+
+    function quickPick(name) {
+      document.getElementById('search-input').value = name;
+      handleSearchSubmit();
+    }
+
+    function handleSearchSubmit() {
+      const q = document.getElementById('search-input').value.trim().toLowerCase();
+      const err = document.getElementById('search-error');
+      const succ = document.getElementById('search-success');
+      const nextBtn = document.getElementById('btn-goto-p3');
+
+      if (!q) {
+        err.classList.remove('hidden');
+        succ.classList.add('hidden');
+        nextBtn.disabled = true;
+        nextBtn.className = "inline-flex items-center gap-1.5 bg-slate-200 text-slate-400 font-semibold px-5 py-2 rounded-md text-xs transition cursor-not-allowed";
+        return;
+      }
+
+      const match = allRecords.find(r => 
+        r.name.toLowerCase() === q || 
+        r.name.toLowerCase().includes(q) || 
+        q.includes(r.name.toLowerCase()) ||
+        r.stateut.toLowerCase() === q
+      );
+
+      if (match) {
+        currentSelected = match;
+        const tier = getTier(match.surface);
+
+        err.classList.add('hidden');
+        succ.classList.remove('hidden');
+
+        document.getElementById('success-dot').className = `w-3 h-3 rounded-full shrink-0 ${tier.dot}`;
+        document.getElementById('success-category').textContent = `${match.type} • ${match.citytype}`;
+        document.getElementById('success-location-title').textContent = `${match.name}, ${match.stateut}`;
+        document.getElementById('success-risk-badge').textContent = tier.label;
+        document.getElementById('success-risk-badge').className = `text-xs px-2.5 py-1 rounded font-bold uppercase border ${tier.badge}`;
+        document.getElementById('success-metal').textContent = match.metal;
+        document.getElementById('success-source').textContent = match.source;
+
+        nextBtn.disabled = false;
+        nextBtn.className = "inline-flex items-center gap-1.5 bg-[#0f5956] hover:bg-[#0b4340] text-white font-semibold px-5 py-2 rounded-md text-xs transition border border-[#072e2c] shadow-xs cursor-pointer";
+      } else {
+        err.classList.remove('hidden');
+        succ.classList.add('hidden');
+        nextBtn.disabled = true;
+        nextBtn.className = "inline-flex items-center gap-1.5 bg-slate-200 text-slate-400 font-semibold px-5 py-2 rounded-md text-xs transition cursor-not-allowed";
+      }
+      lucide.createIcons();
+    }
+
+    function populatePage3() {
+      const d = currentSelected;
+      const tier = getTier(d.surface);
+
+      document.getElementById('p3-name').textContent = d.name;
+      document.getElementById('p3-stateut').textContent = `(${d.stateut} • ${d.citytype})`;
+      document.getElementById('p3-risk-badge').textContent = tier.label;
+      document.getElementById('p3-risk-badge').className = `px-3 py-1 rounded text-xs font-bold uppercase tracking-wider border ${tier.badge}`;
+
+      document.getElementById('p3-surface').textContent = d.surface + '%';
+      document.getElementById('p3-surface').className = `text-2xl font-black ${tier.text} mt-1`;
+
+      document.getElementById('p3-ground').textContent = d.ground + '%';
+      document.getElementById('p3-metal').textContent = d.metal;
+      document.getElementById('p3-citytype').textContent = d.citytype;
+
+      document.getElementById('m-as').textContent = d.as + '%';
+      document.getElementById('m-cr').textContent = d.cr + '%';
+      document.getElementById('m-pb').textContent = d.pb + '%';
+      document.getElementById('m-cd').textContent = d.cd + '%';
+      document.getElementById('m-zn').textContent = d.zn + '%';
+      document.getElementById('m-cu').textContent = d.cu + '%';
+      document.getElementById('m-ni').textContent = d.ni + '%';
+
+      document.getElementById('p3-bod').textContent = d.bod + '%';
+      document.getElementById('p3-cod').textContent = d.cod + '%';
+      document.getElementById('p3-do').textContent = d.do + '%';
+      document.getElementById('p3-ph').textContent = d.ph + '%';
+      document.getElementById('p3-tds').textContent = d.tds + '%';
+
+      document.getElementById('p3-source-desc').textContent = d.source;
+    }
+
+    function populatePage4() {
+      const d = currentSelected;
+      const tier = getTier(d.surface);
+      
+      document.getElementById('p4-name-title').textContent = `${d.name} (${d.stateut})`;
+      
+      const contaminantId = (d.metal || '').toLowerCase().trim();
+      const riskFactor = tier.riskFactor;
+
+      // Match solutions in solutionsData
+      let matched = solutionsData.filter(s => 
+        s.contaminant_id.toLowerCase() === contaminantId && 
+        s.risk_factor.toLowerCase() === riskFactor.toLowerCase()
+      );
+
+      let warningText = "";
+      let whoAtRisk = "";
+
+      if (matched.length === 0) {
+        if (riskFactor === "Good") {
+          warningText = `Certified Safe Baseline: Telemetry for ${d.name} demonstrates heavy metal concentrations well within IS 10500 permissible limits. Standard hygienic plumbing maintenance is recommended.`;
+          whoAtRisk = "General population (low immediate vulnerability; maintain clean storage)";
+          matched = [
+            {
+              contaminant_id: contaminantId,
+              contaminant_name: d.metal || "General",
+              risk_factor: "Good",
+              danger_warning: warningText,
+              who_is_at_risk: whoAtRisk,
+              solution_tier: "Free",
+              solution_title: "Periodic Tap & Storage Tank Sanitation",
+              what_to_do: "Flush overhead and underground water storage tanks every 6 months. Discard the first 30 seconds of morning water to clear residual pipe sediment.",
+              where_to_get: "Standard household maintenance",
+              works_best_for: "All domestic and municipal water connections"
+            },
+            {
+              contaminant_id: contaminantId,
+              contaminant_name: d.metal || "General",
+              risk_factor: "Good",
+              danger_warning: warningText,
+              who_is_at_risk: whoAtRisk,
+              solution_tier: "Low Cost",
+              solution_title: "Inline Physical Sediment Mesh Filter",
+              what_to_do: "Install a stainless steel or nylon mesh filter at the kitchen inlet to intercept loose pipe scale and suspended particulates.",
+              where_to_get: "Local hardware store or plumbing supplier",
+              works_best_for: "Homes with direct pipeline feeds"
+            }
+          ];
+        } else {
+          warningText = `Elevated ${d.metal} Alert: Local water sampling shows heavy metal exceedance requiring filtration and source precautions.`;
+          whoAtRisk = "Infants, pregnant mothers, and elderly residents";
+          matched = [
+            {
+              contaminant_id: contaminantId,
+              contaminant_name: d.metal || "Heavy Metal",
+              risk_factor: riskFactor,
+              danger_warning: warningText,
+              who_is_at_risk: whoAtRisk,
+              solution_tier: "Free",
+              solution_title: "Switch Drinking Source to Verified Public Tap",
+              what_to_do: "Stop drinking untreated groundwater from this local source. Collect daily cooking and drinking water from verified deep municipal taps.",
+              where_to_get: "Local municipal water supply or panchayat office",
+              works_best_for: "All households in affected areas"
+            },
+            {
+              contaminant_id: contaminantId,
+              contaminant_name: d.metal || "Heavy Metal",
+              risk_factor: riskFactor,
+              danger_warning: warningText,
+              who_is_at_risk: whoAtRisk,
+              solution_tier: "Low Cost",
+              solution_title: "Dual-Stage Gravity Sediment & Carbon Filter",
+              what_to_do: "Filter water through an activated carbon block or ceramic candle unit to reduce dissolved metals and organic residues without electricity.",
+              where_to_get: "Local hardware store or public health cooperative",
+              works_best_for: "Off-grid homes and small households"
+            },
+            {
+              contaminant_id: contaminantId,
+              contaminant_name: d.metal || "Heavy Metal",
+              risk_factor: riskFactor,
+              danger_warning: warningText,
+              who_is_at_risk: whoAtRisk,
+              solution_tier: "Medium Cost",
+              solution_title: "Certified Thin-Film Composite (TFC) RO System",
+              what_to_do: "Install an ISI-certified domestic RO purifier. Thin-film membranes extract up to 98% of dissolved heavy metal ions.",
+              where_to_get: "Authorized water equipment dealer",
+              works_best_for: "Homes with regular electrical connection"
+            }
+          ];
+        }
+      } else {
+        warningText = matched[0].danger_warning;
+        whoAtRisk = matched[0].who_is_at_risk;
+      }
+
+      // Update Danger Warning Banner
+      const banner = document.getElementById('p4-warning-banner');
+      banner.className = `p-4 rounded-md border text-xs space-y-2 ${tier.bannerBg}`;
+      
+      const warnTitle = document.getElementById('p4-warning-title');
+      warnTitle.textContent = `${riskFactor} Risk Protocol — ${d.metal} Guidance`;
+      warnTitle.className = `font-bold text-sm ${tier.text}`;
+      
+      const warnIcon = document.getElementById('p4-warning-icon');
+      warnIcon.setAttribute('data-lucide', riskFactor === 'Good' ? 'shield-check' : 'alert-triangle');
+      warnIcon.className = `w-5 h-5 shrink-0 mt-0.5 ${tier.bannerIcon}`;
+      
+      document.getElementById('p4-warning-desc').textContent = warningText;
+      document.getElementById('p4-risk-target').textContent = whoAtRisk;
+
+      // Render Solutions Grouped by Tier
+      const container = document.getElementById('p4-solutions-container');
+      container.innerHTML = "";
+
+      const tiers = [
+        {
+          tierName: "Free",
+          heading: "Zero-Cost & Sourcing Solutions",
+          badgeStyle: "bg-emerald-50 text-emerald-800 border-emerald-200",
+          cardStyle: "bg-white border-slate-200"
+        },
+        {
+          tierName: "Low Cost",
+          heading: "Low-Cost Filtration Solutions",
+          badgeStyle: "bg-amber-50 text-amber-800 border-amber-200",
+          cardStyle: "bg-white border-slate-200"
+        },
+        {
+          tierName: "Medium Cost",
+          heading: "Engineered & Purifier Solutions",
+          badgeStyle: "bg-blue-50 text-blue-800 border-blue-200",
+          cardStyle: "bg-white border-slate-200"
+        }
+      ];
+
+      let stepCounter = 1;
+
+      tiers.forEach(t => {
+        const tierSolutions = matched.filter(s => s.solution_tier.toLowerCase() === t.tierName.toLowerCase());
+        if (tierSolutions.length > 0) {
+          const sec = document.createElement('div');
+          sec.className = "space-y-3";
+
+          const headerDiv = document.createElement('div');
+          headerDiv.className = "flex items-center gap-2";
+          headerDiv.innerHTML = `
+            <span class="px-2.5 py-1 rounded text-[11px] font-bold uppercase tracking-wider border ${t.badgeStyle}">
+              ${t.heading}
+            </span>
+            <div class="h-px bg-slate-200 flex-1"></div>
+          `;
+          sec.appendChild(headerDiv);
+
+          const grid = document.createElement('div');
+          grid.className = "grid grid-cols-1 gap-3";
+
+          tierSolutions.forEach(sol => {
+            const card = document.createElement('div');
+            card.className = `p-4 rounded-md border shadow-xs ${t.cardStyle}`;
+
+            card.innerHTML = `
+              <div class="flex items-start gap-3">
+                <span class="flex items-center justify-center w-6 h-6 rounded bg-[#0f5956] text-white font-bold text-xs shrink-0 mt-0.5">
+                  ${stepCounter}
+                </span>
+                <div class="flex-1 space-y-1.5">
+                  <h4 class="text-sm font-bold text-slate-900 leading-snug">
+                    ${sol.solution_title}
+                  </h4>
+                  <p class="text-xs text-slate-700 leading-relaxed">
+                    ${sol.what_to_do}
+                  </p>
+                  <div class="pt-2 flex flex-wrap items-center gap-2 text-[11px]">
+                    <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 font-medium">
+                      <i data-lucide="map-pin" class="w-3 h-3 text-[#0f5956]"></i>
+                      <span><b>Procurement:</b> ${sol.where_to_get}</span>
+                    </span>
+                    <span class="text-slate-500 italic">
+                      • Best suited for: ${sol.works_best_for}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            `;
+            grid.appendChild(card);
+            stepCounter++;
+          });
+
+          sec.appendChild(grid);
+          container.appendChild(sec);
+        }
+      });
+
+      lucide.createIcons();
+    }
+
+    // STRICT MULTI-PAGE REDIRECTION FUNCTION
+    function goToPage(pageNumber) {
+      // 1. Hide every page screen immediately
+      document.querySelectorAll('.page-screen').forEach(el => {
+        el.classList.remove('active');
+        el.style.setProperty('display', 'none', 'important');
+      });
+
+      // 2. Display ONLY the target page
+      const targetPage = document.getElementById(`page-${pageNumber}`);
+      if (targetPage) {
+        targetPage.classList.add('active');
+        targetPage.style.setProperty('display', 'block', 'important');
+      }
+
+      // 3. Update top stepper buttons
+      for (let i = 1; i <= 4; i++) {
+        const pill = document.getElementById(`step-pill-${i}`);
+        if (pill) {
+          if (i === pageNumber) {
+            pill.className = "px-3 py-1.5 rounded text-white bg-[#0f5956] font-medium transition cursor-pointer";
+          } else if (i < pageNumber) {
+            pill.className = "px-3 py-1.5 rounded text-[#0f5956] bg-teal-50 border border-teal-200 font-medium transition cursor-pointer";
+          } else {
+            pill.className = "px-3 py-1.5 rounded text-slate-600 hover:text-slate-900 transition cursor-pointer";
+          }
+        }
+      }
+
+      // 4. Trigger data population
+      if (pageNumber === 3) populatePage3();
+      if (pageNumber === 4) populatePage4();
+
+      // 5. Scroll back to top
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      lucide.createIcons();
+    }
+
+    // Initialize map engine on load
+    renderRealisticIndiaMap();
+    goToPage(1);
+    lucide.createIcons();
+  </script>
+</body>
+</html>
